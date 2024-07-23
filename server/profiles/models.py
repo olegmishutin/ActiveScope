@@ -1,7 +1,6 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
-from auth_sys.models import User
-from server.utils import delete_existing_file
+from django.contrib.auth import get_user_model
+from server.utils.functions import delete_existing_file
 
 
 def profile_file_uploading_to(instance, file):
@@ -9,15 +8,15 @@ def profile_file_uploading_to(instance, file):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, verbose_name=_('user'), related_name='profile', on_delete=models.CASCADE)
-    photo = models.ImageField(_('photo'), upload_to=profile_file_uploading_to, null=True, blank=True)
-    header_image = models.ImageField(_('image of header'), upload_to=profile_file_uploading_to, null=True, blank=True)
-    description = models.TextField(_('description'), null=True, blank=True)
+    user = models.OneToOneField(get_user_model(), verbose_name='пользователь', on_delete=models.CASCADE)
+    photo = models.ImageField('фото', upload_to=profile_file_uploading_to, null=True, blank=True)
+    header_image = models.ImageField('фоновая картинка', upload_to=profile_file_uploading_to, null=True, blank=True)
+    description = models.TextField('описание', null=True, blank=True)
 
     class Meta:
         db_table = 'Profile'
-        verbose_name = _('profile')
-        verbose_name_plural = _('profiles')
+        verbose_name = 'Профиль'
+        verbose_name_plural = 'Профили'
 
     def change_photo(self, file):
         delete_existing_file(self.photo)

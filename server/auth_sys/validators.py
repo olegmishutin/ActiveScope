@@ -1,13 +1,12 @@
-from rest_framework.serializers import ValidationError
-from django.utils.translation import gettext_lazy as _
+from rest_framework.exceptions import ValidationError
 
 
 def validate_password(value):
     if len(value) < 6:
-        raise ValidationError(_('Password must be longer than 5 characters'))
+        raise ValidationError('Пароль должен быть длиннее пяти символов')
 
     if not any(char.isdigit() for char in value):
-        raise ValidationError(_('The password must contain at least one number'))
+        raise ValidationError('Пароль должен содержать хотябы одну цифру')
 
     if not any(char.isupper() for char in value):
-        raise ValidationError(_('The password must contain at least one capital letter'))
+        raise ValidationError('Пароль должен содержать хотябы одну заглавную букву')

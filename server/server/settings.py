@@ -1,4 +1,5 @@
 import os
+import datetime
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -38,7 +39,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-REST_FRAMEWORK = {}
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'auth_sys.authentication.TokenAuthentication'
+    ]
+}
 
 ROOT_URLCONF = 'server.urls'
 
@@ -85,6 +90,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+EXPIRE_TOKEN_IN = datetime.timedelta(days=int(os.getenv('EXPIRE_TOKEN_IN')))
 
 LANGUAGE_CODE = 'Ru-ru'
 

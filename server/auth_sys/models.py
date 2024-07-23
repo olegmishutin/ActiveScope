@@ -1,8 +1,14 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser
+from rest_framework.authtoken.models import Token as RestTokenModel
 from .validators import validate_password
 from .managers import UserManager
+
+
+class Token(RestTokenModel):
+    class Meta(RestTokenModel.Meta):
+        db_table = 'Token'
+        abstract = False
 
 
 class User(AbstractBaseUser):
@@ -10,12 +16,12 @@ class User(AbstractBaseUser):
 
     is_admin = models.BooleanField(default=False)
 
-    email = models.EmailField(_('email'), max_length=256, unique=True)
-    password = models.CharField(_('password'), max_length=128, validators=[validate_password])
+    email = models.EmailField('email', max_length=256, unique=True)
+    password = models.CharField('пароль', max_length=128, validators=[validate_password])
 
-    first_name = models.CharField(_('first name'), max_length=128)
-    last_name = models.CharField(_('last name'), max_length=128)
-    patronymic = models.CharField(_('patronymic'), max_length=128, null=True, blank=True)
+    first_name = models.CharField('имя', max_length=128)
+    last_name = models.CharField('фамилия', max_length=128)
+    patronymic = models.CharField('отчество', max_length=128, null=True, blank=True)
 
     birth_date = models.DateField(null=True, blank=True)
 
@@ -30,8 +36,8 @@ class User(AbstractBaseUser):
 
     class Meta:
         db_table = 'User'
-        verbose_name = _('User')
-        verbose_name_plural = _('Users')
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
         indexes = [
             models.Index(fields=['email'], name='email_index'),
