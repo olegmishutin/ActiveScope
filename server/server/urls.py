@@ -3,7 +3,8 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 api_urls = [
-    path('', include('auth_sys.urls'))
+    path('', include('auth_sys.urls')),
+    path('', include('profiles.urls')),
 ]
 
 urlpatterns = [

@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from .serializers import RegistrationSerializer, LoginSerializer
+from .permissions import IsAnonymousUser
 
 
 class RegistrationView(CreateAPIView):
@@ -11,11 +12,12 @@ class RegistrationView(CreateAPIView):
 
 
 @api_view(['POST'])
+@permission_classes([IsAnonymousUser])
 def login_view(request):
     login_serializer = LoginSerializer(data=request.data)
 
     if login_serializer.is_valid(raise_exception=True):
-        token_key = login_serializer.save()
+        token_key = login_serializer.authenticate_user()
 
         return Response({'token': token_key}, status=status.HTTP_200_OK)
 
@@ -24,4 +26,4 @@ def login_view(request):
 @permission_classes([IsAuthenticated])
 def logout_view(request):
     request.user.auth_token.delete()
-    return Response({'detail': 'Успешно вышли из системы'}, status=status.HTTP_200_OK)
+    return Response({'detail': 'Успешно вышли из системы.'}, status=status.HTTP_200_OK)

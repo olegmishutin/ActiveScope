@@ -47,5 +47,9 @@ class User(AbstractBaseUser):
     def get_full_name(self):
         return f'{self.last_name} {self.first_name} {self.patronymic}'
 
+    def delete(self, using=None, keep_parents=False):
+        self.profile.delete()
+        return super().delete(using, keep_parents)
+
     def __str__(self):
         return self.email

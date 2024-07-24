@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from server.utils.functions import delete_existing_file
+from server.utils.functions import set_new_file, delete_old_files
 
 
 def profile_file_uploading_to(instance, file):
@@ -19,12 +19,14 @@ class Profile(models.Model):
         verbose_name_plural = 'Профили'
 
     def change_photo(self, file):
-        delete_existing_file(self.photo)
-        self.photo = file
+        self.photo = set_new_file(self.photo, file)
 
     def change_header_image(self, file):
-        delete_existing_file(self.header_image)
-        self.header_image = file
+        self.header_image = set_new_file(self.header_image, file)
+
+    def delete(self, using=None, keep_parents=False):
+        delete_old_files(self.photo, self.header_image)
+        return super().delete(using, keep_parents)
 
     def __str__(self):
         return f'{self.user.email} profile'
