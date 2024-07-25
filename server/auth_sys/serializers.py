@@ -1,18 +1,20 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
-from profiles.models import Profile
 from .models import Token
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        exclude = ['is_admin']
+        exclude = ['is_admin', 'photo', 'header_image', 'description']
+        extra_kwargs = {
+            'password': {
+                'write_only': True
+            }
+        }
 
     def create(self, validated_data):
-        user = get_user_model().objects.create_user(**validated_data)
-        Profile.objects.create(user=user)
-        return user
+        return get_user_model().objects.create_user(**validated_data)
 
 
 class LoginSerializer(serializers.Serializer):

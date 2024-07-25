@@ -9,6 +9,7 @@ from .permissions import IsAnonymousUser
 
 class RegistrationView(CreateAPIView):
     serializer_class = RegistrationSerializer
+    permission_classes = [IsAnonymousUser]
 
 
 @api_view(['POST'])

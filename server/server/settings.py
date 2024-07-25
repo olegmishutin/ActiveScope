@@ -26,7 +26,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'auth_sys',
-    'profiles'
+    'profiles',
+    'groups'
 ]
 
 MIDDLEWARE = [
