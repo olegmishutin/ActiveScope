@@ -25,7 +25,7 @@ class LoginSerializer(serializers.Serializer):
         user = authenticate(**self.validated_data)
 
         if user is not None:
-            token = Token.objects.create(user=user)
+            token, created_token = Token.objects.get_or_create(user=user)
             return token.key
 
         raise serializers.ValidationError({'detail': 'Пользователь не найден.'})

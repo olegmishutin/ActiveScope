@@ -27,7 +27,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'auth_sys',
     'profiles',
-    'groups'
+    'groups',
+    'messages',
 ]
 
 MIDDLEWARE = [

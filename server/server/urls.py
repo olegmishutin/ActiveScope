@@ -6,6 +6,7 @@ api_urls = [
     path('', include('auth_sys.urls')),
     path('', include('profiles.urls')),
     path('', include('groups.urls')),
+    path('', include('messages.urls')),
 ]
 
 urlpatterns = [

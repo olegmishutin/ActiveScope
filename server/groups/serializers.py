@@ -8,16 +8,21 @@ class GroupMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['id', 'photo', 'full_name', 'email']
+        fields = ['id', 'photo', 'full_name', 'email', 'description']
 
 
 class GroupSerializer(serializers.ModelSerializer):
     members = GroupMemberSerializer(many=True, read_only=True)
-    founder = serializers.StringRelatedField(read_only=True)
+    founder_email = serializers.ReadOnlyField(source='founder.email')
 
     class Meta:
         model = Group
         fields = '__all__'
+        extra_kwargs = {
+            'founder': {
+                'read_only': True
+            }
+        }
 
     def update(self, instance, validated_data):
         file = validated_data.pop('icon', None)
