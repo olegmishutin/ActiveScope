@@ -40,14 +40,11 @@ class GroupsViewSet(ModelViewSet):
             return Response({'detail': f'Пользователю {user.email} отправлено приглашение.'}, status=status.HTTP_200_OK)
 
         if action == 'remove':
-            if group.members.filter(id=user.id).exists():
-                group.remove_members(user)
+            group.remove_member(user, 'Пользователь в группе не найден.')
+            Message.objects.create_remove_from_group_message(group, user)
 
-                Message.objects.create_remove_from_group_message(group, user)
-                group_serializer = GroupSerializer(group)
-
-                return Response(group_serializer.data, status=status.HTTP_200_OK)
-            raise ValidationError({'detail': 'Пользователь в группе не найден.'})
+            group_serializer = GroupSerializer(group)
+            return Response(group_serializer.data, status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=True)
     def invite_member(self, request, pk=None):
@@ -61,15 +58,11 @@ class GroupsViewSet(ModelViewSet):
     def leave_group(self, request, pk=None):
         group = self.get_object()
 
-        if group.members.filter(id=request.user.id).exists():
-            group.remove_members(request.user)
-            Message.objects.create_leave_from_group_message(group, request.user)
+        group.remove_member(request.user, 'Вы не являетесь участникос этой группы.')
+        Message.objects.create_leave_from_group_message(group, request.user)
 
-            groups = self.get_queryset()
-            groups_serializer = GroupSerializer(groups, many=True)
-
-            return Response(groups_serializer.data, status=status.HTTP_200_OK)
-        raise ValidationError({'detail': 'Вы не являетесь участникос этой группы.'})
+        groups_serializer = GroupSerializer(self.get_queryset(), many=True)
+        return Response(groups_serializer.data, status=status.HTTP_200_OK)
 
 
 class AdminGroupsView(generics.ListAPIView):

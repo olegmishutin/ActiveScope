@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from rest_framework.exceptions import ValidationError
 from server.utils.functions.files import set_new_file, delete_old_files
 
 
@@ -21,17 +22,20 @@ class Group(models.Model):
         verbose_name = 'Группа'
         verbose_name_plural = 'Группы'
 
-    def update_members_count(self, members, factor=1):
-        self.members_count += len(members) * factor
+    def update_members_count(self, factor):
+        self.members_count += factor
         self.save(update_fields=['members_count'])
 
-    def add_members(self, *args):
-        self.members.add(*args)
-        self.update_members_count(args)
+    def add_member(self, user):
+        self.members.add(user)
+        self.update_members_count(1)
 
-    def remove_members(self, *args):
-        self.members.remove(*args)
-        self.update_members_count(args, factor=-1)
+    def remove_member(self, user, validation_error_message):
+        if self.members.filter(id=user.id).exists():
+            self.members.remove(user)
+
+            self.update_members_count(-1)
+        raise ValidationError({'detail': validation_error_message})
 
     def change_icon(self, file):
         set_new_file(self, 'icon', file)

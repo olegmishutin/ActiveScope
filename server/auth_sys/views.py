@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from asgiref.sync import sync_to_async
 from .serializers import RegistrationSerializer, LoginSerializer, UserShortInfoSerializer
 from .permissions import IsAnonymousUser
 
@@ -12,6 +13,7 @@ class RegistrationView(CreateAPIView):
     permission_classes = [IsAnonymousUser]
 
 
+@sync_to_async()
 @api_view(['POST'])
 @permission_classes([IsAnonymousUser])
 def login_view(request):
@@ -23,6 +25,7 @@ def login_view(request):
         return Response({'token': token_key}, status=status.HTTP_200_OK)
 
 
+@sync_to_async()
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_view(request):
@@ -30,6 +33,7 @@ def logout_view(request):
     return Response({'detail': 'Успешно вышли из системы.'}, status=status.HTTP_200_OK)
 
 
+@sync_to_async()
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def short_user_info_view(request):

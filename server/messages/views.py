@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from asgiref.sync import sync_to_async
 from .models import Message
 from .serializers import MessageSerializer
 
@@ -27,6 +28,7 @@ class UpdatedMessageView(MessagesView, generics.UpdateAPIView):
     pass
 
 
+@sync_to_async()
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def new_messages_count_view(request):

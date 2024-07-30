@@ -34,5 +34,5 @@ class GroupSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
 
         group = Group.objects.create(founder=user, **validated_data)
-        group.add_members(user)
+        group.add_member(user)
         return group

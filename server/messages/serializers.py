@@ -23,7 +23,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
         if agreement_data:
             if instance.topic == 'INV_GROUP':
-                instance.sender_group.add_members(instance.receiver)
+                instance.sender_group.add_member(instance.receiver)
                 Message.objects.create_joined_group_message(instance.sender_group, instance.receiver)
 
         instance.is_readed = True
