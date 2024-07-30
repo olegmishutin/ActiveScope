@@ -1,11 +1,6 @@
-def filter_queryset_by_members_count(queryset, request):
-    min_members_count = request.query_params.get('min_members')
-    max_members_count = request.query_params.get('max_members')
+from django_filters import rest_framework as filters
 
-    if min_members_count is not None:
-        queryset = queryset.filter(members_count__gte=min_members_count)
 
-    if max_members_count is not None:
-        queryset = queryset.filter(members_count__lte=max_members_count)
-
-    return queryset
+class MembersCountFilter(filters.FilterSet):
+    min_members_count = filters.NumberFilter(field_name='members_count', lookup_expr='gte')
+    max_members_count = filters.NumberFilter(field_name='members_count', lookup_expr='lte')

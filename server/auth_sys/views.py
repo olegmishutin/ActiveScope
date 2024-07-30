@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from .serializers import RegistrationSerializer, LoginSerializer
+from .serializers import RegistrationSerializer, LoginSerializer, UserShortInfoSerializer
 from .permissions import IsAnonymousUser
 
 
@@ -28,3 +28,10 @@ def login_view(request):
 def logout_view(request):
     request.user.auth_token.delete()
     return Response({'detail': 'Успешно вышли из системы.'}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def short_user_info_view(request):
+    user_serializer = UserShortInfoSerializer(request.user)
+    return Response(user_serializer.data, status=status.HTTP_200_OK)

@@ -8,54 +8,54 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.filters import OrderingFilter, SearchFilter
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django_filters.rest_framework import DjangoFilterBackend
 from server.utils.classes.permissions_classes import IsAdminUser
 from messages.models import Message
 from .models import Group
 from .serializers import GroupSerializer
 from .permissions import IsGroupCanBeChangedOrDeleted
-from .filters import filter_queryset_by_members_count
+from .filters import MembersCountFilter
 
 
 class GroupsViewSet(ModelViewSet):
     serializer_class = GroupSerializer
     permission_classes = [IsAuthenticated, IsGroupCanBeChangedOrDeleted]
-    filter_backends = [OrderingFilter]
-    ordering = ['created_date', 'members_count']
+    filter_backends = [OrderingFilter, DjangoFilterBackend]
+    filterset_class = MembersCountFilter
+    ordering_fields = ['created_date', 'members_count']
+    ordering = ['-created_date', '-members_count']
 
     def get_queryset(self):
         return self.request.user.groups.all().select_related('founder').prefetch_related('members')
 
-    def filter_queryset(self, queryset):
-        new_queryset = filter_queryset_by_members_count(queryset, self.request)
-        return super().filter_queryset(new_queryset)
+    def handle_member_action(self, request, action):
+        group = self.get_object()
+        user = get_object_or_404(get_user_model().objects.all().only('id', 'email'), pk=request.data.get('user_id'))
 
-    def get_group_and_user(self, request):
-        user_id = request.data.get('user_id')
-        user = get_object_or_404(get_user_model().objects.all().only('id', 'email'), pk=user_id)
+        if action == 'invite':
+            if group.members.filter(id=user.id).exists():
+                raise ValidationError({'detail': 'Пользователь уже является участником этой группы.'})
 
-        return self.get_object(), user
+            Message.objects.create_invite_in_group_message(group, user)
+            return Response({'detail': f'Пользователю {user.email} отправлено приглашение.'}, status=status.HTTP_200_OK)
+
+        if action == 'remove':
+            if group.members.filter(id=user.id).exists():
+                group.remove_members(user)
+
+                Message.objects.create_remove_from_group_message(group, user)
+                group_serializer = GroupSerializer(group)
+
+                return Response(group_serializer.data, status=status.HTTP_200_OK)
+            raise ValidationError({'detail': 'Пользователь в группе не найден.'})
 
     @action(methods=['POST'], detail=True)
     def invite_member(self, request, pk=None):
-        group, user = self.get_group_and_user(request)
-
-        if group.members.filter(id=user.id).exists():
-            raise ValidationError({'detail': 'Этот пользователь уже является участником этой группы.'})
-
-        Message.create_invite_group_message(group, user)
-        return Response({'detail': f'Пользователю {user.email} отправлено приглашение.'}, status=status.HTTP_200_OK)
+        return self.handle_member_action(request, 'invite')
 
     @action(methods=['POST'], detail=True)
     def remove_member(self, request, pk=None):
-        group, user = self.get_group_and_user(request)
-
-        if group.members.filter(id=user.id).exists():
-            group.remove_members(user)
-            Message.create_exclude_from_group_message(group, user)
-
-            group_serializer = GroupSerializer(group)
-            return Response(group_serializer.data, status=status.HTTP_200_OK)
-        raise ValidationError({'detail': 'Пользователь в группе не найден.'})
+        return self.handle_member_action(request, 'remove')
 
     @action(methods=['POST'], detail=True, permission_classes=[])
     def leave_group(self, request, pk=None):
@@ -63,7 +63,7 @@ class GroupsViewSet(ModelViewSet):
 
         if group.members.filter(id=request.user.id).exists():
             group.remove_members(request.user)
-            Message.create_leave_from_group_message(group, request.user)
+            Message.objects.create_leave_from_group_message(group, request.user)
 
             groups = self.get_queryset()
             groups_serializer = GroupSerializer(groups, many=True)
@@ -77,12 +77,10 @@ class AdminGroupsView(generics.ListAPIView):
     serializer_class = GroupsViewSet.serializer_class
     permission_classes = [IsAdminUser]
     filter_backends = [SearchFilter] + GroupsViewSet.filter_backends
+    filterset_class = GroupsViewSet.filterset_class
+    ordering_fields = GroupsViewSet.ordering_fields
     ordering = GroupsViewSet.ordering
     search_fields = ['$name', '$founder__email']
-
-    def filter_queryset(self, queryset):
-        new_queryset = filter_queryset_by_members_count(queryset, self.request)
-        return super().filter_queryset(new_queryset)
 
 
 class AdminGroupDestroyView(generics.DestroyAPIView):

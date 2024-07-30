@@ -29,3 +29,9 @@ class LoginSerializer(serializers.Serializer):
             return token.key
 
         raise serializers.ValidationError({'detail': 'Пользователь не найден.'})
+
+
+class UserShortInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ['id', 'is_admin', 'photo', 'get_full_name']

@@ -21,10 +21,10 @@ class MessageSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         agreement_data = validated_data.pop('agreement', None)
 
-        if agreement_data is not None and agreement_data:
+        if agreement_data:
             if instance.topic == 'INV_GROUP':
                 instance.sender_group.add_members(instance.receiver)
-                Message.create_joined_group_message(instance.sender_group, instance.receiver)
+                Message.objects.create_joined_group_message(instance.sender_group, instance.receiver)
 
         instance.is_readed = True
         return super().update(instance, validated_data)
