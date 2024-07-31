@@ -1,18 +1,11 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from profiles.serializers import ShortUserProfile
 from .models import Group
 
 
-class GroupMemberSerializer(serializers.ModelSerializer):
-    full_name = serializers.ReadOnlyField(source='get_full_name')
-
-    class Meta:
-        model = get_user_model()
-        fields = ['id', 'photo', 'full_name', 'email', 'description']
-
-
 class GroupSerializer(serializers.ModelSerializer):
-    members = GroupMemberSerializer(many=True, read_only=True)
+    members = ShortUserProfile(many=True, read_only=True)
     founder_email = serializers.ReadOnlyField(source='founder.email')
 
     class Meta:

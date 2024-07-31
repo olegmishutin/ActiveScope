@@ -4,6 +4,14 @@ from django.contrib.auth.hashers import check_password
 from auth_sys.validators import validate_password
 
 
+class ShortUserProfile(serializers.ModelSerializer):
+    full_name = serializers.ReadOnlyField(source='get_full_name')
+
+    class Meta:
+        model = get_user_model()
+        fields = ['id', 'photo', 'full_name', 'email', 'description']
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     full_name = serializers.ReadOnlyField(source='get_full_name')
 
