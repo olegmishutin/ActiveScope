@@ -34,3 +34,10 @@ class UpdatedMessageView(MessagesView, generics.UpdateAPIView):
 def new_messages_count_view(request):
     messages_count = request.user.messages.filter(is_readed=False).count()
     return Response({'count': messages_count}, status=status.HTTP_200_OK)
+
+
+@sync_to_async()
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def messages_topics(request):
+    return Response(Message.topics, status=status.HTTP_200_OK)
