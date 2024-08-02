@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from server.utils.functions.files import set_new_file, user_task_file_uploading_to
+from server.utils.functions.files import set_new_file, delete_old_files, user_task_file_uploading_to
 
 
 class UserTaskList(models.Model):
@@ -16,6 +16,12 @@ class UserTaskList(models.Model):
 
     def change_header_image(self, file):
         set_new_file(self, 'header_image', file)
+
+    def delete(self, using=None, keep_parents=False):
+        for task in self.tasks.all():
+            task.delete()
+
+        return super().delete(using, keep_parents)
 
     def __str__(self):
         return f'Задачник {self.user.email}'
@@ -77,6 +83,12 @@ class UserTask(models.Model):
         verbose_name = 'Пользовательская задача'
         verbose_name_plural = 'Пользовательские задачи'
 
+    def delete(self, using=None, keep_parents=False):
+        for file in self.files.all():
+            file.delete()
+
+        return super().delete(using, keep_parents)
+
     def __str__(self):
         return self.name
 
@@ -94,6 +106,10 @@ class UserTaskFile(models.Model):
 
     def change_file(self, file):
         set_new_file(self, 'file', file)
+
+    def delete(self, using=None, keep_parents=False):
+        delete_old_files(self.file)
+        return super().delete(using, keep_parents)
 
     def __str__(self):
         return self.file.path

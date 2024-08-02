@@ -1,6 +1,7 @@
+import os
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
-from .models import UserTaskList, UserTask, UserTaskListStatus, UserTaskListPriority
+from .models import UserTaskList, UserTask, UserTaskListStatus, UserTaskListPriority, UserTaskFile
 
 
 class BaseSerializer(serializers.ModelSerializer):
@@ -45,6 +46,7 @@ class TaskSerializer(BaseSerializer):
 
     status_id = serializers.IntegerField(write_only=True, required=False)
     priority_id = serializers.IntegerField(write_only=True, required=False)
+    uploaded_files = serializers.ListField(child=serializers.FileField(), write_only=True, required=False)
 
     class Meta(BaseSerializer.Meta):
         model = UserTask
@@ -65,14 +67,47 @@ class TaskSerializer(BaseSerializer):
         if field_id is not None:
             get_object_or_404(model, pk=field_id)
 
-    def check_objects(self, validated_data):
+    def check_states(self, validated_data):
         self.is_object_exists(validated_data, 'status_id', UserTaskListStatus)
         self.is_object_exists(validated_data, 'priority_id', UserTaskListPriority)
 
     def update(self, instance, validated_data):
-        self.check_objects(validated_data)
+        self.check_states(validated_data)
         return super().update(instance, validated_data)
 
     def create(self, validated_data):
-        self.check_objects(validated_data)
-        return super(BaseSerializer, self).create(validated_data)
+        self.check_states(validated_data)
+
+        files = validated_data.pop('uploaded_files', [])
+        task = super().create(validated_data)
+
+        for file in files:
+            UserTaskFile.objects.create(task=task, file=file)
+
+        return task
+
+
+class FileSerializer(serializers.ModelSerializer):
+    file_name = serializers.SerializerMethodField('get_file_name')
+    uploaded_files = serializers.ListField(child=serializers.FileField(), write_only=True)
+
+    class Meta:
+        model = UserTaskFile
+        exclude = ['task']
+        extra_kwargs = {
+            'file': {
+                'read_only': True
+            },
+            'upload_date': {
+                'format': '%d.%m.%Y %H:%M'
+            }
+        }
+
+    def get_file_name(self, instance):
+        return os.path.basename(instance.file.name)
+
+    def create(self, validated_data):
+        files = validated_data.pop('uploaded_files', [])
+        task_id = self.context.get('task_id')
+
+        return [UserTaskFile.objects.create(task_id=task_id, file=file) for file in files]

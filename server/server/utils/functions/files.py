@@ -6,7 +6,7 @@ def user_file_uploading_to(instance, file):
 
 
 def user_task_file_uploading_to(instance, file):
-    return f'{instance.task.task_list.user.email}/task_{instance.id}_files/{file}'
+    return f'{instance.task.task_list.user.email}/task_{instance.task.id}_files/{file}'
 
 
 def delete_old_files(*args):

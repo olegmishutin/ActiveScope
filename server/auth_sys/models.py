@@ -54,6 +54,7 @@ class User(AbstractBaseUser):
 
     def delete(self, using=None, keep_parents=False):
         delete_old_files(self.photo, self.header_image)
+        self.task_list.delete()
 
         for group in self.my_groups.all():
             delete_old_files(group.icon)
