@@ -8,6 +8,7 @@ api_urls = [
     path('', include('groups.urls')),
     path('', include('messages.urls')),
     path('', include('user_tasks.urls')),
+    path('', include('projects.urls')),
 ]
 
 urlpatterns = [

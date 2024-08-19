@@ -9,7 +9,7 @@ def user_task_file_uploading_to(instance, file):
     return f'{instance.task.task_list.user.email}/task_{instance.task.id}_files/{file}'
 
 
-def project_icon_uploading_to(instance, file):
+def project_image_uploading_to(instance, file):
     return f'projects/{instance.id}/info/{file}'
 
 

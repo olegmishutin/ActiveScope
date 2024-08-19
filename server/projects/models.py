@@ -5,13 +5,17 @@ from server.utils.classes.models import TaskState
 
 
 class Project(models.Model):
-    name = models.CharField('название', max_length=128)
-    task_count = models.IntegerField('количесвто задач', editable=False)
-    completed_task_count = models.IntegerField('количество выполненных задач', editable=False)
+    owner = models.ForeignKey(
+        get_user_model(), related_name='my_projects', verbose_name='основатель', on_delete=models.SET_NULL, null=True,
+        blank=True)
 
-    icon = models.ImageField('иконка', upload_to=files.project_icon_uploading_to, null=True, blank=True)
+    name = models.CharField('название', max_length=128)
+    task_count = models.IntegerField('количесвто задач', default=0, editable=False)
+    completed_task_count = models.IntegerField('количество выполненных задач', default=0, editable=False)
+
+    icon = models.ImageField('иконка', upload_to=files.project_image_uploading_to, null=True, blank=True)
     header_image = models.ImageField(
-        'фоновая картинка', upload_to=files.project_icon_uploading_to, null=True, blank=True)
+        'фоновая картинка', upload_to=files.project_image_uploading_to, null=True, blank=True)
 
     start_date = models.DateField('дата начала', null=True, blank=True)
     end_date = models.DateField('дата окончания', null=True, blank=True)
@@ -24,6 +28,12 @@ class Project(models.Model):
         db_table = 'Project'
         verbose_name = 'Проект'
         verbose_name_plural = 'Проекты'
+
+    def change_icon(self, file):
+        files.set_new_file(self, 'icon', file)
+
+    def change_header_image(self, file):
+        files.set_new_file(self, 'header_image', file)
 
     def __str__(self):
         return self.name
@@ -61,10 +71,12 @@ class ProjectTask(models.Model):
         null=True, blank=True)
 
     status = models.ForeignKey(
-        ProjectTaskStatus, related_name='tasks', verbose_name='статус', on_delete=models.SET_NULL)
+        ProjectTaskStatus, related_name='tasks', verbose_name='статус', on_delete=models.SET_NULL, null=True,
+        blank=True)
 
     priority = models.ForeignKey(
-        ProjectTaskPriority, related_name='tasks', verbose_name='приоритет', on_delete=models.SET_NULL)
+        ProjectTaskPriority, related_name='tasks', verbose_name='приоритет', on_delete=models.SET_NULL, null=True,
+        blank=True)
 
     name = models.CharField('название', max_length=128)
     start_date = models.DateField('дата начала', null=True, blank=True)
