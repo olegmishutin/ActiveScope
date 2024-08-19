@@ -9,6 +9,14 @@ def user_task_file_uploading_to(instance, file):
     return f'{instance.task.task_list.user.email}/task_{instance.task.id}_files/{file}'
 
 
+def project_icon_uploading_to(instance, file):
+    return f'projects/{instance.id}/info/{file}'
+
+
+def project_task_file_uploading_to(instance, file):
+    return f'projects/{instance.task.project.id}/task_{instance.id}/{file}'
+
+
 def delete_old_files(*args):
     for file in args:
         if file and os.path.exists(file.path):

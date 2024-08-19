@@ -58,7 +58,7 @@ class GroupsViewSet(ModelViewSet):
     def leave_group(self, request, pk=None):
         group = self.get_object()
 
-        group.remove_member(request.user, 'Вы не являетесь участникос этой группы.')
+        group.remove_member(request.user, 'Вы не являетесь участником этой группы.')
         Message.objects.create_leave_from_group_message(group, request.user)
 
         groups_serializer = GroupSerializer(self.get_queryset(), many=True)

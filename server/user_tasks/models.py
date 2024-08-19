@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from server.utils.functions.files import set_new_file, delete_old_files, user_task_file_uploading_to
+from server.utils.classes.models import TaskState
 
 
 class UserTaskList(models.Model):
@@ -27,15 +28,7 @@ class UserTaskList(models.Model):
         return f'Задачник {self.user.email}'
 
 
-class UserTaskListState(models.Model):
-    name = models.CharField('название', max_length=128)
-    color = models.CharField('цвет', max_length=6)
-
-    class Meta:
-        abstract = True
-
-
-class UserTaskListStatus(UserTaskListState):
+class UserTaskListStatus(TaskState):
     task_list = models.ForeignKey(
         UserTaskList, related_name='statuses', verbose_name='список задач', on_delete=models.CASCADE)
 
@@ -48,7 +41,7 @@ class UserTaskListStatus(UserTaskListState):
         return f'Статус: {self.name}'
 
 
-class UserTaskListPriority(UserTaskListState):
+class UserTaskListPriority(TaskState):
     task_list = models.ForeignKey(
         UserTaskList, related_name='priorities', verbose_name='список задач', on_delete=models.CASCADE)
 

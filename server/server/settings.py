@@ -29,7 +29,8 @@ INSTALLED_APPS = [
     'profiles',
     'groups',
     'messages',
-    'user_tasks'
+    'user_tasks',
+    'projects'
 ]
 
 MIDDLEWARE = [
