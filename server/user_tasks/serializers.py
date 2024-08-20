@@ -110,4 +110,5 @@ class FileSerializer(serializers.ModelSerializer):
         files = validated_data.pop('uploaded_files', [])
         task_id = self.context.get('task_id')
 
-        return [UserTaskFile.objects.create(task_id=task_id, file=file) for file in files]
+        files_to_create = [UserTaskFile(task_id=task_id, file=file) for file in files]
+        return UserTaskFile.objects.bulk_create(files_to_create)

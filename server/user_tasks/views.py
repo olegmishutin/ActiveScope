@@ -48,7 +48,7 @@ class TaskFilesBase(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return get_object_or_404(self.request.user.task_list.tasks, pk=self.kwargs.get('task_id')).files.all()
+        return get_object_or_404(self.request.user.task_list.tasks.all(), pk=self.kwargs.get('task_id')).files.all()
 
 
 class TaskFilesView(TaskFilesBase, generics.ListCreateAPIView):
