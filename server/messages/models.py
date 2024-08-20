@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from groups.models import Group
+from projects.models import Project
 from .managers import MessagesManager
 
 
@@ -9,7 +10,11 @@ class Message(models.Model):
         'INV_GROUP': 'Приглашение в группу',
         'JOINED_GROUP': 'Пополнение в группе',
         'EXC_GROUP': 'Исключен из группы',
-        'LEAVE_GROUP': 'Убавление в группе'
+        'LEAVE_GROUP': 'Убавление в группе',
+
+        'INV_PROJECT': 'Приглашение в проект',
+        'JOINED_PROJECT': 'Пополнение в проекте',
+        'EXC_PROJECT': 'Исключен из проекта',
     }
 
     receiver = models.ForeignKey(
@@ -18,6 +23,11 @@ class Message(models.Model):
     sender_group = models.ForeignKey(
         Group, related_name='messages', verbose_name='группа-отправитель', on_delete=models.CASCADE, null=True,
         blank=True)
+
+    sender_project = models.ForeignKey(
+        Project, related_name='messages', verbose_name='проект-отправитель', on_delete=models.CASCADE, null=True,
+        blank=True
+    )
 
     topic = models.CharField('тема', max_length=56, choices=topics, editable=False)
     date = models.DateTimeField('дата', auto_now_add=True, editable=False)

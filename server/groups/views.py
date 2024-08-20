@@ -73,7 +73,7 @@ class AdminGroupsView(generics.ListAPIView):
     filterset_class = GroupsViewSet.filterset_class
     ordering_fields = GroupsViewSet.ordering_fields
     ordering = GroupsViewSet.ordering
-    search_fields = ['$name', '$founder__email']
+    search_fields = ['name', 'founder__email']
 
 
 class AdminGroupDestroyView(generics.DestroyAPIView):

@@ -11,9 +11,15 @@ statuses_router.register('statuses', views.StatusesViewSet, basename='statuses')
 priorities_router = routers.NestedSimpleRouter(router, 'projects', lookup='project')
 priorities_router.register('priorities', views.PrioritiesViewSet, basename='priorities')
 
+members_router = routers.NestedSimpleRouter(router, 'projects', lookup='project')
+members_router.register('members', views.MembersView, basename='members')
+
+print(members_router.urls)
+
 app_name = 'projects'
 urlpatterns = [
     path('', include(router.urls)),
     path('', include(statuses_router.urls)),
-    path('', include(priorities_router.urls))
+    path('', include(priorities_router.urls)),
+    path('', include(members_router.urls))
 ]

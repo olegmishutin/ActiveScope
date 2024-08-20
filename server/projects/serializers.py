@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth import get_user_model
 from .models import Project, ProjectTaskStatus, ProjectTaskPriority
 
 
@@ -11,7 +12,7 @@ class BaseSerializer(serializers.ModelSerializer):
         return self.Meta.model.objects.create(project_id=project, **validated_data)
 
 
-class ProjectsSerializer(serializers.ModelSerializer):
+class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         exclude = ['members']
@@ -39,7 +40,13 @@ class ProjectsSerializer(serializers.ModelSerializer):
         return project
 
 
-class StatusesSerializer(BaseSerializer):
+class MemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ['photo', 'get_full_name', 'email']
+
+
+class StatusSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = ProjectTaskStatus
 

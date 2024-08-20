@@ -26,5 +26,9 @@ class MessageSerializer(serializers.ModelSerializer):
                 instance.sender_group.add_member(instance.receiver)
                 Message.objects.create_joined_group_message(instance.sender_group, instance.receiver)
 
+            elif instance.topic == 'INV_PROJECT':
+                instance.sender_project.members.add(instance.receiver)
+                Message.objects.create_joined_project_message(instance.sender_project, instance.receiver)
+
         instance.is_readed = True
         return super().update(instance, validated_data)
