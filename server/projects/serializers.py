@@ -1,5 +1,14 @@
 from rest_framework import serializers
-from .models import Project
+from .models import Project, ProjectTaskStatus, ProjectTaskPriority
+
+
+class BaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        exclude = ['project']
+
+    def create(self, validated_data):
+        project = self.context['project_pk']
+        return self.Meta.model.objects.create(project_id=project, **validated_data)
 
 
 class ProjectsSerializer(serializers.ModelSerializer):
@@ -28,3 +37,13 @@ class ProjectsSerializer(serializers.ModelSerializer):
         project.icon, project.header_image = self.icon, self.header_image
         project.save(update_fields=['icon', 'header_image'])
         return project
+
+
+class StatusesSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = ProjectTaskStatus
+
+
+class PrioritySerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = ProjectTaskPriority
