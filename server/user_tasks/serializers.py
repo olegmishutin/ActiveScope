@@ -1,6 +1,7 @@
 import os
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
+from server.utils.classes.serializers import TaskBaseSerializer
 from .models import UserTaskList, UserTask, UserTaskListStatus, UserTaskListPriority, UserTaskFile
 
 
@@ -40,51 +41,19 @@ class PrioritySerializer(BaseSerializer):
         model = UserTaskListPriority
 
 
-class TaskSerializer(BaseSerializer):
+class TaskSerializer(TaskBaseSerializer, BaseSerializer):
     status = StatusSerializer(read_only=True)
     priority = PrioritySerializer(read_only=True)
 
-    status_id = serializers.IntegerField(write_only=True, required=False)
-    priority_id = serializers.IntegerField(write_only=True, required=False)
-    uploaded_files = serializers.ListField(child=serializers.FileField(), write_only=True, required=False)
-
-    class Meta(BaseSerializer.Meta):
+    class Meta(TaskBaseSerializer.Meta, BaseSerializer.Meta):
         model = UserTask
-        extra_kwargs = {
-            'start_date': {
-                'format': '%d.%m.%Y',
-                'input_formats': ['%d.%m.%Y']
-            },
-            'end_date': {
-                'format': '%d.%m.%Y',
-                'input_formats': ['%d.%m.%Y']
-            },
-        }
-
-    def is_object_exists(self, validated_data, field, model):
-        field_id = validated_data.get(field)
-
-        if field_id is not None:
-            get_object_or_404(model, pk=field_id)
+        file_model = UserTaskFile
 
     def check_states(self, validated_data):
-        self.is_object_exists(validated_data, 'status_id', UserTaskListStatus)
-        self.is_object_exists(validated_data, 'priority_id', UserTaskListPriority)
+        user = self.context['request'].user
 
-    def update(self, instance, validated_data):
-        self.check_states(validated_data)
-        return super().update(instance, validated_data)
-
-    def create(self, validated_data):
-        self.check_states(validated_data)
-
-        files = validated_data.pop('uploaded_files', [])
-        task = super().create(validated_data)
-
-        for file in files:
-            UserTaskFile.objects.create(task=task, file=file)
-
-        return task
+        self.is_object_exists(validated_data, 'status_id', user.task_list.statuses.all())
+        self.is_object_exists(validated_data, 'priority_id', user.task_list.priorities.all())
 
 
 class FileSerializer(serializers.ModelSerializer):

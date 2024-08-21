@@ -10,9 +10,6 @@ class Project(models.Model):
         blank=True)
 
     name = models.CharField('название', max_length=128)
-    task_count = models.IntegerField('количесвто задач', default=0, editable=False)
-    completed_task_count = models.IntegerField('количество выполненных задач', default=0, editable=False)
-
     icon = models.ImageField('иконка', upload_to=files.project_image_uploading_to, null=True, blank=True)
     header_image = models.ImageField(
         'фоновая картинка', upload_to=files.project_image_uploading_to, null=True, blank=True)

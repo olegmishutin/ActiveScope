@@ -14,12 +14,14 @@ priorities_router.register('priorities', views.PrioritiesViewSet, basename='prio
 members_router = routers.NestedSimpleRouter(router, 'projects', lookup='project')
 members_router.register('members', views.MembersView, basename='members')
 
-print(members_router.urls)
+tasks_router = routers.NestedSimpleRouter(router, 'projects', lookup='project')
+tasks_router.register('tasks', views.TasksViewSet, basename='tasks')
 
 app_name = 'projects'
 urlpatterns = [
     path('', include(router.urls)),
     path('', include(statuses_router.urls)),
     path('', include(priorities_router.urls)),
-    path('', include(members_router.urls))
+    path('', include(members_router.urls)),
+    path('', include(tasks_router.urls))
 ]

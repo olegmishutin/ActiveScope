@@ -4,17 +4,20 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django.db.models import Count, Q
 from messages.models import Message
 from groups.models import Group
 from .permissions import IsProjectCanBeChangedOrDeleted, UserIsMemberOfProject, UserIsOwnerOfTheProject
 from .utils import get_project_from_request
+from .filters import TaskFilter
 from . import serializers
 
 
 class BaseViewSet(viewsets.ModelViewSet):
-    permission_classes = [UserIsMemberOfProject]
+    permission_classes = [IsAuthenticated, UserIsMemberOfProject]
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -27,7 +30,18 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsProjectCanBeChangedOrDeleted]
 
     def get_queryset(self):
-        return self.request.user.projects.all()
+        return self.request.user.projects.all().annotate(
+            completed_tasks=Count('tasks', filter=Q(tasks__status__is_means_completeness=True)),
+            total_tasks=Count('tasks'))
+
+
+class TasksViewSet(BaseViewSet):
+    serializer_class = serializers.TaskSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TaskFilter
+
+    def get_queryset(self):
+        return get_project_from_request(self.request, self.kwargs).tasks.all()
 
 
 class MembersView(mixins.ListModelMixin, viewsets.GenericViewSet):

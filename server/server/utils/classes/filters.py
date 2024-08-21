@@ -1,5 +1,8 @@
 from django_filters import rest_framework as filters
-from server.utils.classes.filters_fields import NumberInFilter
+
+
+class NumberInFilter(filters.BaseInFilter, filters.NumberFilter):
+    pass
 
 
 class TasksFilter(filters.FilterSet):

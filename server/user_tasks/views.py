@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from .filters import TasksFilter
+from server.utils.classes.filters import TasksFilter
 from . import serializers
 
 

@@ -14,7 +14,7 @@ def project_image_uploading_to(instance, file):
 
 
 def project_task_file_uploading_to(instance, file):
-    return f'projects/{instance.task.project.id}/task_{instance.id}/{file}'
+    return f'projects/{instance.task.project.id}/task_{instance.task.id}/{file}'
 
 
 def delete_old_files(*args):
