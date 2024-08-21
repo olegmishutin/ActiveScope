@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from server.utils.functions import files
-from server.utils.classes.models import TaskState
+from server.utils.classes.models import TaskState, TaskFile
 
 
 class Project(models.Model):
@@ -89,19 +89,14 @@ class ProjectTask(models.Model):
         return self.name
 
 
-class ProjectTaskFile(models.Model):
+class ProjectTaskFile(TaskFile):
     task = models.ForeignKey(ProjectTask, related_name='files', verbose_name='задача', on_delete=models.CASCADE)
-
     file = models.FileField('файл', upload_to=files.project_task_file_uploading_to)
-    load_date = models.DateField('дата загрузки', auto_now_add=True, editable=False)
 
     class Meta:
         db_table = 'ProjectTaskFile'
         verbose_name = 'Файл задачи проекта'
         verbose_name_plural = 'Файлы задач проектов'
-
-    def __str__(self):
-        return self.file
 
 
 class Comment(models.Model):

@@ -1,4 +1,3 @@
-from django_filters import rest_framework as filters
 from server.utils.classes.filters import TasksFilter as BaseTasksFilter, NumberInFilter
 
 

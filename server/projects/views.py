@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Count, Q
 from messages.models import Message
 from groups.models import Group
+from server.utils.classes.viewsets import TaskFilesBaseViewSet
 from .permissions import IsProjectCanBeChangedOrDeleted, UserIsMemberOfProject, UserIsOwnerOfTheProject
 from .utils import get_project_from_request
 from .filters import TaskFilter
@@ -21,7 +22,7 @@ class BaseViewSet(viewsets.ModelViewSet):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['project_pk'] = self.kwargs['project_pk']
+        context['project_pk'] = self.kwargs.get('project_pk')
         return context
 
 
@@ -99,3 +100,13 @@ class PrioritiesViewSet(BaseViewSet):
 
     def get_queryset(self):
         return get_project_from_request(self.request, self.kwargs).priorities.all()
+
+
+class TaskFilesViewSet(TaskFilesBaseViewSet):
+    serializer_class = serializers.TaskFilesSerializer
+    permission_classes = [IsAuthenticated, UserIsMemberOfProject]
+
+    def get_queryset(self):
+        project = get_project_from_request(self.request, self.kwargs)
+        task = get_object_or_404(project.tasks.all(), pk=self.kwargs.get('task_pk'))
+        return task.files.all()

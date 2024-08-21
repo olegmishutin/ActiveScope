@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from groups.models import Group
 from .models import Message
 
 

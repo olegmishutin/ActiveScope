@@ -1,12 +1,13 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from server.utils.classes.serializers import TaskBaseSerializer
+from server.utils.classes.serializers import TaskBaseSerializer, TaskFilesBaseSerializer
 from .models import Project, ProjectTask, ProjectTaskFile, ProjectTaskStatus, ProjectTaskPriority
 
 
 class BaseSerializer(serializers.ModelSerializer):
     class Meta:
+        model = None
         exclude = ['project']
 
     def create(self, validated_data):
@@ -78,3 +79,8 @@ class TaskSerializer(TaskBaseSerializer, BaseSerializer):
         self.is_object_exists(validated_data, 'status_id', project.statuses.all())
         self.is_object_exists(validated_data, 'priority_id', project.priorities.all())
         self.is_object_exists(validated_data, 'executor_id', project.members.all())
+
+
+class TaskFilesSerializer(TaskFilesBaseSerializer):
+    class Meta(TaskFilesBaseSerializer.Meta):
+        model = ProjectTaskFile

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from server.utils.functions.files import set_new_file, delete_old_files, user_task_file_uploading_to
-from server.utils.classes.models import TaskState
+from server.utils.classes.models import TaskState, TaskFile
 
 
 class UserTaskList(models.Model):
@@ -22,6 +22,7 @@ class UserTaskList(models.Model):
         for task in self.tasks.all():
             task.delete()
 
+        delete_old_files(self.header_image)
         return super().delete(using, keep_parents)
 
     def __str__(self):
@@ -86,23 +87,11 @@ class UserTask(models.Model):
         return self.name
 
 
-class UserTaskFile(models.Model):
+class UserTaskFile(TaskFile):
     task = models.ForeignKey(UserTask, related_name='files', verbose_name='задача', on_delete=models.CASCADE)
-
     file = models.FileField('файл', upload_to=user_task_file_uploading_to)
-    upload_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'UserTaskFile'
         verbose_name = 'Файл пользовательской задачи'
         verbose_name_plural = 'Файлы пользовательских задач'
-
-    def change_file(self, file):
-        set_new_file(self, 'file', file)
-
-    def delete(self, using=None, keep_parents=False):
-        delete_old_files(self.file)
-        return super().delete(using, keep_parents)
-
-    def __str__(self):
-        return self.file.path

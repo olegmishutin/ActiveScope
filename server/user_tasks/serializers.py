@@ -1,12 +1,11 @@
-import os
 from rest_framework import serializers
-from django.shortcuts import get_object_or_404
-from server.utils.classes.serializers import TaskBaseSerializer
+from server.utils.classes.serializers import TaskBaseSerializer, TaskFilesBaseSerializer
 from .models import UserTaskList, UserTask, UserTaskListStatus, UserTaskListPriority, UserTaskFile
 
 
 class BaseSerializer(serializers.ModelSerializer):
     class Meta:
+        model = None
         exclude = ['task_list']
 
     def create(self, validated_data):
@@ -56,28 +55,6 @@ class TaskSerializer(TaskBaseSerializer, BaseSerializer):
         self.is_object_exists(validated_data, 'priority_id', user.task_list.priorities.all())
 
 
-class FileSerializer(serializers.ModelSerializer):
-    file_name = serializers.SerializerMethodField('get_file_name')
-    uploaded_files = serializers.ListField(child=serializers.FileField(), write_only=True)
-
-    class Meta:
+class FileSerializer(TaskFilesBaseSerializer):
+    class Meta(TaskFilesBaseSerializer.Meta):
         model = UserTaskFile
-        exclude = ['task']
-        extra_kwargs = {
-            'file': {
-                'read_only': True
-            },
-            'upload_date': {
-                'format': '%d.%m.%Y %H:%M'
-            }
-        }
-
-    def get_file_name(self, instance):
-        return os.path.basename(instance.file.name)
-
-    def create(self, validated_data):
-        files = validated_data.pop('uploaded_files', [])
-        task_id = self.context.get('task_id')
-
-        files_to_create = [UserTaskFile(task_id=task_id, file=file) for file in files]
-        return UserTaskFile.objects.bulk_create(files_to_create)
