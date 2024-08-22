@@ -12,7 +12,7 @@ from messages.models import Message
 from groups.models import Group
 from server.utils.classes.viewsets import TaskFilesBaseViewSet
 from .permissions import IsProjectCanBeChangedOrDeleted, UserIsMemberOfProject, UserIsOwnerOfTheProject
-from .utils import get_project_from_request
+from .utils import get_project_from_request, get_project_task_from_request
 from .filters import TaskFilter
 from . import serializers
 
@@ -107,6 +107,34 @@ class TaskFilesViewSet(TaskFilesBaseViewSet):
     permission_classes = [IsAuthenticated, UserIsMemberOfProject]
 
     def get_queryset(self):
-        project = get_project_from_request(self.request, self.kwargs)
-        task = get_object_or_404(project.tasks.all(), pk=self.kwargs.get('task_pk'))
-        return task.files.all()
+        return get_project_task_from_request(self.request, self.kwargs).files.all()
+
+
+class TaskCommentsView(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+    serializer_class = serializers.TaskCommentSerializer
+    permission_classes = [IsAuthenticated, UserIsMemberOfProject]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['task_id'] = self.kwargs.get('task_pk')
+        return context
+
+    def get_queryset(self):
+        return get_project_task_from_request(self.request, self.kwargs).comments.all().annotate(
+            likes_count=Count('likes'))
+
+    @action(methods=['POST'], detail=True)
+    def like(self, request, project_pk=None, task_pk=None, pk=None):
+        task = get_project_task_from_request(request, {'project_pk': project_pk, 'task_pk': task_pk})
+        comment = get_object_or_404(task.comments.all(), pk=pk)
+
+        if comment.likes.filter(id=request.user.id).exists():
+            comment.likes.remove(request.user)
+        else:
+            comment.likes.add(request.user)
+
+        comment_serializer = self.get_serializer(comment)
+        data = comment_serializer.data
+        data.update({'likes_count': comment.likes.count()})
+
+        return Response(data, status=status.HTTP_200_OK)

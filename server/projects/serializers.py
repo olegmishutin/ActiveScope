@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from server.utils.classes.serializers import TaskBaseSerializer, TaskFilesBaseSerializer
-from .models import Project, ProjectTask, ProjectTaskFile, ProjectTaskStatus, ProjectTaskPriority
+from .models import Project, ProjectTask, ProjectTaskFile, ProjectTaskStatus, ProjectTaskPriority, Comment
 
 
 class BaseSerializer(serializers.ModelSerializer):
@@ -84,3 +84,23 @@ class TaskSerializer(TaskBaseSerializer, BaseSerializer):
 class TaskFilesSerializer(TaskFilesBaseSerializer):
     class Meta(TaskFilesBaseSerializer.Meta):
         model = ProjectTaskFile
+
+
+class TaskCommentSerializer(serializers.ModelSerializer):
+    author = MemberSerializer(read_only=True)
+    likes_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Comment
+        exclude = ['task', 'likes']
+        extra_kwargs = {
+            'date': {
+                'format': '%d.%m.%Y'
+            }
+        }
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        task_id = self.context['task_id']
+
+        return Comment.objects.create(author=user, task_id=task_id, **validated_data)

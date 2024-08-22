@@ -13,5 +13,7 @@ class UserIsOwnerOfTheProject(BasePermission):
 
 
 class UserIsMemberOfProject(BasePermission):
+    message = 'Вы не являетесь участником проекта.'
+
     def has_permission(self, request, view):
         return request.user.projects.filter(id=view.kwargs['project_pk']).exists()
