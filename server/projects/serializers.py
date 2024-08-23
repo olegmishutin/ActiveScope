@@ -15,7 +15,8 @@ class BaseSerializer(serializers.ModelSerializer):
         return self.Meta.model.objects.create(project_id=project, **validated_data)
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class ProjectBaseSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.email')
     completed_tasks = serializers.IntegerField(read_only=True)
     total_tasks = serializers.IntegerField(read_only=True)
 
@@ -23,6 +24,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         exclude = ['members']
 
+
+class ProjectSerializer(ProjectBaseSerializer):
     def validate(self, attrs):
         ret_attrs = super().validate(attrs)
         self.icon = ret_attrs.pop('icon', None)
@@ -104,3 +107,14 @@ class TaskCommentSerializer(serializers.ModelSerializer):
         task_id = self.context['task_id']
 
         return Comment.objects.create(author=user, task_id=task_id, **validated_data)
+
+
+class AdminProjectsTasksSerializer(serializers.ModelSerializer):
+    executor = serializers.ReadOnlyField(source='executor.email')
+
+    class Meta(TaskBaseSerializer.Meta, BaseSerializer.Meta):
+        model = ProjectTask
+
+
+class AdminProjectsSerializer(ProjectBaseSerializer):
+    tasks = AdminProjectsTasksSerializer(many=True)

@@ -1,19 +1,22 @@
-from rest_framework import viewsets, mixins, status
+from rest_framework import viewsets, generics, mixins, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django.http import FileResponse
 from django.db.models import Count, Q
 from messages.models import Message
 from groups.models import Group
 from server.utils.classes.viewsets import TaskFilesBaseViewSet
+from server.utils.classes.permissions_classes import IsAdminUser
 from .permissions import IsProjectCanBeChangedOrDeleted, UserIsMemberOfProject, UserIsOwnerOfTheProject
 from .utils import get_project_from_request, get_project_task_from_request
-from .filters import TaskFilter
+from .filters import TaskFilter, TasksCountFilter
+from .models import Project, ProjectTask, ProjectTaskFile
 from . import serializers
 
 
@@ -138,3 +141,45 @@ class TaskCommentsView(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.
         data.update({'likes_count': comment.likes.count()})
 
         return Response(data, status=status.HTTP_200_OK)
+
+
+class AdminProjectsViewSet(mixins.ListModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    serializer_class = serializers.AdminProjectsSerializer
+    permission_classes = [IsAdminUser]
+    filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
+    ordering_fields = ['total_tasks']
+    search_fields = ['name']
+    filterset_class = TasksCountFilter
+
+    def get_queryset(self):
+        return Project.objects.all().annotate(
+            completed_tasks=Count('tasks', filter=Q(tasks__status__is_means_completeness=True)),
+            total_tasks=Count('tasks'))
+
+
+class AdminTasksFilesListView(generics.ListAPIView):
+    serializer_class = serializers.TaskFilesSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        task = get_object_or_404(ProjectTask.objects.all(), pk=self.kwargs.get('task_pk'))
+        return task.files.all()
+
+
+class AdminFileView(generics.RetrieveAPIView):
+    queryset = ProjectTaskFile.objects.all()
+    serializer_class = serializers.TaskFilesSerializer
+    permission_classes = [IsAdminUser]
+
+    def retrieve(self, request, *args, **kwargs):
+        insctance = self.get_object()
+        return FileResponse(open(insctance.file.path, 'rb'), as_attachment=True)
+
+
+class AdminTaskComments(generics.ListAPIView):
+    serializer_class = serializers.TaskCommentSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        task = get_object_or_404(ProjectTask.objects.all(), pk=self.kwargs.get('task_pk'))
+        return task.comments.all().annotate(likes_count=Count('likes'))

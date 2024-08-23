@@ -4,6 +4,7 @@ from . import views
 
 router = DefaultRouter()
 router.register('projects', views.ProjectsViewSet, basename='projects')
+router.register('admin_projects', views.AdminProjectsViewSet, basename='admin_projects')
 
 statuses_router = NestedDefaultRouter(router, 'projects', lookup='project')
 statuses_router.register('statuses', views.StatusesViewSet, basename='statuses')
@@ -31,5 +32,10 @@ urlpatterns = [
     path('', include(members_router.urls)),
     path('', include(tasks_router.urls)),
     path('', include(task_files_router.urls)),
-    path('', include(task_comments_router.urls))
+    path('', include(task_comments_router.urls)),
+    path('admin_tasks/<int:task_pk>/', include([
+        path('files/', views.AdminTasksFilesListView.as_view(), name='admin-task-files'),
+        path('comments/', views.AdminTaskComments.as_view(), name='admin-task-comments'),
+    ])),
+    path('admin_file/<int:pk>/', views.AdminFileView.as_view(), name='admin-file')
 ]
