@@ -50,9 +50,11 @@ class ProjectSerializer(ProjectBaseSerializer):
 
 
 class MemberSerializer(serializers.ModelSerializer):
+    tasks_count = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = get_user_model()
-        fields = ['photo', 'get_full_name', 'email']
+        fields = ['photo', 'get_full_name', 'email', 'tasks_count']
 
 
 class StatusSerializer(BaseSerializer):

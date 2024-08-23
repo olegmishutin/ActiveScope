@@ -55,7 +55,9 @@ class MembersView(mixins.ListModelMixin, viewsets.GenericViewSet):
     search_fields = ['email', 'first_name', 'last_name', 'patronymic']
 
     def get_queryset(self):
-        return get_project_from_request(self.request, self.kwargs).members.all()
+        return get_project_from_request(self.request, self.kwargs).members.all().annotate(
+            tasks_count=Count(
+                'projects_tasks', filter=Q(projects_tasks__project_id=self.kwargs.get('project_pk'))))
 
     def handle_member_action(self, request, action):
         project = get_project_from_request(request, self.kwargs)
