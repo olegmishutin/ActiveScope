@@ -33,6 +33,7 @@ urlpatterns = [
     path('', include(tasks_router.urls)),
     path('', include(task_files_router.urls)),
     path('', include(task_comments_router.urls)),
+    path('users/<int:user_id>/projects/', views.UserProjectsView.as_view(), name='user-projects'),
     path('admin_tasks/<int:task_pk>/', include([
         path('files/', views.AdminTasksFilesListView.as_view(), name='admin-task-files'),
         path('comments/', views.AdminTaskComments.as_view(), name='admin-task-comments'),

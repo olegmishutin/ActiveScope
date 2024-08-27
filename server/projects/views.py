@@ -145,6 +145,20 @@ class TaskCommentsView(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.
         return Response(data, status=status.HTTP_200_OK)
 
 
+class UserProjectsView(generics.ListAPIView):
+    serializer_class = serializers.ProjectBaseSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [OrderingFilter, DjangoFilterBackend]
+    ordering_fields = ['total_tasks']
+    filterset_class = TasksCountFilter
+
+    def get_queryset(self):
+        user = get_object_or_404(get_user_model().objects.all(), pk=self.kwargs.get('user_id'))
+        return user.projects.all().annotate(
+            completed_tasks=Count('tasks', filter=Q(tasks__status__is_means_completeness=True)),
+            total_tasks=Count('tasks'))
+
+
 class AdminProjectsViewSet(mixins.ListModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.AdminProjectsSerializer
     permission_classes = [IsAdminUser]
