@@ -14,7 +14,7 @@ class MessagesView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return self.request.user.messages.all().select_related('sender_group')
+        return self.request.user.messages.all()
 
 
 class MessagesListView(MessagesView, generics.ListAPIView):

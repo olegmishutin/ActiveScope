@@ -2,6 +2,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import SearchFilter
 from django.contrib.auth import get_user_model
+from django.db.models import Count
 from server.utils.classes.permissions_classes import IsAdminUser
 from .serializers import UserProfileSerializer, ShortUserProfile
 from .permissions import IsUserProfileCanBeChangedOrDeleted
@@ -14,7 +15,7 @@ class UserProfileView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class SearchUsersView(generics.ListAPIView):
-    queryset = get_user_model().objects.all().only(
+    queryset = get_user_model().objects.all().annotate(projects_count=Count('projects')).only(
         'id', 'photo', 'email', 'first_name', 'last_name', 'patronymic', 'description')
 
     serializer_class = ShortUserProfile

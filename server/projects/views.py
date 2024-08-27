@@ -36,7 +36,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.user.projects.all().annotate(
             completed_tasks=Count('tasks', filter=Q(tasks__status__is_means_completeness=True)),
-            total_tasks=Count('tasks'))
+            total_tasks=Count('tasks')).select_related('owner')
 
 
 class TasksViewSet(BaseViewSet):
@@ -45,7 +45,8 @@ class TasksViewSet(BaseViewSet):
     filterset_class = TaskFilter
 
     def get_queryset(self):
-        return get_project_from_request(self.request, self.kwargs).tasks.all()
+        return get_project_from_request(self.request, self.kwargs).tasks.all().select_related(
+            'executor', 'status', 'priority')
 
 
 class MembersView(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -126,7 +127,7 @@ class TaskCommentsView(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.
 
     def get_queryset(self):
         return get_project_task_from_request(self.request, self.kwargs).comments.all().annotate(
-            likes_count=Count('likes'))
+            likes_count=Count('likes')).select_related('author')
 
     @action(methods=['POST'], detail=True)
     def like(self, request, project_pk=None, task_pk=None, pk=None):
@@ -156,7 +157,7 @@ class UserProjectsView(generics.ListAPIView):
         user = get_object_or_404(get_user_model().objects.all(), pk=self.kwargs.get('user_id'))
         return user.projects.all().annotate(
             completed_tasks=Count('tasks', filter=Q(tasks__status__is_means_completeness=True)),
-            total_tasks=Count('tasks'))
+            total_tasks=Count('tasks')).select_related('owner')
 
 
 class AdminProjectsViewSet(mixins.ListModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
@@ -170,7 +171,7 @@ class AdminProjectsViewSet(mixins.ListModelMixin, mixins.DestroyModelMixin, view
     def get_queryset(self):
         return Project.objects.all().annotate(
             completed_tasks=Count('tasks', filter=Q(tasks__status__is_means_completeness=True)),
-            total_tasks=Count('tasks'))
+            total_tasks=Count('tasks')).select_related('owner').prefetch_related('tasks', 'tasks__executor')
 
 
 class AdminTasksFilesListView(generics.ListAPIView):
@@ -198,4 +199,4 @@ class AdminTaskComments(generics.ListAPIView):
 
     def get_queryset(self):
         task = get_object_or_404(ProjectTask.objects.all(), pk=self.kwargs.get('task_pk'))
-        return task.comments.all().annotate(likes_count=Count('likes'))
+        return task.comments.all().annotate(likes_count=Count('likes')).select_related('author')

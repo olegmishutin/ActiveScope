@@ -5,7 +5,7 @@ from auth_sys.validators import validate_password
 
 
 class ShortUserProfile(serializers.ModelSerializer):
-    projects_count = serializers.ReadOnlyField(source='projects.count')
+    projects_count = serializers.ReadOnlyField()
     full_name = serializers.ReadOnlyField(source='get_full_name')
 
     class Meta:

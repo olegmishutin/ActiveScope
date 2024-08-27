@@ -47,5 +47,5 @@ class TaskFilesViewSet(TaskFilesBaseViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return get_object_or_404(
-            self.request.user.task_list.tasks.all(), pk=self.kwargs.get('task_pk')).files.all().defer('task')
+        task = get_object_or_404(self.request.user.task_list.tasks.all(), pk=self.kwargs.get('task_pk'))
+        return task.files.all().defer('task')

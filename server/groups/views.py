@@ -8,6 +8,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.filters import OrderingFilter, SearchFilter
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django.db.models import Prefetch, Count
 from django_filters.rest_framework import DjangoFilterBackend
 from server.utils.classes.permissions_classes import IsAdminUser
 from messages.models import Message
@@ -26,7 +27,9 @@ class GroupsViewSet(ModelViewSet):
     ordering = ['-created_date', '-members_count']
 
     def get_queryset(self):
-        return self.request.user.groups.all().select_related('founder').prefetch_related('members')
+        return self.request.user.groups.all().select_related('founder').prefetch_related(
+            Prefetch('members', queryset=get_user_model().objects.all().annotate(
+                projects_count=Count('projects'))))
 
     def handle_member_action(self, request, action):
         group = self.get_object()

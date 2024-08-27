@@ -17,8 +17,8 @@ class BaseSerializer(serializers.ModelSerializer):
 
 class ProjectBaseSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.email')
-    completed_tasks = serializers.IntegerField(read_only=True)
-    total_tasks = serializers.IntegerField(read_only=True)
+    completed_tasks = serializers.ReadOnlyField()
+    total_tasks = serializers.ReadOnlyField()
 
     class Meta:
         model = Project
@@ -50,7 +50,7 @@ class ProjectSerializer(ProjectBaseSerializer):
 
 
 class MemberSerializer(serializers.ModelSerializer):
-    tasks_count = serializers.IntegerField(read_only=True)
+    tasks_count = serializers.ReadOnlyField()
 
     class Meta:
         model = get_user_model()
@@ -93,7 +93,7 @@ class TaskFilesSerializer(TaskFilesBaseSerializer):
 
 class TaskCommentSerializer(serializers.ModelSerializer):
     author = MemberSerializer(read_only=True)
-    likes_count = serializers.IntegerField(read_only=True)
+    likes_count = serializers.ReadOnlyField()
 
     class Meta:
         model = Comment
