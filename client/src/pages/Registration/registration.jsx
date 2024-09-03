@@ -1,4 +1,3 @@
-import './registration.css'
 import '../../assets/styles/authPages.css'
 import registrationImage from '../../assets/images/registration image.png'
 

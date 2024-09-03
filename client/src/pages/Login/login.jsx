@@ -1,4 +1,3 @@
-import './login.css'
 import '../../assets/styles/authPages.css'
 import loginImage from '../../assets/images/login image.png'
 
