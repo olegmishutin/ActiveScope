@@ -46,12 +46,16 @@
     margin-top: 16px;
 }
 
+.auth_window__content__form__status,
 .auth_window__content__form__link {
     font-size: 14px;
+    max-width: 340px;
+    text-align: center;
 }
 
 .auth_window__content__form__inputs {
     gap: 8px;
+    margin-top: 16px;
 }
 
 .auth_window__content__description {

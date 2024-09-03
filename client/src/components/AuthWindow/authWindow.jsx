@@ -16,6 +16,7 @@ export default function AuthWindow(props) {
                 </div>
                 <div className="auth_window__content">
                     <form className="auth_window__content__form">
+                        <p className='auth_window__content__form__status'>{props.status}</p>
                         <div className="auth_window__content__form__inputs">
                             {props.children}
                         </div>

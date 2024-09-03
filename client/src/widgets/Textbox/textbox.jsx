@@ -1,9 +1,10 @@
 import './textbox.css'
+import '../../assets/styles/widgetsEffects.css'
 
 export default function Textbox(props) {
     return (
         <>
-            <div className={`default_textbox ${props.className}`}>
+            <div className={`default_textbox hoverEffect ${props.className}`}>
                 <label className={`default_textbox__label ${props.labelClassName}`} htmlFor={props.id}>
                     {props.label}{props.isRequired ? <span>*</span> : ''}:
                 </label>
