@@ -1,0 +1,9 @@
+.registration_window .auth_window__content__form {
+    margin-top: 53px;
+}
+
+@media (max-width: 1000px) {
+    .registration_window .auth_window__content__form {
+        margin-top: 0;
+    }
+}

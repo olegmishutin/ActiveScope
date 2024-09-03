@@ -1,0 +1,7 @@
+.default_button {
+    border-radius: 10px;
+    background-color: #525252;
+    border: none;
+    font-weight: 500;
+    font-size: 14px;
+}

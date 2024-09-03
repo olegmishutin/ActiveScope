@@ -1,0 +1,9 @@
+.login_window .auth_window__content__form {
+    margin-top: 71px;
+}
+
+@media (max-width: 1000px) {
+    .login_window .auth_window__content__form {
+        margin-top: 0;
+    }
+}
