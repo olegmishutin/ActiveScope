@@ -33,7 +33,8 @@ class GroupsViewSet(ModelViewSet):
 
     def handle_member_action(self, request, action):
         group = self.get_object()
-        user = get_object_or_404(get_user_model().objects.all().only('id', 'email'), pk=request.data.get('user_id'))
+        user = get_object_or_404(get_user_model().objects.filter(may_be_invited=True).only('id', 'email'),
+                                 pk=request.data.get('user_id'))
 
         if action == 'invite':
             if group.members.filter(id=user.id).exists():

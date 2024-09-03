@@ -15,7 +15,7 @@ class UserProfileView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class SearchUsersView(generics.ListAPIView):
-    queryset = get_user_model().objects.all().annotate(projects_count=Count('projects')).only(
+    queryset = get_user_model().objects.filter(may_be_invited=True).annotate(projects_count=Count('projects')).only(
         'id', 'photo', 'email', 'first_name', 'last_name', 'patronymic', 'description')
 
     serializer_class = ShortUserProfile

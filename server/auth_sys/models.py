@@ -27,6 +27,7 @@ class User(AbstractBaseUser):
     photo = models.ImageField('фото', upload_to=user_file_uploading_to, null=True, blank=True)
     header_image = models.ImageField('фоновая картинка', upload_to=user_file_uploading_to, null=True, blank=True)
     description = models.TextField('описание', null=True, blank=True)
+    may_be_invited = models.BooleanField('может быть приглашен', default=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['password', 'first_name', 'last_name']
@@ -44,7 +45,7 @@ class User(AbstractBaseUser):
         ]
 
     def get_full_name(self):
-        return f'{self.last_name} {self.first_name} {self.patronymic or ""}'
+        return f'{self.last_name} {self.first_name}{" " + self.patronymic if self.patronymic else ""}'
 
     def change_photo(self, file):
         set_new_file(self, 'photo', file)

@@ -10,12 +10,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
-        fields = '__all__'
-        extra_kwargs = {
-            'founder': {
-                'read_only': True
-            }
-        }
+        exclude = ['founder']
 
     def update(self, instance, validated_data):
         file = validated_data.pop('icon', None)

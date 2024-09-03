@@ -11,3 +11,5 @@ urlpatterns = [
     path('admin_groups/<int:pk>/', views.AdminGroupDestroyView.as_view(), name='admin-groups-destroy'),
     path('', include(router.urls))
 ]
+
+print(router.urls)
