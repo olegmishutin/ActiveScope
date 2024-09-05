@@ -86,10 +86,15 @@
     }
 }
 
-@media (max-height: 820px) {
+@media (max-height: 720px) {
     .auth_window {
         align-self: flex-start;
-        min-height: 100%;
+    }
+}
+
+@media (max-height: 820px) {
+    .auth_window {
+        min-height: 100svh;
         padding: 50px 79px;
     }
 }

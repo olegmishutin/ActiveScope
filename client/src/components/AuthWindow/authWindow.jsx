@@ -1,4 +1,5 @@
 import './authWindow.css'
+import '../../assets/styles/widgetsEffects.css'
 import logo from '../../assets/images/logo.svg'
 import {Link} from "react-router-dom"
 
@@ -9,9 +10,9 @@ export default function AuthWindow(props) {
         <>
             <div className={`auth_window ${props.className}`}>
                 <div className="auth_window__header">
-                    <div className="auth_window__header__logo">
+                    <Link to='/' className="auth_window__header__logo hoverEffect">
                         <img src={logo} alt='logo'/>
-                    </div>
+                    </Link>
                     <h1 className='auth_window__header__text'>{props.headerText}</h1>
                 </div>
                 <div className="auth_window__content">

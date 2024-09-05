@@ -1,3 +1,13 @@
+function setTokenToHeader(rquestParameters) {
+    const token = window.localStorage.getItem('token')
+    if (token) {
+        rquestParameters['headers'] = {
+            'Authorization': `Bearer ${token}`
+        }
+    }
+    return rquestParameters
+}
+
 export function POST(url, data) {
     const parameters = {
         url: url,
@@ -7,12 +17,13 @@ export function POST(url, data) {
         xsrfHeaderName: 'X-CSRFTOKEN',
         withCredentials: true,
     }
+    return setTokenToHeader(parameters)
+}
 
-    const token = window.localStorage.getItem('token')
-    if (token) {
-        parameters['headers'] = {
-            'Authorization': `Bearer ${token}`
-        }
+export function GET(url) {
+    const parameters = {
+        url: url,
+        method: 'GET'
     }
-    return parameters
+    return setTokenToHeader(parameters)
 }

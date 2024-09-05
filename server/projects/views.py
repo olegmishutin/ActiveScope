@@ -1,4 +1,5 @@
 from rest_framework import viewsets, generics, mixins, status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
@@ -9,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.http import FileResponse
 from django.db.models import Count, Q
+from asgiref.sync import sync_to_async
 from messages.models import Message
 from groups.models import Group
 from server.utils.classes.viewsets import TaskFilesBaseViewSet
@@ -200,3 +202,12 @@ class AdminTaskComments(generics.ListAPIView):
     def get_queryset(self):
         task = get_object_or_404(ProjectTask.objects.all(), pk=self.kwargs.get('task_pk'))
         return task.comments.all().annotate(likes_count=Count('likes')).select_related('author')
+
+
+@sync_to_async()
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_projects(request):
+    projects = request.user.projects.all()
+    projects_serializer = serializers.ShortProjectsSerializer(projects, many=True, context={'request': request})
+    return Response(projects_serializer.data, status=status.HTTP_200_OK)

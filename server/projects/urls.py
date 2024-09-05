@@ -38,5 +38,6 @@ urlpatterns = [
         path('files/', views.AdminTasksFilesListView.as_view(), name='admin-task-files'),
         path('comments/', views.AdminTaskComments.as_view(), name='admin-task-comments'),
     ])),
-    path('admin_file/<int:pk>/', views.AdminFileView.as_view(), name='admin-file')
+    path('admin_file/<int:pk>/', views.AdminFileView.as_view(), name='admin-file'),
+    path('my_projects/', views.get_user_projects, name='user-projects')
 ]

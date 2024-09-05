@@ -120,3 +120,9 @@ class AdminProjectsTasksSerializer(serializers.ModelSerializer):
 
 class AdminProjectsSerializer(ProjectBaseSerializer):
     tasks = AdminProjectsTasksSerializer(many=True)
+
+
+class ShortProjectsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ['id', 'icon', 'name']

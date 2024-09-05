@@ -37,5 +37,5 @@ def logout_view(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def short_user_info_view(request):
-    user_serializer = UserShortInfoSerializer(request.user)
+    user_serializer = UserShortInfoSerializer(request.user, context={'request': request})
     return Response(user_serializer.data, status=status.HTTP_200_OK)
