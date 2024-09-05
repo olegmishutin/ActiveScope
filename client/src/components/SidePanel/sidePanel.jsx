@@ -66,7 +66,7 @@ export default function SidePanel() {
 
     return (
         <>
-            <aside className="panel" id='panel'>
+            <aside className="panel show_panel" id='panel'>
                 <header className="panel__header">
                     <div className="panel__header__box">
                         <div className="panel__header__logo">
@@ -138,87 +138,6 @@ export default function SidePanel() {
                             projects.map((value) => {
                                 return (
                                     <>
-                                        <Link to='' className="panel__main__selector" id={`project_${value.id}`}>
-                                            <div className="panel__main__selector__icon">
-                                                <img src={
-                                                    value.icon ? value.icon : projectIcon
-                                                }/>
-                                            </div>
-                                            <p className='panel__main__selector__name'
-                                               id={`project_${value.id}_name`}>{value.name}</p>
-                                        </Link>
-                                        <Link to='' className="panel__main__selector" id={`project_${value.id}`}>
-                                            <div className="panel__main__selector__icon">
-                                                <img src={
-                                                    value.icon ? value.icon : projectIcon
-                                                }/>
-                                            </div>
-                                            <p className='panel__main__selector__name'
-                                               id={`project_${value.id}_name`}>{value.name}</p>
-                                        </Link>
-                                        <Link to='' className="panel__main__selector" id={`project_${value.id}`}>
-                                            <div className="panel__main__selector__icon">
-                                                <img src={
-                                                    value.icon ? value.icon : projectIcon
-                                                }/>
-                                            </div>
-                                            <p className='panel__main__selector__name'
-                                               id={`project_${value.id}_name`}>{value.name}</p>
-                                        </Link>
-                                        <Link to='' className="panel__main__selector" id={`project_${value.id}`}>
-                                            <div className="panel__main__selector__icon">
-                                                <img src={
-                                                    value.icon ? value.icon : projectIcon
-                                                }/>
-                                            </div>
-                                            <p className='panel__main__selector__name'
-                                               id={`project_${value.id}_name`}>{value.name}</p>
-                                        </Link>
-                                        <Link to='' className="panel__main__selector" id={`project_${value.id}`}>
-                                            <div className="panel__main__selector__icon">
-                                                <img src={
-                                                    value.icon ? value.icon : projectIcon
-                                                }/>
-                                            </div>
-                                            <p className='panel__main__selector__name'
-                                               id={`project_${value.id}_name`}>{value.name}</p>
-                                        </Link>
-                                        <Link to='' className="panel__main__selector" id={`project_${value.id}`}>
-                                            <div className="panel__main__selector__icon">
-                                                <img src={
-                                                    value.icon ? value.icon : projectIcon
-                                                }/>
-                                            </div>
-                                            <p className='panel__main__selector__name'
-                                               id={`project_${value.id}_name`}>{value.name}</p>
-                                        </Link>
-                                        <Link to='' className="panel__main__selector" id={`project_${value.id}`}>
-                                            <div className="panel__main__selector__icon">
-                                                <img src={
-                                                    value.icon ? value.icon : projectIcon
-                                                }/>
-                                            </div>
-                                            <p className='panel__main__selector__name'
-                                               id={`project_${value.id}_name`}>{value.name}</p>
-                                        </Link>
-                                        <Link to='' className="panel__main__selector" id={`project_${value.id}`}>
-                                            <div className="panel__main__selector__icon">
-                                                <img src={
-                                                    value.icon ? value.icon : projectIcon
-                                                }/>
-                                            </div>
-                                            <p className='panel__main__selector__name'
-                                               id={`project_${value.id}_name`}>{value.name}</p>
-                                        </Link>
-                                        <Link to='' className="panel__main__selector" id={`project_${value.id}`}>
-                                            <div className="panel__main__selector__icon">
-                                                <img src={
-                                                    value.icon ? value.icon : projectIcon
-                                                }/>
-                                            </div>
-                                            <p className='panel__main__selector__name'
-                                               id={`project_${value.id}_name`}>{value.name}</p>
-                                        </Link>
                                         <Link to='' className="panel__main__selector" id={`project_${value.id}`}>
                                             <div className="panel__main__selector__icon">
                                                 <img src={

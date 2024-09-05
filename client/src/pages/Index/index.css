@@ -7,5 +7,5 @@
 .content__main {
     width: 100%;
     max-height: 100svh;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
