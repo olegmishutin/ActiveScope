@@ -1,0 +1,117 @@
+.header {
+    width: 100%;
+    position: relative;
+}
+
+.header__background {
+    width: 100%;
+    height: 250px;
+    background-color: #3777A0;
+    position: absolute;
+}
+
+.header__background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.header__content {
+    width: 100%;
+    position: relative;
+    padding: 67px 79px 0 79px;
+    box-sizing: border-box;
+    display: flex;
+    gap: 36px;
+}
+
+.header__content__image {
+    width: 286px;
+    height: 286px;
+    min-width: 286px;
+    min-height: 286px;
+    overflow: hidden;
+}
+
+.header__content__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.round_header_image {
+    border-radius: 50%;
+}
+
+.empty_header_image {
+    background-color: #3777A0;
+    border: 2px solid white;
+}
+
+.header__content__main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.header__content__main__top,
+.header__content__main__bottom {
+    width: fit-content;
+}
+
+.header__content__main__top {
+    padding: 10px;
+    box-sizing: border-box;
+    margin-bottom: 21px;
+}
+
+.header__content__main__bottom {
+    min-height: 103px;
+    display: flex;
+    padding-top: 25px;
+    box-sizing: border-box;
+    gap: 13px;
+    flex-wrap: wrap;
+}
+
+.header_blur {
+    backdrop-filter: blur(4px);
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.header__info__text {
+    white-space: nowrap;
+}
+
+.header__info__text span {
+    font-weight: bold;
+}
+
+@media (max-width: 1023px) {
+    .header__background {
+        height: 100%;
+    }
+
+    .header__content {
+        flex-direction: column;
+        align-items: center;
+        backdrop-filter: blur(4px);
+        background-color: rgba(0, 0, 0, 0.3);
+        padding: 67px 79px;
+    }
+
+    .header_blur {
+        backdrop-filter: none;
+        background: none;
+    }
+
+    .header__content__main {
+        align-items: center;
+    }
+
+    .header__content__main__bottom {
+        justify-content: center;
+    }
+}

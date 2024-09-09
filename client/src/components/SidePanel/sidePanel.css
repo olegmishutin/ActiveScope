@@ -159,7 +159,6 @@
 @media (max-width: 768px) {
     .panel {
         width: 100%;
-        position: fixed;
     }
 
     .hidden_panel {
@@ -182,5 +181,11 @@
         to {
             margin-left: 0;
         }
+    }
+}
+
+@media (max-width: 1440px) {
+    .panel {
+        position: fixed;
     }
 }

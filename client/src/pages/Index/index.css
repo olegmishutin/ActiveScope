@@ -8,4 +8,5 @@
     width: 100%;
     max-height: 100svh;
     overflow-y: auto;
+    overflow-x: hidden;
 }

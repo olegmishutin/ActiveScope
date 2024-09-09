@@ -87,9 +87,9 @@ export default function SidePanel() {
                         </button>
                     </div>
                 </header>
-                <main className='panel__main'>
+                <nav className='panel__main'>
                     <div className="panel__main_box">
-                        <Link to='' className="panel__main__selector">
+                        <Link to={`/users/${user.id}`} className="panel__main__selector">
                             <div className="panel__main__selector__icon">
                                 <img className='panel__main__selector__icon__user' src={
                                     user.photo ? user.photo : userIcon
@@ -176,7 +176,7 @@ export default function SidePanel() {
                             </div>
                         </> : ''
                     }
-                </main>
+                </nav>
             </aside>
         </>
     )

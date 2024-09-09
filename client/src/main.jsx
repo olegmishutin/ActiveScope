@@ -6,6 +6,7 @@ import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import Login from "./pages/Login/login.jsx"
 import Registration from "./pages/Registration/registration.jsx"
 import Index from "./pages/Index/index.jsx"
+import Profile from "./pages/Profile/profile.jsx"
 import UserTasks from "./pages/UserTasks/userTasks.jsx"
 
 const router = createBrowserRouter([
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
             {
                 path: '/',
                 element: <UserTasks/>
+            },
+            {
+                path: 'users/:id',
+                element: <Profile/>
             }
         ]
     }
