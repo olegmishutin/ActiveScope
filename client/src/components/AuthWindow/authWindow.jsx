@@ -21,7 +21,7 @@ export default function AuthWindow(props) {
                         <div className="auth_window__content__form__inputs">
                             {props.children}
                         </div>
-                        <Button className='auth_window__content__form__button'
+                        <Button className='auth_window__content__form__button light_button'
                                 onClick={props.onClick}>{props.formButtonText}</Button>
                         <Link className='auth_window__content__form__link'
                               to={props.anotherPage}>{props.hrefText}</Link>

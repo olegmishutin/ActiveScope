@@ -8,6 +8,9 @@ import {checkResponse} from "../../utils/response.jsx"
 
 import Header from "../../components/Header/header.jsx"
 import Button from "../../widgets/Button/button.jsx"
+import Filters from "../../components/Filters/filters.jsx"
+import Textbox from "../../widgets/Textbox/textbox.jsx"
+import Ordering from "../../widgets/Ordering/ordering.jsx"
 
 export default function Profile() {
     let {id} = useParams()
@@ -73,6 +76,15 @@ export default function Profile() {
                             </> : ''
                         }
                     </>}/>
+            <div className="window_main_content profile_content">
+                <Filters>
+                    <Textbox type='number' className='profile_content__filter' min={0} label='Минимальное кол-во задач'
+                             id={'min_total_tasks'}></Textbox>
+                    <Textbox type='number' className='profile_content__filter' min={0} label='Максимальное кол-во задач'
+                             id={'max_total_tasks'}></Textbox>
+                    <Ordering id='total_tasks_ordering'>Количество задач</Ordering>
+                </Filters>
+            </div>
         </>
     )
 }

@@ -47,12 +47,12 @@ export default function Registration() {
                             descriptionImage={registrationImage} description={description} status={status}
                             formButtonText='Зарегистрироваться' hrefText='Войти' anotherPage='/login/'
                             onClick={register}>
-                    <Textbox id='first_name' label='Ваше имя' isRequired={true}/>
-                    <Textbox id='last_name' label='Ваша фамилия' isRequired={true}/>
-                    <Textbox id='patronymic' label='Ваше отчество'/>
-                    <Textbox type='date' id='birth_date' label='Дата рождения'/>
-                    <Textbox type='email' id='email' label='Ваш email' isRequired={true}/>
-                    <Textbox type='password' id='password' label='Пароль' isRequired={true}/>
+                    <Textbox className='light_textbox' id='first_name' label='Ваше имя' isRequired={true}/>
+                    <Textbox className='light_textbox' id='last_name' label='Ваша фамилия' isRequired={true}/>
+                    <Textbox className='light_textbox' id='patronymic' label='Ваше отчество'/>
+                    <Textbox className='light_textbox' type='date' id='birth_date' label='Дата рождения'/>
+                    <Textbox className='light_textbox' type='email' id='email' label='Ваш email' isRequired={true}/>
+                    <Textbox className='light_textbox' type='password' id='password' label='Пароль' isRequired={true}/>
                 </AuthWindow>
             </div>
         </>

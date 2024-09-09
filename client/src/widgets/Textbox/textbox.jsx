@@ -10,7 +10,7 @@ export default function Textbox(props) {
                 </label>
                 <input type={props.type ? props.type : 'text'}
                        className={`default_textbox__input ${props.inputClassName}`} id={props.id} name={props.name}
-                       defaultValue={props.defaultValue}/>
+                       defaultValue={props.defaultValue} min={props.min}/>
             </div>
         </>
     )

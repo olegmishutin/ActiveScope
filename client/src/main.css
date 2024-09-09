@@ -22,6 +22,12 @@ button:hover {
     cursor: pointer;
 }
 
+.window_main_content {
+    padding-left: 79px;
+    padding-right: 79px;
+    box-sizing: border-box;
+}
+
 ::-webkit-scrollbar {
     width: 5px;
     background-color: #313131;

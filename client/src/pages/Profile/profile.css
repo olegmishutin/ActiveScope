@@ -33,6 +33,15 @@
     -moz-box-orient: vertical;
 }
 
+.profile_content {
+    width: 100%;
+    margin-top: 38px;
+}
+
+.profile_content__filter {
+    width: 341px;
+}
+
 @media (max-width: 768px) {
     .profile {
         flex-direction: column;

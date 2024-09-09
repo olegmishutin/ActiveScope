@@ -1,7 +1,7 @@
 .default_button {
     height: 40px;
     border-radius: 10px;
-    background-color: #525252;
+    background-color: #414141;
     border: none;
     font-weight: 500;
     font-size: 14px;
@@ -10,4 +10,8 @@
 
 .red_button {
     background-color: #EC625F;
+}
+
+.light_button {
+    background-color: #525252;
 }

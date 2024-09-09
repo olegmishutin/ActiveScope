@@ -1,5 +1,5 @@
 .default_textbox {
-    background-color: #525252;
+    background-color: #414141;
     height: 40px;
     border-radius: 10px;
     display: flex;
@@ -25,4 +25,8 @@
     background: none;
     outline: none;
     border: none;
+}
+
+.light_textbox {
+    background-color: #525252;
 }

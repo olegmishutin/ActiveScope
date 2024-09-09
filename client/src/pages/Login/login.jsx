@@ -43,8 +43,8 @@ export default function Login() {
                 <AuthWindow className='login_window' headerText='Вход в ActiveScope' descriptionImage={loginImage}
                             description={description} formButtonText='Войти в систему' hrefText='Регистрация'
                             anotherPage='/registration/' status={status} onClick={login}>
-                    <Textbox type='email' id='email' label='Email' isRequired={true}/>
-                    <Textbox type='password' id='password' label='Пароль' isRequired={true}/>
+                    <Textbox className='light_textbox' type='email' id='email' label='Email' isRequired={true}/>
+                    <Textbox className='light_textbox' type='password' id='password' label='Пароль' isRequired={true}/>
                 </AuthWindow>
             </div>
         </>
