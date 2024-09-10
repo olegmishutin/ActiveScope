@@ -5,13 +5,13 @@ import orderingIcon from '../../assets/images/order.svg'
 export default function Ordering(props) {
     return (
         <>
-            <div className="ordering hoverEffect">
+            <div className="widget ordering hoverEffect">
                 <label className='ordering__label' htmlFor={props.id}>
-                    <img src={orderingIcon} alt='ordering icon' id='ordering_icon'/>
+                    <img src={orderingIcon} alt='ordering icon' id={`${props.id}_icon`}/>
                     <p className='ordering__name'>{props.children}</p>
                 </label>
                 <input type='checkbox' className='ordering__checkbox' id={props.id} onChange={(e) => {
-                    const icon = document.getElementById('ordering_icon')
+                    const icon = document.getElementById(`${props.id}_icon`)
                     if (e.target.checked) {
                         icon.classList.add('ascending')
                     } else {

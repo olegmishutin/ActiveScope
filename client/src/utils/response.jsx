@@ -1,6 +1,8 @@
-export function checkResponse(response, statusSetter, successfulStatus, successfulFunc) {
+export function checkResponse(response, statusSetter, successfulStatus, successfulFunc, to404) {
     if (response.status === 200 || response.status === 201) {
-        statusSetter(successfulStatus)
+        if (statusSetter) {
+            statusSetter(successfulStatus)
+        }
 
         if (successfulFunc) {
             successfulFunc()
@@ -11,6 +13,8 @@ export function checkResponse(response, statusSetter, successfulStatus, successf
         } else if (response.status === 401) {
             window.localStorage.clear()
             window.location.href = '/login/'
+        } else if (response.status === 404 && to404) {
+            window.location.href = '/404/'
         } else {
             const messages = Object.entries(response.data)
             let errorMessage = `${messages[0][0]}: ${messages[0][1]}`

@@ -1,4 +1,3 @@
-import '../../assets/styles/authPages.css'
 import loginImage from '../../assets/images/login image.png'
 
 import axios from "axios"
@@ -39,14 +38,12 @@ export default function Login() {
 
     return (
         <>
-            <div className="auth_box">
-                <AuthWindow className='login_window' headerText='Вход в ActiveScope' descriptionImage={loginImage}
-                            description={description} formButtonText='Войти в систему' hrefText='Регистрация'
-                            anotherPage='/registration/' status={status} onClick={login}>
-                    <Textbox className='light_textbox' type='email' id='email' label='Email' isRequired={true}/>
-                    <Textbox className='light_textbox' type='password' id='password' label='Пароль' isRequired={true}/>
-                </AuthWindow>
-            </div>
+            <AuthWindow className='login_window' headerText='Вход в ActiveScope' descriptionImage={loginImage}
+                        description={description} formButtonText='Войти в систему' hrefText='Регистрация'
+                        anotherPage='/registration/' status={status} onClick={login}>
+                <Textbox className='light_textbox' type='email' id='email' label='Email' isRequired={true}/>
+                <Textbox className='light_textbox' type='password' id='password' label='Пароль' isRequired={true}/>
+            </AuthWindow>
         </>
     )
 }

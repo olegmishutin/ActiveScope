@@ -9,7 +9,7 @@
 }
 
 .red_button {
-    background-color: #EC625F;
+    background-color: #EC625F !important;
 }
 
 .light_button {

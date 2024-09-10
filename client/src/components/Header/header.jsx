@@ -6,14 +6,14 @@ export default function Header(props) {
             <header className='header'>
                 <div className="header__background">
                     {
-                        props.header_image ? <img src={props.header_image} alt={'header image'}/> : ''
+                        props.header_image ? <img src={props.header_image} alt={'header image'} loading='lazy'/> : ''
                     }
                 </div>
                 <div className="header__content">
                     <div className={`header__content__image
                      ${props.round_image ? 'round_header_image' : ''} ${!props.image ? 'empty_header_image' : ''}`}>
                         {
-                            props.image ? <img src={props.image} alt='image'/> : ''
+                            props.image ? <img src={props.image} alt='image' loading='lazy'/> : ''
                         }
                     </div>
                     <div className="header__content__main">

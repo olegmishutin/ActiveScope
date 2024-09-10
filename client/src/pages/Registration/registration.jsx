@@ -1,4 +1,3 @@
-import '../../assets/styles/authPages.css'
 import registrationImage from '../../assets/images/registration image.png'
 
 import axios from "axios"
@@ -42,19 +41,17 @@ export default function Registration() {
 
     return (
         <>
-            <div className="auth_box">
-                <AuthWindow className='registration_window' headerText='Регистрация в ActiveScope'
-                            descriptionImage={registrationImage} description={description} status={status}
-                            formButtonText='Зарегистрироваться' hrefText='Войти' anotherPage='/login/'
-                            onClick={register}>
-                    <Textbox className='light_textbox' id='first_name' label='Ваше имя' isRequired={true}/>
-                    <Textbox className='light_textbox' id='last_name' label='Ваша фамилия' isRequired={true}/>
-                    <Textbox className='light_textbox' id='patronymic' label='Ваше отчество'/>
-                    <Textbox className='light_textbox' type='date' id='birth_date' label='Дата рождения'/>
-                    <Textbox className='light_textbox' type='email' id='email' label='Ваш email' isRequired={true}/>
-                    <Textbox className='light_textbox' type='password' id='password' label='Пароль' isRequired={true}/>
-                </AuthWindow>
-            </div>
+            <AuthWindow className='registration_window' headerText='Регистрация в ActiveScope'
+                        descriptionImage={registrationImage} description={description} status={status}
+                        formButtonText='Зарегистрироваться' hrefText='Войти' anotherPage='/login/'
+                        onClick={register}>
+                <Textbox className='light_textbox' id='first_name' label='Ваше имя' isRequired={true}/>
+                <Textbox className='light_textbox' id='last_name' label='Ваша фамилия' isRequired={true}/>
+                <Textbox className='light_textbox' id='patronymic' label='Ваше отчество'/>
+                <Textbox className='light_textbox' type='date' id='birth_date' label='Дата рождения'/>
+                <Textbox className='light_textbox' type='email' id='email' label='Ваш email' isRequired={true}/>
+                <Textbox className='light_textbox' type='password' id='password' label='Пароль' isRequired={true}/>
+            </AuthWindow>
         </>
     )
 }

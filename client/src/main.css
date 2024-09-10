@@ -18,13 +18,19 @@ body {
     overflow-x: hidden;
 }
 
+.base_list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
 button:hover {
     cursor: pointer;
 }
 
 .window_main_content {
-    padding-left: 79px;
-    padding-right: 79px;
+    width: 100%;
+    padding: 14px 79px;
     box-sizing: border-box;
 }
 
@@ -36,4 +42,16 @@ button:hover {
 
 ::-webkit-scrollbar-thumb {
     background-color: #525252;
+}
+
+@media (max-width: 768px) {
+    .window_main_content {
+        padding: 14px 39px;
+    }
+}
+
+@media (max-width: 425px) {
+    .window_main_content {
+        padding: 14px 19px;
+    }
 }

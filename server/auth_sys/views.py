@@ -26,7 +26,7 @@ def login_view(request):
 
 
 @sync_to_async()
-@api_view(['POST'])
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def logout_view(request):
     request.user.auth_token.delete()

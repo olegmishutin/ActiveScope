@@ -29,6 +29,10 @@ const router = createBrowserRouter([
             {
                 path: 'users/:id',
                 element: <Profile/>
+            },
+            {
+                path: '404/',
+                element: <h1>Не найдено</h1>
             }
         ]
     }

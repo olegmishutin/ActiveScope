@@ -4,7 +4,7 @@
     background-color: #414141;
     padding: 14px;
     box-sizing: border-box;
-    z-index: 3;
+    z-index: 4;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
 }
 
@@ -157,6 +157,12 @@
     margin-left: auto;
 }
 
+@media (max-width: 1440px) {
+    .panel {
+        position: fixed;
+    }
+}
+
 @media (max-width: 768px) {
     .panel {
         width: 100%;
@@ -164,6 +170,10 @@
 
     .hidden_panel {
         margin-left: -100%;
+    }
+
+    .panel__header__control_button + .maximize {
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
     }
 
     @keyframes hidde_panel_anim {
@@ -182,11 +192,5 @@
         to {
             margin-left: 0;
         }
-    }
-}
-
-@media (max-width: 1440px) {
-    .panel {
-        position: fixed;
     }
 }

@@ -64,6 +64,12 @@ export default function SidePanel() {
         panel.classList.add(addClass)
     }
 
+    function closePanelOnMobile() {
+        if (window.innerWidth <= 768) {
+            changePanel('show_panel', 'hidden_panel')
+        }
+    }
+
     return (
         <>
             <aside className="panel show_panel" id='panel'>
@@ -89,40 +95,40 @@ export default function SidePanel() {
                 </header>
                 <nav className='panel__main'>
                     <div className="panel__main_box">
-                        <Link to={`/users/${user.id}`} className="panel__main__selector">
+                        <Link onClick={closePanelOnMobile} to={`/users/${user.id}`} className="panel__main__selector">
                             <div className="panel__main__selector__icon">
                                 <img className='panel__main__selector__icon__user' src={
                                     user.photo ? user.photo : userIcon
-                                } alt='user icon' id='panel_user_photo'/>
+                                } alt='user icon' loading='lazy' id='panel_user_photo'/>
                             </div>
                             <p className='panel__main__selector__name' id='panel_user_name'>{user.get_full_name}</p>
                         </Link>
                         <Link to='' className="panel__main__selector">
                             <div className="panel__main__selector__icon">
-                                <img src={inbox}/>
+                                <img src={inbox} alt='icon'/>
                             </div>
                             <p className='panel__main__selector__name'>Входящие сообщения</p>
                             <div className="panel__main__selector__counter">
                                 <p className='panel__main__selector__counter__number'>{newMessagesCount}</p>
                             </div>
                         </Link>
-                        <Link to='' className="panel__main__selector">
+                        <Link onClick={closePanelOnMobile} to='' className="panel__main__selector">
                             <div className="panel__main__selector__icon">
-                                <img src={userTasks}/>
+                                <img src={userTasks} alt='icon'/>
                             </div>
                             <p className='panel__main__selector__name'>Мои задачи</p>
                         </Link>
                     </div>
                     <div className="panel__main_box">
-                        <Link to='' className="panel__main__selector">
+                        <Link onClick={closePanelOnMobile} to='' className="panel__main__selector">
                             <div className="panel__main__selector__icon">
-                                <img src={loup}/>
+                                <img src={loup} alt='icon'/>
                             </div>
                             <p className='panel__main__selector__name'>Поиск людей</p>
                         </Link>
-                        <Link to='' className="panel__main__selector">
+                        <Link onClick={closePanelOnMobile} to='' className="panel__main__selector">
                             <div className="panel__main__selector__icon">
-                                <img src={groups}/>
+                                <img src={groups} alt='icon'/>
                             </div>
                             <p className='panel__main__selector__name'>Группы</p>
                         </Link>
@@ -130,7 +136,7 @@ export default function SidePanel() {
                     <div className="panel__main_box">
                         <Link to='' className="panel__main__selector">
                             <div className="panel__main__selector__icon">
-                                <img src={addIcon}/>
+                                <img src={addIcon} alt='icon'/>
                             </div>
                             <p className='panel__main__selector__name'>Создать проект</p>
                         </Link>
@@ -138,11 +144,12 @@ export default function SidePanel() {
                             projects.map((value) => {
                                 return (
                                     <>
-                                        <Link to='' className="panel__main__selector" id={`project_${value.id}`}>
+                                        <Link onClick={closePanelOnMobile} to='' className="panel__main__selector"
+                                              id={`project_${value.id}`}>
                                             <div className="panel__main__selector__icon">
                                                 <img src={
                                                     value.icon ? value.icon : projectIcon
-                                                }/>
+                                                } alt='icon' loading='lazy'/>
                                             </div>
                                             <p className='panel__main__selector__name'
                                                id={`project_${value.id}_name`}>{value.name}</p>
@@ -155,21 +162,21 @@ export default function SidePanel() {
                     {
                         user.is_admin ? <>
                             <div className="panel__main_box">
-                                <Link to='' className="panel__main__selector">
+                                <Link onClick={closePanelOnMobile} to='' className="panel__main__selector">
                                     <div className="panel__main__selector__icon">
-                                        <img src={allUserIcon}/>
+                                        <img src={allUserIcon} alt='icon'/>
                                     </div>
                                     <p className='panel__main__selector__name'>Все пользователи</p>
                                 </Link>
-                                <Link to='' className="panel__main__selector">
+                                <Link onClick={closePanelOnMobile} to='' className="panel__main__selector">
                                     <div className="panel__main__selector__icon">
-                                        <img src={allGroupsIcon}/>
+                                        <img src={allGroupsIcon} alt='icon'/>
                                     </div>
                                     <p className='panel__main__selector__name'>Все группы</p>
                                 </Link>
-                                <Link to='' className="panel__main__selector">
+                                <Link onClick={closePanelOnMobile} to='' className="panel__main__selector">
                                     <div className="panel__main__selector__icon">
-                                        <img src={allProjectsIcon}/>
+                                        <img src={allProjectsIcon} alt='icon'/>
                                     </div>
                                     <p className='panel__main__selector__name'>Все проекты</p>
                                 </Link>

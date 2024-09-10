@@ -1,6 +1,7 @@
 .header {
     width: 100%;
     position: relative;
+    margin-bottom: 24px;
 }
 
 .header__background {
@@ -113,5 +114,17 @@
 
     .header__content__main__bottom {
         justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .header__content {
+        padding: 67px 39px;
+    }
+}
+
+@media (max-width: 425px) {
+    .header__content {
+        padding: 67px 19px;
     }
 }
