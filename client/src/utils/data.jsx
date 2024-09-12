@@ -1,4 +1,4 @@
-export function getDataByIDs(ids, isFormData) {
+export function getDataByIDs(ids, isFormData, includeEmpty) {
     const data = isFormData ? new FormData() : {}
 
     ids.forEach((id) => {
@@ -10,10 +10,14 @@ export function getDataByIDs(ids, isFormData) {
             } else if (element.type === 'checkbox') {
                 data.append(id, element.checked)
             } else {
-                data.append(id, element.value)
+                if (element.value || (!element.value && includeEmpty)) {
+                    data.append(id, element.value)
+                }
             }
         } else {
-            data[id] = element.value
+            if (element.value || (!element.value && includeEmpty)) {
+                data[id] = element.value
+            }
         }
         const errorElement = document.getElementById(`${id}_error`)
 

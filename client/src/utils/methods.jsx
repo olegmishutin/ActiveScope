@@ -32,6 +32,17 @@ export function PUT(url, data) {
     return setTokenToHeader(parameters)
 }
 
+export function DELETE(url) {
+    const parameters = {
+        url: url,
+        method: 'DELETE',
+        xsrfCookieName: 'csrftoken',
+        xsrfHeaderName: 'X-CSRFTOKEN',
+        withCredentials: true,
+    }
+    return setTokenToHeader(parameters)
+}
+
 export function GET(url) {
     const parameters = {
         url: url,

@@ -65,6 +65,7 @@
 }
 
 .auth_window__content__form__inputs {
+    max-width: 341px;
     gap: 8px;
     margin-top: 16px;
 }

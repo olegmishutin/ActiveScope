@@ -1,5 +1,5 @@
 export function checkResponse(response, statusSetter, successfulStatus, successfulFunc, to404) {
-    if (response.status === 200 || response.status === 201) {
+    if (response.status === 200 || response.status === 201 || response.status === 204) {
         if (statusSetter) {
             statusSetter(successfulStatus)
         }
@@ -15,7 +15,7 @@ export function checkResponse(response, statusSetter, successfulStatus, successf
             window.location.href = '/login/'
         } else if (response.status === 404 && to404) {
             window.location.href = '/404/'
-        } else {
+        } else if (response.status === 400) {
             const messages = Object.entries(response.data)
             if (messages[0][0] === 'detail') {
                 statusSetter(messages[0][1])

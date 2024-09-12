@@ -22,7 +22,7 @@ export default function Registration() {
     function register(event) {
         const data = getDataByIDs([
             'first_name', 'last_name', 'patronymic', 'email', 'password', 'birth_date'
-        ], false)
+        ], false, false)
 
         if (data.birth_date) {
             data.birth_date = getDateFromInput(birth_date)

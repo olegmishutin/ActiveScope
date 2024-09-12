@@ -4,7 +4,7 @@ import projectIcon from '../../assets/images/project.svg'
 import {useParams} from 'react-router-dom'
 import {useState, useEffect} from "react"
 import axios from "axios"
-import {GET, PUT} from "../../utils/methods.jsx"
+import {GET, PUT, DELETE} from "../../utils/methods.jsx"
 import {checkResponse} from "../../utils/response.jsx"
 import {getFilters, getDataByIDs} from "../../utils/data.jsx"
 import {getDateFromRequest, getDateFromInput} from "../../utils/date.jsx"
@@ -70,7 +70,7 @@ export default function Profile() {
             'birth_date',
             'description',
             'may_be_invited'
-        ], true)
+        ], true, true)
 
         if (data.get('birth_date')) {
             data.set('birth_date', getDateFromInput(data.get('birth_date')))
@@ -140,7 +140,19 @@ export default function Profile() {
                         }
                         {
                             currentUser.id !== user.id && currentUser.is_admin ?
-                                <Button className='red_button'>Удалить аккаунт</Button> : ''
+                                <Button className='red_button' onClick={() => {
+                                    if (confirm('Уверены, что требуется удалить данного пользователя?')) {
+                                        axios(DELETE(`/api/users/${id}/`)).then(
+                                            (response) => {
+                                                checkResponse(response, null, null, () => {
+                                                    window.location.href = '/users/'
+                                                })
+                                            }
+                                        ).catch((error) => {
+                                            checkResponse(error.response)
+                                        })
+                                    }
+                                }}>Удалить аккаунт</Button> : ''
                         }
                         {
                             currentUser.id === user.id ? <>

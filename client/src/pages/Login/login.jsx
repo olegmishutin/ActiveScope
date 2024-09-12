@@ -20,7 +20,7 @@ export default function Login() {
     function login(event) {
         const data = getDataByIDs([
             'email', 'password'
-        ], false)
+        ], false, true)
 
         axios(POST('/api/login/', data)).then(
             (response) => {
