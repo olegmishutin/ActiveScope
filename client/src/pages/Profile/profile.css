@@ -19,18 +19,23 @@
     gap: 12px;
 }
 
+.profile__info__name,
+.profile__info__description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+}
+
 .profile__info__name {
     font-size: 24px;
     font-weight: 800;
+    -webkit-line-clamp: 2;
 }
 
 .profile__info__description {
     max-width: 713px;
-    display: -webkit-box;
-    overflow: hidden;
     -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    -moz-box-orient: vertical;
 }
 
 .profile_content__filter {
@@ -40,8 +45,7 @@
 @media (max-width: 768px) {
     .profile {
         flex-direction: column;
-        align-items: center;
-        text-align: center;
+        align-items: flex-start;
     }
 
     .profile__info__description {

@@ -25,9 +25,10 @@ export default function Login() {
         axios(POST('/api/login/', data)).then(
             (response) => {
                 checkResponse(response, setStatus, 'Успешно вошли в систему!', () => {
-                    if (response.status === 200) {
-                        window.localStorage.setItem('token', response.data['token'])
-                    }
+                    window.localStorage.setItem('token', response.data['token'])
+                    setTimeout(() => {
+                        window.location.href = '/'
+                    }, 1000)
                 })
             }
         ).catch((error) => {
