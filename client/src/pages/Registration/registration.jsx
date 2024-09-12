@@ -4,8 +4,8 @@ import axios from "axios"
 import {useState} from "react"
 import {POST} from "../../utils/methods.jsx"
 import {checkResponse} from "../../utils/response.jsx"
-import {getDate} from "../../utils/date.jsx"
-import {getJsonDataByIDs} from "../../utils/data.jsx"
+import {getDateFromInput} from "../../utils/date.jsx"
+import {getDataByIDs} from "../../utils/data.jsx"
 
 import AuthWindow from "../../components/AuthWindow/authWindow.jsx"
 import Textbox from "../../widgets/Textbox/textbox.jsx"
@@ -20,13 +20,12 @@ export default function Registration() {
         'с ActiveScope - вашим надежным партнером в управлении проектами.'
 
     function register(event) {
-        const data = getJsonDataByIDs([
-            'first_name', 'last_name', 'patronymic', 'email', 'password'
-        ])
+        const data = getDataByIDs([
+            'first_name', 'last_name', 'patronymic', 'email', 'password', 'birth_date'
+        ], false)
 
-        const birth_date = document.getElementById('birth_date').value
-        if (birth_date) {
-            data['birth_date'] = getDate(birth_date)
+        if (data.birth_date) {
+            data.birth_date = getDateFromInput(birth_date)
         }
 
         axios(POST('/api/registration/', data)).then(

@@ -4,9 +4,10 @@ import projectIcon from '../../assets/images/project.svg'
 import {useParams} from 'react-router-dom'
 import {useState, useEffect} from "react"
 import axios from "axios"
-import {GET} from "../../utils/methods.jsx"
+import {GET, PUT} from "../../utils/methods.jsx"
 import {checkResponse} from "../../utils/response.jsx"
-import {getFilters} from "../../utils/data.jsx"
+import {getFilters, getDataByIDs} from "../../utils/data.jsx"
+import {getDateFromRequest, getDateFromInput} from "../../utils/date.jsx"
 
 import Header from "../../components/Header/header.jsx"
 import Button from "../../widgets/Button/button.jsx"
@@ -14,11 +15,15 @@ import Filters from "../../components/Filters/filters.jsx"
 import Textbox from "../../widgets/Textbox/textbox.jsx"
 import Ordering from "../../widgets/Ordering/ordering.jsx"
 import ListElement from "../../components/ListElement/listElement.jsx"
+import Modal from "../../components/Modal/modal.jsx"
+import FilePicker from "../../widgets/FilePicker/filePicker.jsx"
+import Checkbox from "../../widgets/Checkbox/checkbox.jsx"
 
 export default function Profile() {
     let {id} = useParams()
+    const [editStatus, setEditStatus] = useState('')
     const [currentUser, setCurrentUser] = useState({})
-    const [user, setUser] = useState({})
+    const [user, setUser] = useState({birth_date: '', full_name: ''})
     const [projects, setProjects] = useState([])
 
     function getUserProjects() {
@@ -48,6 +53,41 @@ export default function Profile() {
             }
         ).catch((error) => {
             checkResponse(error.response)
+        })
+        event.preventDefault()
+    }
+
+    function changeUserInfo(event) {
+        const data = getDataByIDs([
+            'photo',
+            'header_image',
+            'first_name',
+            'last_name',
+            'patronymic',
+            'email',
+            'old_password',
+            'new_password',
+            'birth_date',
+            'description',
+            'may_be_invited'
+        ], true)
+
+        if (data.get('birth_date')) {
+            data.set('birth_date', getDateFromInput(data.get('birth_date')))
+        }
+
+        axios(PUT(`/api/users/${id}/`, data)).then(
+            (response) => {
+                checkResponse(response, setUser, response.data, () => {
+                    setEditStatus('Данные успешно изменены!')
+                    const panel_user_photo = document.getElementById('panel_user_photo')
+                    const panel_user_name = document.getElementById('panel_user_name')
+                    panel_user_photo.src = response.data.photo
+                    panel_user_name.textContent = response.data.full_name
+                })
+            }
+        ).catch((error) => {
+            checkResponse(error.response, setEditStatus)
         })
         event.preventDefault()
     }
@@ -104,7 +144,12 @@ export default function Profile() {
                         }
                         {
                             currentUser.id === user.id ? <>
-                                <Button>Изменить данные</Button>
+                                <Button onClick={() => {
+                                    setEditStatus('')
+                                    const modal = document.getElementById('editModal')
+                                    modal.classList.remove('hide_modal')
+                                    modal.classList.add('show_modal')
+                                }}>Изменить данные</Button>
                                 <Button className='red_button' onClick={logout}>Выйти из системы</Button>
                             </> : ''
                         }
@@ -147,6 +192,39 @@ export default function Profile() {
                     }
                 </ul>
             </div>
+            <Modal id='editModal' className='profile_modal' contentClassName='profile_modal_content' status={editStatus}
+                   manageButtons={
+                       <Button onClick={changeUserInfo}>Изменить</Button>
+                   }>
+                <div className="profile_edit_modal">
+                    <div className="profile_edit_modal__left_side">
+                        <FilePicker accept='image/*' className='profile_edit_modal__left_side__file'
+                                    big={true} id='photo'>Фотография</FilePicker>
+                        <FilePicker accept='image/*' className='profile_edit_modal__left_side__file' big={true}
+                                    id='header_image'>Задний фон профиля</FilePicker>
+                    </div>
+                    <div className="profile_edit_modal__right_side">
+                        <div className="profile_edit_modal__right_side__inline">
+                            <Textbox id='first_name' label='Имя' isRequired={true}
+                                     defaultValue={user.full_name.split(' ')[1]}/>
+                            <Textbox id='last_name' label='Фамилия' isRequired={true}
+                                     defaultValue={user.full_name.split(' ')[0]}/>
+                        </div>
+                        <Textbox id='patronymic' label='Отчество' defaultValue={user.full_name.split(' ')[2]}></Textbox>
+                        <Textbox id='email' type='email' label='Email' isRequired={true} defaultValue={user.email}/>
+                        <div className="profile_edit_modal__right_side__inline">
+                            <Textbox type='password' id='old_password' label='Старый пароль'/>
+                            <Textbox type='password' id='new_password' label='Новый пароль'/>
+                        </div>
+                        <Textbox id='birth_date' type='date' label='Дата рождения'
+                                 defaultValue={getDateFromRequest(user.birth_date)}/>
+                    </div>
+                </div>
+                <Textbox className='profile_edit_modal__description' type='textarea' id='description'
+                         placeholder='Краткое описание вас:' defaultValue={user.description}/>
+                <Checkbox className='profile_edit_modal__may_be_invited' defaultChecked={user.may_be_invited}
+                          id='may_be_invited'>Можете быть приглашены в группу</Checkbox>
+            </Modal>
         </>
     )
 }

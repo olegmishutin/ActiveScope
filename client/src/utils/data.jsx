@@ -1,11 +1,24 @@
-export function getJsonDataByIDs(ids) {
-    const data = {}
+export function getDataByIDs(ids, isFormData) {
+    const data = isFormData ? new FormData() : {}
 
     ids.forEach((id) => {
-        let value = document.getElementById(id).value
+        let element = document.getElementById(id)
 
-        if (value) {
-            data[id] = value
+        if (isFormData) {
+            if (element.type === 'file' && element.files.length) {
+                data.append(id, element.files[0])
+            } else if (element.type === 'checkbox') {
+                data.append(id, element.checked)
+            } else {
+                data.append(id, element.value)
+            }
+        } else {
+            data[id] = element.value
+        }
+        const errorElement = document.getElementById(`${id}_error`)
+
+        if (errorElement) {
+            errorElement.textContent = ''
         }
     })
 

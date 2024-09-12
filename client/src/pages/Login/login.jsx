@@ -2,7 +2,7 @@ import loginImage from '../../assets/images/login image.png'
 
 import axios from "axios"
 import {useState} from "react"
-import {getJsonDataByIDs} from "../../utils/data.jsx"
+import {getDataByIDs} from "../../utils/data.jsx"
 import {POST} from "../../utils/methods.jsx"
 import {checkResponse} from "../../utils/response.jsx"
 
@@ -18,9 +18,9 @@ export default function Login() {
         'превратите свои идеи в результаты!'
 
     function login(event) {
-        const data = getJsonDataByIDs([
+        const data = getDataByIDs([
             'email', 'password'
-        ])
+        ], false)
 
         axios(POST('/api/login/', data)).then(
             (response) => {

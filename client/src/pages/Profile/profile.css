@@ -6,7 +6,10 @@
 }
 
 .profile__info,
-.profile__info__other {
+.profile__info__other,
+.profile_edit_modal__left_side,
+.profile_edit_modal__right_side,
+.profile_modal_content {
     display: flex;
     flex-direction: column;
 }
@@ -42,6 +45,51 @@
     width: 341px;
 }
 
+.profile_edit_modal {
+    width: 100%;
+    display: flex;
+    gap: 15px;
+}
+
+.profile_edit_modal__left_side,
+.profile_edit_modal__right_side {
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.profile_edit_modal__left_side {
+    width: 247px;
+}
+
+.profile_edit_modal__right_side {
+    width: 449px;
+}
+
+.profile_edit_modal__right_side__inline {
+    display: flex;
+    gap: 9px;
+    align-items: flex-end;
+}
+
+.profile_edit_modal__description {
+    width: 100%;
+    min-height: 106px;
+    margin-top: 18px;
+    margin-bottom: 8px;
+}
+
+.profile_edit_modal__left_side__file {
+    min-height: 111px;
+}
+
+.profile_edit_modal__may_be_invited {
+    margin-bottom: 16px;
+}
+
+.profile_modal_content {
+    align-items: center;
+}
+
 @media (max-width: 768px) {
     .profile {
         flex-direction: column;
@@ -50,5 +98,51 @@
 
     .profile__info__description {
         -webkit-line-clamp: 10;
+    }
+}
+
+@media (max-width: 515px) {
+    .profile_edit_modal__left_side,
+    .profile_edit_modal__right_side {
+        width: 100%;
+    }
+
+    .profile_edit_modal {
+        flex-direction: column;
+    }
+}
+
+@media (max-height: 501px) {
+    .profile_modal {
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 751px) {
+    .profile_modal {
+        width: 100%;
+    }
+}
+
+@media (max-width: 751px) and (max-height: 501px) {
+    .profile_modal {
+        border-radius: 0 !important;
+    }
+}
+
+@media (max-width: 515px) and (max-height: 738px) {
+    .profile_modal {
+        align-self: flex-start !important;
+        border-radius: 0 !important;
+    }
+}
+
+@media (max-width: 425px) {
+    .profile_edit_modal__right_side__inline {
+        flex-direction: column;
+    }
+
+    .profile_edit_modal__right_side__inline .textbox {
+        width: 100%;
     }
 }

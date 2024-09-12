@@ -17,8 +17,12 @@ export function checkResponse(response, statusSetter, successfulStatus, successf
             window.location.href = '/404/'
         } else {
             const messages = Object.entries(response.data)
-            let errorMessage = `${messages[0][0]}: ${messages[0][1]}`
-            statusSetter(errorMessage)
+            if (messages[0][0] === 'detail') {
+                statusSetter(messages[0][1])
+            } else {
+                const element = document.getElementById(`${messages[0][0]}_error`)
+                element.textContent = messages[0][1]
+            }
         }
     }
 }

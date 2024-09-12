@@ -20,6 +20,18 @@ export function POST(url, data) {
     return setTokenToHeader(parameters)
 }
 
+export function PUT(url, data) {
+    const parameters = {
+        url: url,
+        method: 'PUT',
+        data: data,
+        xsrfCookieName: 'csrftoken',
+        xsrfHeaderName: 'X-CSRFTOKEN',
+        withCredentials: true,
+    }
+    return setTokenToHeader(parameters)
+}
+
 export function GET(url) {
     const parameters = {
         url: url,
