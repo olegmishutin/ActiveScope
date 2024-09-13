@@ -42,7 +42,7 @@
 }
 
 .profile_content__filter {
-    width: 341px;
+    max-width: 341px;
 }
 
 .profile_edit_modal {
