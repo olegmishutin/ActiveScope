@@ -32,6 +32,10 @@ const router = createBrowserRouter([
                 element: <SearchUsers/>
             },
             {
+                path: 'admin/users/',
+                element: <SearchUsers isAdmin={true}/>
+            },
+            {
                 path: 'users/:id',
                 element: <Profile/>
             },

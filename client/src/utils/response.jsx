@@ -13,6 +13,8 @@ export function checkResponse(response, statusSetter, successfulStatus, successf
         } else if (response.status === 401) {
             window.localStorage.clear()
             window.location.href = '/login/'
+        } else if (response.status === 403) {
+            window.location.href = '/'
         } else if (response.status === 404 && to404) {
             window.location.href = '/404/'
         } else if (response.status === 400) {

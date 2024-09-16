@@ -18,7 +18,7 @@ export default function Selection(props) {
                                 })
                             }
                         </select>
-                    </> : ' у вас нет груп'
+                    </> : ''
                 }
             </label>
         </>

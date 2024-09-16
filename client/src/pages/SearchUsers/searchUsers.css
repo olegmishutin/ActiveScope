@@ -6,10 +6,14 @@
     margin-bottom: 15px;
 }
 
-.search_users__searching .textbox{
+.search_users__searching .textbox {
     width: 865px;
 }
 
 .search_users__searching__texbox {
     width: 100%
+}
+
+.search_users__list__button {
+    height: 32px;
 }

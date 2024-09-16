@@ -18,7 +18,7 @@ import ListElement from "../../components/ListElement/listElement.jsx"
 import Modal from "../../components/Modal/modal.jsx"
 import FilePicker from "../../widgets/FilePicker/filePicker.jsx"
 import Checkbox from "../../widgets/Checkbox/checkbox.jsx"
-import Selection from "../../widgets/Selection/selection.jsx"
+import InviteModal from "../../components/InviteMdal/inviteModal.jsx"
 
 export default function Profile() {
     let {id} = useParams()
@@ -169,7 +169,7 @@ export default function Profile() {
                                     setInviteStatus('')
                                     getUserOwnGroups()
 
-                                    const modal = document.getElementById('inviteModal')
+                                    const modal = document.getElementById('profileInviteModal')
                                     modal.classList.remove('hide_modal')
                                     modal.classList.add('show_modal')
                                 }}>Пригласить в группу</Button> : ''
@@ -273,11 +273,8 @@ export default function Profile() {
                 <Checkbox defaultChecked={user.may_be_invited} id='may_be_invited'>Можете быть приглашены в
                     группу</Checkbox>
             </Modal>
-            <Modal id='inviteModal' contentClassName='profile_modal_content' status={inviteStatus} manageButtons={
-                <Button onClick={inviteUser}>Пригласить</Button>
-            }>
-                <Selection id='groups_selection' data={groups}/>
-            </Modal>
+            <InviteModal id='profileInviteModal' inviteStatus={inviteStatus} inviteUserFunc={inviteUser}
+                         groups={groups}/>
         </>
     )
 }

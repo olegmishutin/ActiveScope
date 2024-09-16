@@ -17,15 +17,17 @@ class UserProfileView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class SearchUsersView(generics.ListAPIView):
-    queryset = get_user_model().objects.filter(may_be_invited=True).annotate(projects_count=Count('projects')).only(
-        'id', 'photo', 'email', 'first_name', 'last_name', 'patronymic', 'description')
-
     serializer_class = ShortUserProfile
     permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
     search_fields = ['email', 'first_name', 'last_name', 'patronymic']
     ordering_fields = ['projects_count']
     filterset_class = ProjectsCountFilter
+
+    def get_queryset(self):
+        return get_user_model().objects.filter(may_be_invited=True).exclude(id=self.request.user.id).annotate(
+            projects_count=Count('projects')).only('id', 'photo', 'email', 'first_name', 'last_name', 'patronymic',
+                                                   'description')
 
 
 class AdminSearchUsersView(SearchUsersView):

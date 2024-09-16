@@ -162,7 +162,7 @@ export default function SidePanel() {
                     {
                         user.is_admin ? <>
                             <div className="panel__main_box">
-                                <Link onClick={closePanelOnMobile} to='' className="panel__main__selector">
+                                <Link onClick={closePanelOnMobile} to='/admin/users/' className="panel__main__selector">
                                     <div className="panel__main__selector__icon">
                                         <img src={allUserIcon} alt='icon'/>
                                     </div>
