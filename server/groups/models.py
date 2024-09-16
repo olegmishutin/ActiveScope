@@ -31,11 +31,11 @@ class Group(models.Model):
         self.update_members_count(1)
 
     def remove_member(self, user, validation_error_message):
-        if self.members.filter(id=user.id).exists():
-            self.members.remove(user)
+        if not self.members.filter(id=user.id).exists():
+            raise ValidationError({'detail': validation_error_message})
 
-            self.update_members_count(-1)
-        raise ValidationError({'detail': validation_error_message})
+        self.members.remove(user)
+        self.update_members_count(-1)
 
     def change_icon(self, file):
         set_new_file(self, 'icon', file)

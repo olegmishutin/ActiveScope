@@ -4,7 +4,7 @@ import projectIcon from '../../assets/images/project.svg'
 import {useParams} from 'react-router-dom'
 import {useState, useEffect} from "react"
 import axios from "axios"
-import {GET, PUT, DELETE} from "../../utils/methods.jsx"
+import {GET, PUT, DELETE, POST} from "../../utils/methods.jsx"
 import {checkResponse} from "../../utils/response.jsx"
 import {getFilters, getDataByIDs} from "../../utils/data.jsx"
 import {getDateFromRequest, getDateFromInput} from "../../utils/date.jsx"
@@ -18,13 +18,16 @@ import ListElement from "../../components/ListElement/listElement.jsx"
 import Modal from "../../components/Modal/modal.jsx"
 import FilePicker from "../../widgets/FilePicker/filePicker.jsx"
 import Checkbox from "../../widgets/Checkbox/checkbox.jsx"
+import Selection from "../../widgets/Selection/selection.jsx"
 
 export default function Profile() {
     let {id} = useParams()
     const [editStatus, setEditStatus] = useState('')
+    const [inviteStatus, setInviteStatus] = useState('')
     const [currentUser, setCurrentUser] = useState({})
     const [user, setUser] = useState({birth_date: '', full_name: ''})
     const [projects, setProjects] = useState([])
+    const [groups, setGroups] = useState([])
 
     function getUserProjects() {
         let url = `/api/users/${id}/projects/`
@@ -41,6 +44,32 @@ export default function Profile() {
         ).catch((error) => {
             checkResponse(error.response, null, null, null, true)
         })
+    }
+
+    function getUserOwnGroups() {
+        axios(GET('/api/my_groups/')).then(
+            (response) => {
+                checkResponse(response, setGroups, response.data)
+            }
+        ).catch((error) => {
+            checkResponse(error.response, setInviteStatus)
+        })
+    }
+
+    function inviteUser(event) {
+        const groupId = document.getElementById('groups_selection').value
+        const data = {
+            user_id: id
+        }
+
+        axios(POST(`/api/groups/${groupId}/invite_member/`, data)).then(
+            (response) => {
+                checkResponse(response, setInviteStatus, response.data.detail)
+            }
+        ).catch((error) => {
+            checkResponse(error.response, setInviteStatus)
+        })
+        event.preventDefault()
     }
 
     function logout(event) {
@@ -136,7 +165,14 @@ export default function Profile() {
                     bottom_content={<>
                         {
                             currentUser.id !== user.id && user.may_be_invited ?
-                                <Button>Пригласить в группу</Button> : ''
+                                <Button onClick={() => {
+                                    setInviteStatus('')
+                                    getUserOwnGroups()
+
+                                    const modal = document.getElementById('inviteModal')
+                                    modal.classList.remove('hide_modal')
+                                    modal.classList.add('show_modal')
+                                }}>Пригласить в группу</Button> : ''
                         }
                         {
                             currentUser.id !== user.id && currentUser.is_admin ?
@@ -234,8 +270,13 @@ export default function Profile() {
                 </div>
                 <Textbox className='profile_edit_modal__description' type='textarea' id='description'
                          placeholder='Краткое описание вас:' defaultValue={user.description}/>
-                <Checkbox className='profile_edit_modal__may_be_invited' defaultChecked={user.may_be_invited}
-                          id='may_be_invited'>Можете быть приглашены в группу</Checkbox>
+                <Checkbox defaultChecked={user.may_be_invited} id='may_be_invited'>Можете быть приглашены в
+                    группу</Checkbox>
+            </Modal>
+            <Modal id='inviteModal' contentClassName='profile_modal_content' status={inviteStatus} manageButtons={
+                <Button onClick={inviteUser}>Пригласить</Button>
+            }>
+                <Selection id='groups_selection' data={groups}/>
             </Modal>
         </>
     )

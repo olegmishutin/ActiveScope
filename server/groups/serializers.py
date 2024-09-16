@@ -24,3 +24,9 @@ class GroupSerializer(serializers.ModelSerializer):
         group = Group.objects.create(founder=user, **validated_data)
         group.add_member(user)
         return group
+
+
+class ShortGroupsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['id', 'name']

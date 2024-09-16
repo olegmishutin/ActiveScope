@@ -53,10 +53,11 @@
     box-sizing: border-box;
 }
 
-.modal__window__status{
+.modal__window__status {
     text-align: center;
     font-size: 14px;
     margin-bottom: 8px;
+    margin-top: 8px;
 }
 
 .modal__window__manage_button {
