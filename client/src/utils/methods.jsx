@@ -8,45 +8,32 @@ function setTokenToHeader(rquestParameters) {
     return rquestParameters
 }
 
-export function POST(url, data) {
+function baseParameters(url, method, data) {
     const parameters = {
         url: url,
-        method: 'POST',
-        data: data,
+        method: method,
         xsrfCookieName: 'csrftoken',
         xsrfHeaderName: 'X-CSRFTOKEN',
         withCredentials: true,
     }
+    if (data) {
+        parameters['data'] = data
+    }
     return setTokenToHeader(parameters)
+}
+
+export function POST(url, data) {
+    return baseParameters(url, 'POST', data)
 }
 
 export function PUT(url, data) {
-    const parameters = {
-        url: url,
-        method: 'PUT',
-        data: data,
-        xsrfCookieName: 'csrftoken',
-        xsrfHeaderName: 'X-CSRFTOKEN',
-        withCredentials: true,
-    }
-    return setTokenToHeader(parameters)
+    return baseParameters(url, 'PUT', data)
 }
 
 export function DELETE(url) {
-    const parameters = {
-        url: url,
-        method: 'DELETE',
-        xsrfCookieName: 'csrftoken',
-        xsrfHeaderName: 'X-CSRFTOKEN',
-        withCredentials: true,
-    }
-    return setTokenToHeader(parameters)
+    return baseParameters(url, 'DELETE')
 }
 
 export function GET(url) {
-    const parameters = {
-        url: url,
-        method: 'GET'
-    }
-    return setTokenToHeader(parameters)
+    return baseParameters(url, 'GET')
 }
