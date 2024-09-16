@@ -8,6 +8,7 @@ import Registration from "./pages/Registration/registration.jsx"
 import Index from "./pages/Index/index.jsx"
 import Profile from "./pages/Profile/profile.jsx"
 import UserTasks from "./pages/UserTasks/userTasks.jsx"
+import SearchUsers from "./pages/SearchUsers/searchUsers.jsx"
 
 const router = createBrowserRouter([
     {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
             {
                 path: '/',
                 element: <UserTasks/>
+            },
+            {
+                path: "users/",
+                element: <SearchUsers/>
             },
             {
                 path: 'users/:id',

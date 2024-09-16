@@ -1,0 +1,15 @@
+.search_users__searching {
+    width: 100%;
+    display: flex;
+    gap: 13px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.search_users__searching .textbox{
+    width: 865px;
+}
+
+.search_users__searching__texbox {
+    width: 100%
+}

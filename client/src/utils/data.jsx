@@ -31,7 +31,7 @@ export function getDataByIDs(ids, isFormData, includeEmpty) {
 
 export function getFilters(url, filtersIds) {
     let urlParams = '?'
-    let ordering = []
+    const ordering = []
 
     filtersIds.forEach((id) => {
         const filter = document.getElementById(id)

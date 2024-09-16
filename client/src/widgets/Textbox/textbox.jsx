@@ -8,12 +8,16 @@ export default function Textbox(props) {
                 <div className="textbox">
                     <p className='textbox__error' id={`${props.id}_error`}></p>
                     <div className={`widget default_textbox hoverEffect ${props.className}`}>
-                        <label className={`default_textbox__label ${props.labelClassName}`} htmlFor={props.id}>
-                            {props.label}{props.isRequired ? <span>*</span> : ''}:
-                        </label>
+                        {
+                            props.label ? <>
+                                <label className={`default_textbox__label ${props.labelClassName}`} htmlFor={props.id}>
+                                    {props.label}{props.isRequired ? <span>*</span> : ''}:
+                                </label>
+                            </> : ''
+                        }
                         <input type={props.type ? props.type : 'text'}
                                className={`default_textbox__input ${props.inputClassName}`} id={props.id}
-                               name={props.name}
+                               name={props.name} placeholder={props.placeholder}
                                defaultValue={props.defaultValue} min={props.min}/>
                     </div>
                 </div>

@@ -6,7 +6,7 @@ export default function ListElement(props) {
             <li className='list_element'>
                 <div className="list_element__header">
                     <div className="list_element__header__info">
-                        <div className="list_element__header__info__icon">
+                        <div className={`list_element__header__info__icon ${props.roundedIcon ? 'round' : ''}`}>
                             <img src={props.icon ? props.icon : props.defaultIcon} alt='icon' loading='lazy'/>
                         </div>
                         <p className="list_element__header__text">

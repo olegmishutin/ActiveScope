@@ -120,7 +120,7 @@ export default function SidePanel() {
                         </Link>
                     </div>
                     <div className="panel__main_box">
-                        <Link onClick={closePanelOnMobile} to='' className="panel__main__selector">
+                        <Link onClick={closePanelOnMobile} to='/users/' className="panel__main__selector">
                             <div className="panel__main__selector__icon">
                                 <img src={loup} alt='icon'/>
                             </div>
