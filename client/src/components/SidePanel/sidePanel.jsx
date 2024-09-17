@@ -168,7 +168,7 @@ export default function SidePanel() {
                                     </div>
                                     <p className='panel__main__selector__name'>Все пользователи</p>
                                 </Link>
-                                <Link onClick={closePanelOnMobile} to='' className="panel__main__selector">
+                                <Link onClick={closePanelOnMobile} to='/admin/groups/' className="panel__main__selector">
                                     <div className="panel__main__selector__icon">
                                         <img src={allGroupsIcon} alt='icon'/>
                                     </div>

@@ -78,6 +78,10 @@
     padding-left: 32px;
 }
 
+.list_element .default_button {
+    height: 32px;
+}
+
 @media (max-width: 768px) {
     .list_element__details .base_list {
         padding-left: 0;

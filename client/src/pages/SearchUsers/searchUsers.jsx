@@ -105,12 +105,12 @@ export default function SearchUsers(props) {
                                         </p>
                                         {
                                             props.isAdmin ? <Button
-                                                    className='red_button search_users__list__button' onClick={() => {
+                                                    className='red_button' onClick={() => {
                                                     if (confirm('Уверены, что требуется удалить данного пользователя?')) {
                                                         axios(DELETE(`/api/users/${user.id}/`)).then(
                                                             (response) => {
                                                                 checkResponse(response, null, null, () => {
-                                                                    setUser(prevItems => prevItems.filter(item => item.id !== user.id));
+                                                                    setUser(prevItems => prevItems.filter(item => item.id !== user.id))
                                                                 })
                                                             }
                                                         ).catch((error) => {
@@ -118,7 +118,7 @@ export default function SearchUsers(props) {
                                                         })
                                                     }
                                                 }}>Удалить</Button> :
-                                                <Button className='light_button search_users__list__button'
+                                                <Button className='light_button'
                                                         onClick={() => {
                                                             setInviteUserId(user.id)
                                                             setInviteStatus('')

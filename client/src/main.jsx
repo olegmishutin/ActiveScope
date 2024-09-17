@@ -45,6 +45,10 @@ const router = createBrowserRouter([
                 element: <Groups/>
             },
             {
+                path: 'admin/groups/',
+                element: <Groups isAdmin={true}/>
+            },
+            {
                 path: '404/',
                 element: <h1>Не найдено</h1>
             }

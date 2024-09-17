@@ -7,6 +7,7 @@ from .models import Group
 class GroupSerializer(serializers.ModelSerializer):
     members = ShortUserProfile(many=True, read_only=True)
     founder_email = serializers.ReadOnlyField(source='founder.email')
+    founder_id = serializers.ReadOnlyField(source='founder.id')
 
     class Meta:
         model = Group

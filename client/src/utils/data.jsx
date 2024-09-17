@@ -7,6 +7,7 @@ export function getDataByIDs(ids, isFormData, includeEmpty) {
         if (isFormData) {
             if (element.type === 'file' && element.files.length) {
                 data.append(id, element.files[0])
+                element.value = ''
             } else if (element.type === 'checkbox') {
                 data.append(id, element.checked)
             } else {
