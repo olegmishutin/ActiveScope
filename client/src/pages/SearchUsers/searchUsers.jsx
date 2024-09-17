@@ -68,7 +68,7 @@ export default function SearchUsers(props) {
 
     useEffect(() => {
         getUsers()
-    }, []);
+    }, [props.isAdmin]);
 
     return (
         <>

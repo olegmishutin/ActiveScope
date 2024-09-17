@@ -32,3 +32,8 @@ class SearchUsersView(generics.ListAPIView):
 
 class AdminSearchUsersView(SearchUsersView):
     permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        return get_user_model().objects.exclude(id=self.request.user.id).annotate(
+            projects_count=Count('projects')).only('id', 'photo', 'email', 'first_name', 'last_name', 'patronymic',
+                                                   'description')
