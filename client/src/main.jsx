@@ -9,6 +9,7 @@ import Index from "./pages/Index/index.jsx"
 import Profile from "./pages/Profile/profile.jsx"
 import UserTasks from "./pages/UserTasks/userTasks.jsx"
 import SearchUsers from "./pages/SearchUsers/searchUsers.jsx"
+import Groups from "./pages/Groups/groups.jsx"
 
 const router = createBrowserRouter([
     {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
             {
                 path: 'users/:id',
                 element: <Profile/>
+            },
+            {
+                path: 'groups/',
+                element: <Groups/>
             },
             {
                 path: '404/',

@@ -11,6 +11,11 @@ class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         exclude = ['founder']
+        extra_kwargs = {
+            'created_date': {
+                'format': '%d.%m.%Y'
+            }
+        }
 
     def update(self, instance, validated_data):
         file = validated_data.pop('icon', None)

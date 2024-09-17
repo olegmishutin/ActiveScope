@@ -17,3 +17,8 @@
 .search_users__list__button {
     height: 32px;
 }
+
+.search_users__filters__textbox {
+    max-width: 341px;
+}
+

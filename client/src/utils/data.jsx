@@ -41,7 +41,7 @@ export function getFilters(url, filtersIds) {
                 const field = id.replace('ordering_', '')
                 ordering.push(filter.checked ? field : `-${field}`)
             } else {
-                urlParams += `${id}=${filter.value}`
+                urlParams += `&${id}=${filter.value}`
             }
         }
     })

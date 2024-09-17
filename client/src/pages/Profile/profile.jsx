@@ -109,9 +109,12 @@ export default function Profile() {
             (response) => {
                 checkResponse(response, setUser, response.data, () => {
                     setEditStatus('Данные успешно изменены!')
-                    const panel_user_photo = document.getElementById('panel_user_photo')
                     const panel_user_name = document.getElementById('panel_user_name')
-                    panel_user_photo.src = response.data.photo
+
+                    if (response.data.photo) {
+                        const panel_user_photo = document.getElementById('panel_user_photo')
+                        panel_user_photo.src = response.data.photo
+                    }
                     panel_user_name.textContent = response.data.full_name
                 })
             }

@@ -79,8 +79,10 @@ export default function SearchUsers(props) {
                     <Button onClick={getUsers}>Искать</Button>
                 </div>
                 <Filters filterEvent={getUsers}>
-                    <Textbox type='number' min={0} label='Минимальное кол-во проектов' id='min_projects_count'/>
-                    <Textbox type='number' min={0} label='Максимальное кол-во проектов' id='max_projects_count'/>
+                    <Textbox className='search_users__filters__textbox' type='number' min={0}
+                             label='Минимальное кол-во проектов' id='min_projects_count'/>
+                    <Textbox className='search_users__filters__textbox' type='number' min={0}
+                             label='Максимальное кол-во проектов' id='max_projects_count'/>
                     <Ordering id='ordering_projects_count'>Количество проектов</Ordering>
                 </Filters>
                 <ul className='base_list search_users__list'>

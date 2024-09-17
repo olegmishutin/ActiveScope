@@ -1,9 +1,10 @@
 import './listElement.css'
+import detailsIcon from '../../assets/images/detail icon.svg'
 
 export default function ListElement(props) {
     return (
         <>
-            <li className='list_element'>
+            <li className={`list_element ${props.className}`}>
                 <div className="list_element__header">
                     <div className="list_element__header__info">
                         <div className={`list_element__header__info__icon ${props.roundedIcon ? 'round' : ''}`}>
@@ -18,6 +19,19 @@ export default function ListElement(props) {
                 <div className="list_element__description">
                     <p className='list_element__description__text'>{props.text}</p>
                 </div>
+                {
+                    props.detail ? <>
+                        <details className='list_element__details'>
+                            <summary className='list_element__details__summary'>
+                                <div className="list_element__details__summary__icon">
+                                    <img src={detailsIcon} alt='icon' loading='lazy'/>
+                                </div>
+                                Участники
+                            </summary>
+                            {props.detail}
+                        </details>
+                    </> : ''
+                }
             </li>
         </>
     )
