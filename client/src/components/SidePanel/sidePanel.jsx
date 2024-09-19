@@ -17,6 +17,9 @@ import {checkResponse} from "../../utils/response.jsx"
 import axios from "axios"
 import {Link} from "react-router-dom"
 
+import Messages from "../Messages/messages.jsx"
+import BackButton from "../../widgets/BackButton/backButton.jsx"
+
 export default function SidePanel() {
     const [user, setUser] = useState({photo: null})
     const [projects, setProjects] = useState([])
@@ -58,15 +61,15 @@ export default function SidePanel() {
         setInterval(getNewMessagesCount, 30000)
     }, []);
 
-    function changePanel(removeClass, addClass) {
-        const panel = document.getElementById('panel')
+    function changePanel(id, removeClass, addClass) {
+        const panel = document.getElementById(id)
         panel.classList.remove(removeClass)
         panel.classList.add(addClass)
     }
 
     function closePanelOnMobile() {
         if (window.innerWidth <= 768) {
-            changePanel('show_panel', 'hidden_panel')
+            changePanel('panel', 'show_panel', 'hidden_panel')
         }
     }
 
@@ -81,16 +84,12 @@ export default function SidePanel() {
                         <h4 className='panel__header__name'>ActiveScope</h4>
                     </div>
                     <div className="panel__header__box control_buttons">
-                        <button className="panel__header__control_button">
-                            <img src={arrow} alt='arrow' onClick={() => {
-                                changePanel('show_panel', 'hidden_panel')
-                            }}/>
-                        </button>
-                        <button className="panel__header__control_button maximize">
-                            <img src={arrow} alt='arrow' onClick={() => {
-                                changePanel('hidden_panel', 'show_panel')
-                            }}/>
-                        </button>
+                        <BackButton onClick={() => {
+                            changePanel('panel', 'show_panel', 'hidden_panel')
+                        }}/>
+                        <BackButton className='panel__header__control_button maximize' onClick={() => {
+                            changePanel('panel', 'hidden_panel', 'show_panel')
+                        }}/>
                     </div>
                 </header>
                 <nav className='panel__main'>
@@ -103,7 +102,9 @@ export default function SidePanel() {
                             </div>
                             <p className='panel__main__selector__name' id='panel_user_name'>{user.get_full_name}</p>
                         </Link>
-                        <Link to='' className="panel__main__selector">
+                        <button onClick={() => {
+                            changePanel('messages_panel', 'hide_messages', 'show_messages')
+                        }} className="panel__main__selector">
                             <div className="panel__main__selector__icon">
                                 <img src={inbox} alt='icon'/>
                             </div>
@@ -111,7 +112,7 @@ export default function SidePanel() {
                             <div className="panel__main__selector__counter">
                                 <p className='panel__main__selector__counter__number'>{newMessagesCount}</p>
                             </div>
-                        </Link>
+                        </button>
                         <Link onClick={closePanelOnMobile} to='' className="panel__main__selector">
                             <div className="panel__main__selector__icon">
                                 <img src={userTasks} alt='icon'/>
@@ -168,7 +169,8 @@ export default function SidePanel() {
                                     </div>
                                     <p className='panel__main__selector__name'>Все пользователи</p>
                                 </Link>
-                                <Link onClick={closePanelOnMobile} to='/admin/groups/' className="panel__main__selector">
+                                <Link onClick={closePanelOnMobile} to='/admin/groups/'
+                                      className="panel__main__selector">
                                     <div className="panel__main__selector__icon">
                                         <img src={allGroupsIcon} alt='icon'/>
                                     </div>
@@ -185,6 +187,7 @@ export default function SidePanel() {
                     }
                 </nav>
             </aside>
+            <Messages/>
         </>
     )
 }

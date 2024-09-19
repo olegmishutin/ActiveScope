@@ -1,0 +1,6 @@
+.backButton {
+    background: #414141;
+    border: none;
+    display: flex;
+    align-items: center;
+}

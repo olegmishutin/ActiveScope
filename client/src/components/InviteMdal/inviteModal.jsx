@@ -9,7 +9,7 @@ export default function InviteModal(props) {
             <Modal id={props.id} status={props.inviteStatus} manageButtons={
                 <Button onClick={props.inviteUserFunc}>Пригласить</Button>
             }>
-                <Selection id='groups_selection' data={props.groups}/>
+                <Selection id='groups_selection' data={props.groups}>Выберите группу</Selection>
             </Modal>
         </>
     )

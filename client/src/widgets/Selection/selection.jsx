@@ -4,7 +4,7 @@ export default function Selection(props) {
     return (
         <>
             <label className={`default_selection ${props.className}`} htmlFor={props.id}>
-                Выберите группу:
+                {props.children}:
                 {
                     props.data.length > 0 ? <>
                         <select className='default_selection__select' id={props.id}>
