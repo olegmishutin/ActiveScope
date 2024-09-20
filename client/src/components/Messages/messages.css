@@ -8,6 +8,7 @@
     margin-left: -359px;
     padding: 14px;
     box-sizing: border-box;
+    overflow-y: auto;
 }
 
 .show_messages {
@@ -52,4 +53,45 @@
 
 .messages__header__back_button {
     border-radius: 10px;
+}
+
+.messages__list {
+    margin-top: 25px;
+    height: calc(100svh - 125px);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+}
+
+.messages__list__message {
+    background-color: #414141;
+    border-radius: 10px;
+    padding: 11px;
+    box-sizing: border-box;
+}
+
+.messages__list__message__topic {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.messages__list__message__date {
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.messages__list__message__text {
+    font-size: 14px;
+}
+
+.messages__list__message__buttons{
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.messages__list__message__buttons__button {
+    height: 32px;
 }

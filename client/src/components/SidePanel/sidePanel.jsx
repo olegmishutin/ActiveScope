@@ -24,6 +24,7 @@ export default function SidePanel() {
     const [user, setUser] = useState({photo: null})
     const [projects, setProjects] = useState([])
     const [newMessagesCount, setNewMessagesCount] = useState(0)
+    const [messages, setMessages] = useState([])
 
     function getProjects() {
         axios(GET('/api/my_projects/')).then(
@@ -104,6 +105,15 @@ export default function SidePanel() {
                         </Link>
                         <button onClick={() => {
                             changePanel('messages_panel', 'hide_messages', 'show_messages')
+                            axios(GET('/api/messages/')).then(
+                                (response) => {
+                                    checkResponse(response, setMessages, response.data, () => {
+                                        setNewMessagesCount(response.data.filter(item => !item.is_readed).length)
+                                    })
+                                }
+                            ).catch((error) => {
+                                checkResponse(error.response)
+                            })
                         }} className="panel__main__selector">
                             <div className="panel__main__selector__icon">
                                 <img src={inbox} alt='icon'/>
@@ -187,7 +197,7 @@ export default function SidePanel() {
                     }
                 </nav>
             </aside>
-            <Messages/>
+            <Messages messages={messages}/>
         </>
     )
 }

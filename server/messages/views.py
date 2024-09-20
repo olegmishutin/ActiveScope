@@ -40,4 +40,4 @@ def new_messages_count_view(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def messages_topics(request):
-    return Response(Message.topics, status=status.HTTP_200_OK)
+    return Response(Message.topics.items(), status=status.HTTP_200_OK)

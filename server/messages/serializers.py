@@ -4,6 +4,7 @@ from .models import Message
 
 class MessageSerializer(serializers.ModelSerializer):
     agreement = serializers.BooleanField(write_only=True, required=False)
+    topic_code = serializers.ReadOnlyField(source='topic')
 
     class Meta:
         model = Message

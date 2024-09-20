@@ -12,7 +12,10 @@ export default function Selection(props) {
                                 props.data.map((value) => {
                                     return (
                                         <>
-                                            <option value={value.id}>{value.name}</option>
+                                            {
+                                                props.flat ? <option value={value[0]}>{value[1]}</option> :
+                                                    <option value={value.id}>{value.name}</option>
+                                            }
                                         </>
                                     )
                                 })
