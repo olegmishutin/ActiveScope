@@ -2,7 +2,7 @@ import './messages.css'
 
 import {useState, useEffect} from "react"
 import axios from "axios"
-import {GET} from "../../utils/methods.jsx"
+import {GET, PATCH,} from "../../utils/methods.jsx"
 import {checkResponse} from "../../utils/response.jsx"
 
 import Ordering from "../../widgets/Ordering/ordering.jsx"
@@ -10,9 +10,73 @@ import Selection from "../../widgets/Selection/selection.jsx"
 import Checkbox from "../../widgets/Checkbox/checkbox.jsx"
 import BackButton from "../../widgets/BackButton/backButton.jsx"
 import Button from "../../widgets/Button/button.jsx"
+import {getFilters} from "../../utils/data.jsx";
+
+export function getIsReadedForUrl(url) {
+    const isReadedCheckbox = document.getElementById('is_readed')
+    const isNotReadedCheckbox = document.getElementById('is_not_readed')
+
+    if (isReadedCheckbox.checked && isNotReadedCheckbox.checked) {
+        url += `&is_readed=${true}, ${false}`
+    } else if (isReadedCheckbox.checked) {
+        url += `&is_readed=${true}`
+    } else if (isNotReadedCheckbox.checked) {
+        url += `&is_readed=${false}`
+    }
+
+    return url
+}
+
+export function getNewMessagesCount(messagesCountSetter) {
+    axios(GET('/api/new_messages_count/')).then(
+        (response) => {
+            checkResponse(response, messagesCountSetter, response.data.count)
+        }
+    ).catch((error) => {
+        checkResponse(error.response)
+    })
+}
+
+export function getMessages(messagesSetter, messagesCountSetter) {
+    let url = '/api/messages/'
+    url = getFilters(url, [
+        'ordering_date',
+        'topic'
+    ])
+    url = getIsReadedForUrl(url)
+
+    axios(GET(url)).then(
+        (response) => {
+            checkResponse(response, messagesSetter, response.data, () => {
+                getNewMessagesCount(messagesCountSetter)
+            })
+        }
+    ).catch((error) => {
+        checkResponse(error.response)
+    })
+}
 
 export default function Messages(props) {
+    const [messages, setMessages] = useState([...props.messages])
     const [themes, setThemes] = useState([])
+
+    function readMessage(id, agreement) {
+        const data = {}
+
+        if (agreement) {
+            data['agreement'] = agreement
+        }
+
+        axios(PATCH(`/api/messages/${id}/`, data)).then(
+            (response) => {
+                checkResponse(response, null, null, () => {
+                    getMessages(setMessages, props.messagesCountSetter)
+                })
+            }
+        ).catch((error) => {
+            checkResponse(error.response)
+        })
+    }
 
     useEffect(() => {
         axios(GET('/api/messages_topics/')).then(
@@ -24,16 +88,29 @@ export default function Messages(props) {
         })
     }, []);
 
+    useEffect(() => {
+        setMessages(props.messages)
+    }, [props.messages]);
+
     return (
         <>
             <aside className="messages" id='messages_panel'>
                 <div className="messages__header">
                     <div className="messages__header__filters">
-                        <Ordering id='date'>Дата</Ordering>
-                        <Selection className='messages__header__filters__selection' data={themes}
-                                   flat={true}>Тема</Selection>
-                        <Checkbox id='is_readed'>Прочитано</Checkbox>
-                        <Checkbox id='is_not_readed'>Не прочитано</Checkbox>
+                        <Ordering id='ordering_date' onChange={() => {
+                            getMessages(setMessages, props.messagesCountSetter)
+                        }}>Дата</Ordering>
+                        <Selection className='messages__header__filters__selection' data={themes} id='topic'
+                                   flat={true} onChange={() => {
+                            getMessages(setMessages, props.messagesCountSetter)
+                        }}>Тема</Selection>
+                        <Checkbox id='is_readed' onChange={() => {
+                            getMessages(setMessages, props.messagesCountSetter)
+                        }}>Прочитано</Checkbox>
+                        <Checkbox id='is_not_readed' defaultChecked={true} onChange={() => {
+                            getMessages(setMessages, props.messagesCountSetter)
+                        }}>Не
+                            прочитано</Checkbox>
                     </div>
                     <BackButton className='messages__header__back_button' onClick={() => {
                         const messagesPanel = document.getElementById('messages_panel')
@@ -43,7 +120,7 @@ export default function Messages(props) {
                 </div>
                 <ul className='messages__list'>
                     {
-                        props.messages.map((message) => {
+                        messages.map((message) => {
                             return (
                                 <>
                                     <li className='messages__list__message'>
@@ -52,17 +129,31 @@ export default function Messages(props) {
                                         <p className='messages__list__message__text'>{message.text}</p>
                                         <div className="messages__list__message__buttons">
                                             {
-                                                message.topic_code in ['INV_GROUP', 'INV_PROJECT'] ?
+                                                !message.is_readed ?
                                                     <>
-                                                        <Button
-                                                            className='light_button messages__list__message__buttons__button'>Принять</Button>
-                                                        <Button
-                                                            className='red_button messages__list__message__buttons__button'>Отклонить</Button>
-                                                    </> :
-                                                    <>
-                                                        <Button
-                                                            className='light_button messages__list__message__buttons__button'>Прочитано</Button>
-                                                    </>
+                                                        {
+                                                            ['INV_GROUP', 'INV_PROJECT'].includes(message.topic_code) ?
+                                                                <>
+                                                                    <Button
+                                                                        className='light_button messages__list__message__buttons__button'
+                                                                        onClick={() => {
+                                                                            readMessage(message.id, true)
+                                                                        }}>Принять</Button>
+                                                                    <Button
+                                                                        className='red_button messages__list__message__buttons__button'
+                                                                        onClick={() => {
+                                                                            readMessage(message.id, false)
+                                                                        }}>Отклонить</Button>
+                                                                </> :
+                                                                <>
+                                                                    <Button
+                                                                        className='light_button messages__list__message__buttons__button'
+                                                                        onClick={() => {
+                                                                            readMessage(message.id)
+                                                                        }}>Прочитано</Button>
+                                                                </>
+                                                        }
+                                                    </> : ''
                                             }
                                         </div>
                                     </li>

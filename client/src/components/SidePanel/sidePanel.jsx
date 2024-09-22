@@ -1,5 +1,4 @@
 import './sidePanel.css'
-import arrow from '../../assets/images/arrow.svg'
 import userIcon from '../../assets/images/user.svg'
 import inbox from '../../assets/images/inbox.svg'
 import userTasks from '../../assets/images/user tasks.svg'
@@ -16,6 +15,7 @@ import {GET} from "../../utils/methods.jsx"
 import {checkResponse} from "../../utils/response.jsx"
 import axios from "axios"
 import {Link} from "react-router-dom"
+import {getNewMessagesCount, getMessages} from "../Messages/messages.jsx"
 
 import Messages from "../Messages/messages.jsx"
 import BackButton from "../../widgets/BackButton/backButton.jsx"
@@ -36,16 +36,6 @@ export default function SidePanel() {
         })
     }
 
-    function getNewMessagesCount() {
-        axios(GET('/api/new_messages_count/')).then(
-            (response) => {
-                checkResponse(response, setNewMessagesCount, response.data.count)
-            }
-        ).catch((error) => {
-            checkResponse(error.response)
-        })
-    }
-
     useEffect(() => {
         axios(GET('/api/me/')).then(
             (response) => {
@@ -56,10 +46,12 @@ export default function SidePanel() {
         })
 
         getProjects()
-        getNewMessagesCount()
+        getNewMessagesCount(setNewMessagesCount)
 
         setInterval(getProjects, 30000)
-        setInterval(getNewMessagesCount, 30000)
+        setInterval(() => {
+            getNewMessagesCount(setNewMessagesCount)
+        }, 30000)
     }, []);
 
     function changePanel(id, removeClass, addClass) {
@@ -105,15 +97,7 @@ export default function SidePanel() {
                         </Link>
                         <button onClick={() => {
                             changePanel('messages_panel', 'hide_messages', 'show_messages')
-                            axios(GET('/api/messages/')).then(
-                                (response) => {
-                                    checkResponse(response, setMessages, response.data, () => {
-                                        setNewMessagesCount(response.data.filter(item => !item.is_readed).length)
-                                    })
-                                }
-                            ).catch((error) => {
-                                checkResponse(error.response)
-                            })
+                            getMessages(setMessages, setNewMessagesCount)
                         }} className="panel__main__selector">
                             <div className="panel__main__selector__icon">
                                 <img src={inbox} alt='icon'/>
@@ -197,7 +181,7 @@ export default function SidePanel() {
                     }
                 </nav>
             </aside>
-            <Messages messages={messages}/>
+            <Messages messages={messages} messagesCountSetter={setNewMessagesCount}/>
         </>
     )
 }

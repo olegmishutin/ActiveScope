@@ -12,7 +12,7 @@ export default function Checkbox(props) {
                     } else {
                         indicator.classList.remove('default_checkbox__checked')
                     }
-                }}/>
+                }} onChange={props.onChange}/>
                 <div className="default_checkbox__background">
                     <div className="default_checkbox__foreground">
                         <div className={props.defaultChecked ? 'default_checkbox__checked' : ''}

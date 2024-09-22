@@ -17,6 +17,10 @@ export default function Ordering(props) {
                     } else {
                         icon.classList.remove('ascending')
                     }
+
+                    if (props.onChange) {
+                        props.onChange()
+                    }
                 }}/>
             </div>
         </>

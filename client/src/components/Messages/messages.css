@@ -1,6 +1,7 @@
 .messages {
     position: fixed;
     width: 359px;
+    max-height: 100svh;
     min-height: 100svh;
     background: #313131;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
@@ -57,11 +58,9 @@
 
 .messages__list {
     margin-top: 25px;
-    height: calc(100svh - 125px);
     display: flex;
     flex-direction: column;
     gap: 20px;
-    overflow-y: auto;
 }
 
 .messages__list__message {
@@ -86,7 +85,7 @@
     font-size: 14px;
 }
 
-.messages__list__message__buttons{
+.messages__list__message__buttons {
     margin-top: 15px;
     display: flex;
     gap: 10px;
@@ -94,4 +93,32 @@
 
 .messages__list__message__buttons__button {
     height: 32px;
+}
+
+@media (max-width: 425px) {
+    .messages {
+        width: 100%;
+    }
+
+    .hide_messages {
+        margin-left: -100%;
+    }
+
+    @keyframes show_messages_anim {
+        from {
+            margin-left: -100%;
+        }
+        to {
+            margin-left: 0;
+        }
+    }
+
+    @keyframes hide_messages_anim {
+        from {
+            margin-left: 0;
+        }
+        to {
+            margin-left: -100%;
+        }
+    }
 }

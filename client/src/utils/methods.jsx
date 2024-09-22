@@ -30,6 +30,10 @@ export function PUT(url, data) {
     return baseParameters(url, 'PUT', data)
 }
 
+export function PATCH(url, data) {
+    return baseParameters(url, 'PATCH', data)
+}
+
 export function DELETE(url) {
     return baseParameters(url, 'DELETE')
 }
