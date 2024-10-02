@@ -103,9 +103,12 @@ export default function SidePanel() {
                                 <img src={inbox} alt='icon'/>
                             </div>
                             <p className='panel__main__selector__name'>Входящие сообщения</p>
-                            <div className="panel__main__selector__counter">
-                                <p className='panel__main__selector__counter__number'>{newMessagesCount}</p>
-                            </div>
+                            {
+                                newMessagesCount ?
+                                    <div className="panel__main__selector__counter">
+                                        <p className='panel__main__selector__counter__number'>{newMessagesCount}</p>
+                                    </div> : ''
+                            }
                         </button>
                         <Link onClick={closePanelOnMobile} to='' className="panel__main__selector">
                             <div className="panel__main__selector__icon">

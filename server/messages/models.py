@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from groups.models import Group
-from projects.models import Project
+from projects.models import Project, ProjectTask
 from .managers import MessagesManager
 
 
@@ -15,6 +15,8 @@ class Message(models.Model):
         'INV_PROJECT': 'Приглашение в проект',
         'JOINED_PROJECT': 'Пополнение в проекте',
         'EXC_PROJECT': 'Исключен из проекта',
+
+        'TASKS': 'Уведомление о задаче'
     }
 
     receiver = models.ForeignKey(
@@ -26,8 +28,13 @@ class Message(models.Model):
 
     sender_project = models.ForeignKey(
         Project, related_name='messages', verbose_name='проект-отправитель', on_delete=models.CASCADE, null=True,
-        blank=True
-    )
+        blank=True)
+
+    sender_project_task = models.ForeignKey(
+        ProjectTask, related_name='messages', verbose_name='проектная-задача-отправитель', on_delete=models.CASCADE,
+        null=True, blank=True)
+
+    days_left = models.SmallIntegerField('остаточные дни', null=True, blank=True, editable=False)
 
     topic = models.CharField('тема', max_length=56, choices=topics, editable=False)
     date = models.DateTimeField('дата', auto_now_add=True, editable=False)

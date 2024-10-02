@@ -36,3 +36,41 @@ class MessagesManager(Manager):
     def create_joined_project_message(self, project, user):
         self.create(receiver=project.owner, topic='JOINED_PROJECT',
                     text=f'Пользователь {user.email} присоединился к вашему проекту {project.name}')
+
+    def get_project_task_messages_objects(self, data):
+        ret_data = []
+        users_data, projects_data, tasks_data, days_data = [], [], [], []
+
+        for info in data:
+            users_data.append(info['user'])
+            projects_data.append(info['project'])
+            tasks_data.append(info['task'])
+            days_data.append(info['days_left'])
+
+        finded_existed_messages = self.filter(
+            topic='TASKS', receiver__in=users_data, sender_project__in=projects_data, days_left__in=days_data,
+            sender_project_task__in=tasks_data).select_related('receiver', 'sender_project', 'sender_project_task')
+
+        for messages in finded_existed_messages:
+            data.remove(
+                {
+                    'user': messages.receiver,
+                    'project': messages.sender_project,
+                    'task': messages.sender_project_task,
+                    'days_left': messages.days_left
+                }
+            )
+
+        for info in data:
+            days_left = info['days_left']
+
+            if days_left in (14, 7, 3, 2, 1):
+                user = info['user']
+                project = info['project']
+                task = info['task']
+
+                ret_data.append(self.model(
+                    receiver=user, topic='TASKS', sender_project=project, sender_project_task=task, days_left=days_left,
+                    text=f'Задача "{task.name}" проекта "{project.name}" должна быть выполнена через {days_left} дней'))
+
+        return ret_data

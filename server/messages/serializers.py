@@ -8,7 +8,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        exclude = ['receiver', 'sender_group', 'sender_project']
+        exclude = ['receiver', 'sender_group', 'sender_project', 'sender_project_task', 'days_left']
         extra_kwargs = {
             'topic': {
                 'source': 'get_topic_display'
