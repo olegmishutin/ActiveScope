@@ -7,11 +7,11 @@ from .models import Message
 @shared_task
 def check_projects_tasks():
     data = []
-    messages = []
 
-    for user in get_user_model().objects.all().prefetch_related('projects_tasks', 'projects_tasks__project'):
+    for user in get_user_model().objects.all().prefetch_related(
+            'projects_tasks', 'projects_tasks__project', 'projects_tasks__status'):
         for task in user.projects_tasks.all():
-            if task.end_date:
+            if (not task.status or not task.status.is_means_completeness) and task.end_date:
                 data.append({
                     'user': user,
                     'project': task.project,
