@@ -69,8 +69,15 @@ class MessagesManager(Manager):
                 project = info['project']
                 task = info['task']
 
+                if days_left < 2:
+                    days_left_text = f'{days_left} день'
+                elif days_left > 1 and days_left < 5:
+                    days_left_text = f'{days_left} дня'
+                else:
+                    days_left_text = f'{days_left} дней'
+
                 ret_data.append(self.model(
                     receiver=user, topic='TASKS', sender_project=project, sender_project_task=task, days_left=days_left,
-                    text=f'Задача "{task.name}" проекта "{project.name}" должна быть выполнена через {days_left} дней'))
+                    text=f'Задача "{task.name}" проекта "{project.name}" должна быть выполнена через {days_left_text}'))
 
         return ret_data
