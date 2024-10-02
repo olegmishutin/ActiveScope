@@ -34,7 +34,7 @@ class Message(models.Model):
         ProjectTask, related_name='messages', verbose_name='проектная-задача-отправитель', on_delete=models.CASCADE,
         null=True, blank=True)
 
-    days_left = models.SmallIntegerField('остаточные дни', null=True, blank=True, editable=False)
+    days_left = models.PositiveSmallIntegerField('остаточные дни', null=True, blank=True, editable=False)
 
     topic = models.CharField('тема', max_length=56, choices=topics, editable=False)
     date = models.DateTimeField('дата', auto_now_add=True, editable=False)
