@@ -41,7 +41,9 @@
 .panel__header__box,
 .panel__header__control_button,
 .panel__main__selector,
-.panel__main__selector__counter {
+.panel__main__selector__counter,
+.projects_modal__content,
+.projects_modal__content__inline {
     display: flex;
     align-items: center;
 }
@@ -87,7 +89,8 @@
 }
 
 .panel__main,
-.panel__main_box {
+.panel__main_box,
+.projects_modal__content__side {
     display: flex;
     flex-direction: column;
 }
@@ -191,5 +194,48 @@
         to {
             margin-left: 0;
         }
+    }
+}
+
+.projects_modal__content__side {
+    width: 100%;
+    gap: 8px;
+}
+
+.projects_modal__content {
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.projects_modal__content__inline {
+    gap: 9px;
+}
+
+.projects_modal__description {
+    width: 100%;
+    height: 244px;
+}
+
+.projects_modal__content__filepicker {
+    min-width: 248px;
+}
+
+@media (max-width: 850px) {
+    .projects_modal__content {
+        flex-direction: column;
+    }
+
+    .projects_modal__content__filepicker {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .projects_modal__content__inline{
+        flex-direction: column;
+    }
+
+    .projects_modal__content__inline .textbox{
+        width: 100%;
     }
 }

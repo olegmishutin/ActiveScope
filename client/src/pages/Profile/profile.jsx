@@ -261,7 +261,7 @@ export default function Profile() {
                             <Textbox id='last_name' label='Фамилия' isRequired={true}
                                      defaultValue={user.full_name.split(' ')[0]}/>
                         </div>
-                        <Textbox id='patronymic' label='Отчество' defaultValue={user.full_name.split(' ')[2]}></Textbox>
+                        <Textbox id='patronymic' label='Отчество' defaultValue={user.full_name.split(' ')[2]}/>
                         <Textbox id='email' type='email' label='Email' isRequired={true} defaultValue={user.email}/>
                         <div className="profile_edit_modal__right_side__inline">
                             <Textbox type='password' id='old_password' label='Старый пароль'/>

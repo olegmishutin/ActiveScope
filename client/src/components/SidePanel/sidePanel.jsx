@@ -9,6 +9,7 @@ import projectIcon from '../../assets/images/project.svg'
 import allUserIcon from '../../assets/images/users.svg'
 import allGroupsIcon from '../../assets/images/all groups.svg'
 import allProjectsIcon from '../../assets/images/all projects.svg'
+import Modal from "../Modal/modal.jsx";
 
 import {useState, useEffect} from "react"
 import {GET} from "../../utils/methods.jsx"
@@ -19,6 +20,9 @@ import {getNewMessagesCount, getMessages} from "../Messages/messages.jsx"
 
 import Messages from "../Messages/messages.jsx"
 import BackButton from "../../widgets/BackButton/backButton.jsx"
+import FilePicker from "../../widgets/FilePicker/filePicker.jsx";
+import Textbox from "../../widgets/Textbox/textbox.jsx";
+import Button from "../../widgets/Button/button.jsx";
 
 export default function SidePanel() {
     const [user, setUser] = useState({photo: null})
@@ -132,12 +136,16 @@ export default function SidePanel() {
                         </Link>
                     </div>
                     <div className="panel__main_box">
-                        <Link to='' className="panel__main__selector">
+                        <button onClick={() => {
+                            const modal = document.getElementById('projects_modal')
+                            modal.classList.add('show_modal')
+                            modal.classList.remove('hide_modal')
+                        }} className="panel__main__selector">
                             <div className="panel__main__selector__icon">
                                 <img src={addIcon} alt='icon'/>
                             </div>
                             <p className='panel__main__selector__name'>Создать проект</p>
-                        </Link>
+                        </button>
                         {
                             projects.map((value) => {
                                 return (
@@ -185,6 +193,31 @@ export default function SidePanel() {
                 </nav>
             </aside>
             <Messages messages={messages} messagesCountSetter={setNewMessagesCount}/>
+            <Modal id='projects_modal' className='projects_modal_window'
+                   contentClassName='projects_modal_window_content' manageButtons={<>
+                       <Button id='projects_modal__manage_button'>Создать</Button>
+                   </>}>
+                <div className="projects_modal__content">
+                    <div className="projects_modal__content__side">
+                        <FilePicker id='project_icon' accept='image/*' className='projects_modal__content__filepicker'>
+                            Иконка
+                        </FilePicker>
+                        <FilePicker id='project_background' accept='image/*'
+                                    className='projects_modal__content__filepicker'>
+                            Задний фон проекта
+                        </FilePicker>
+                    </div>
+                    <div className="projects_modal__content__side">
+                        <Textbox id='name' label='Название' isRequired={true}/>
+                        <div className="projects_modal__content__inline">
+                            <Textbox id='start_date' type='date' label='Дата начала'/>
+                            <Textbox id='end_date' type='date' label='Дата окончания'/>
+                        </div>
+                    </div>
+                </div>
+                <Textbox id='description' type='textarea' placeholder='Описание проекта:'
+                         className='projects_modal__description'/>
+            </Modal>
         </>
     )
 }
