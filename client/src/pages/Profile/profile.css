@@ -142,3 +142,10 @@
         width: 100%;
     }
 }
+
+@media (max-width: 425px) and (max-height: 820px) {
+    .profile_modal{
+        align-self: flex-start !important;
+        border-radius: 0 !important;
+    }
+}

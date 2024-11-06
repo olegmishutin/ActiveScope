@@ -231,11 +231,25 @@
 }
 
 @media (max-width: 768px) {
-    .projects_modal__content__inline{
+    .projects_modal__content__inline {
         flex-direction: column;
     }
 
-    .projects_modal__content__inline .textbox{
+    .projects_modal__content__inline .textbox {
         width: 100%;
+    }
+}
+
+@media (max-height: 589px) {
+    .projects_modal_window {
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 325px) and (max-height: 589px) {
+    .projects_modal_window{
+        width: 100%;
+        min-height: 100%;
+        border-radius: 0 !important;
     }
 }
