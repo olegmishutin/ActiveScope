@@ -9,10 +9,11 @@ import projectIcon from '../../assets/images/project.svg'
 import allUserIcon from '../../assets/images/users.svg'
 import allGroupsIcon from '../../assets/images/all groups.svg'
 import allProjectsIcon from '../../assets/images/all projects.svg'
+import threeDots from '../../assets/images/three dots.svg'
 import Modal from "../Modal/modal.jsx";
 
 import {useState, useEffect} from "react"
-import {GET} from "../../utils/methods.jsx"
+import {GET, POST, PUT} from "../../utils/methods.jsx"
 import {checkResponse} from "../../utils/response.jsx"
 import axios from "axios"
 import {Link} from "react-router-dom"
@@ -23,12 +24,14 @@ import BackButton from "../../widgets/BackButton/backButton.jsx"
 import FilePicker from "../../widgets/FilePicker/filePicker.jsx";
 import Textbox from "../../widgets/Textbox/textbox.jsx";
 import Button from "../../widgets/Button/button.jsx";
+import {getDataByIDs} from "../../utils/data.jsx";
 
 export default function SidePanel() {
     const [user, setUser] = useState({photo: null})
     const [projects, setProjects] = useState([])
     const [newMessagesCount, setNewMessagesCount] = useState(0)
     const [messages, setMessages] = useState([])
+    const [projectStatus, setProjectStatus] = useState('')
 
     function getProjects() {
         axios(GET('/api/my_projects/')).then(
@@ -57,6 +60,82 @@ export default function SidePanel() {
             getNewMessagesCount(setNewMessagesCount)
         }, 30000)
     }, []);
+
+    function createProject(event) {
+        const data = getDataByIDs([
+            ['project_icon', 'icon'],
+            ['project_header_image', 'header_image'],
+            ['project_name', 'name'],
+            ['project_start_date', 'start_date'],
+            ['project_end_date', 'end_date'],
+            ['project_description', 'description'],
+        ], true, false)
+
+        axios(POST('/api/projects/', data)).then((response) => {
+            checkResponse(response, setProjectStatus, 'Проект успешно создан!', () => {
+                setProjects([...projects, response.data])
+            })
+        }).catch((error) => {
+            checkResponse(error.response, setProjectStatus, null, null, null, 'project')
+        })
+        event.preventDefault()
+    }
+
+    function editProject(id){
+        const data = getDataByIDs([
+            ['project_icon', 'icon'],
+            ['project_header_image', 'header_image'],
+            ['project_name', 'name'],
+            ['project_start_date', 'start_date'],
+            ['project_end_date', 'end_date'],
+            ['project_description', 'description'],
+        ], true, true)
+
+        axios(PUT(`/api/projects/${id}/`, data)).then(
+            (response) => {
+                checkResponse(response, setProjectStatus, 'Проект изменен!', () => {
+                    setProjects(projects.map(project =>
+                        project.id === id ? response.data : project
+                    ))
+                })
+            }
+        ).catch((error) => {
+            checkResponse(error.response, setProjectStatus)
+        })
+    }
+
+    function openModal(buttonText, buttonFunc, nameText, descriptionText, id) {
+        setProjectStatus('')
+
+        const modal = document.getElementById('projects_modal')
+        modal.classList.add('show_modal')
+        modal.classList.remove('hide_modal')
+
+        const button = document.getElementById('projects_modal__manage_button')
+        button.textContent = buttonText
+        button.onclick = buttonFunc
+
+
+        if (id !== null){
+            axios(GET(`/api/projects/${id}/`)).then(
+                (response) => {
+                    checkResponse(response, null, null, () => {
+                        document.getElementById('project_name').value = response.data.name
+                        document.getElementById('project_start_date').value = response.data.start_date
+                        document.getElementById('project_end_date').value = response.data.end_date
+                        document.getElementById('project_description').value = response.data.description
+                    })
+                }
+            ).catch((error) => {
+                checkResponse(error.response)
+            })
+        } else {
+            document.getElementById('project_name').value = nameText
+            document.getElementById('project_start_date').value = nameText
+            document.getElementById('project_end_date').value = nameText
+            document.getElementById('project_description').value = descriptionText
+        }
+    }
 
     function changePanel(id, removeClass, addClass) {
         const panel = document.getElementById(id)
@@ -137,9 +216,7 @@ export default function SidePanel() {
                     </div>
                     <div className="panel__main_box">
                         <button onClick={() => {
-                            const modal = document.getElementById('projects_modal')
-                            modal.classList.add('show_modal')
-                            modal.classList.remove('hide_modal')
+                            openModal('Создать', createProject, '', '', null)
                         }} className="panel__main__selector">
                             <div className="panel__main__selector__icon">
                                 <img src={addIcon} alt='icon'/>
@@ -159,6 +236,14 @@ export default function SidePanel() {
                                             </div>
                                             <p className='panel__main__selector__name'
                                                id={`project_${value.id}_name`}>{value.name}</p>
+                                            <button className="panel__main__selector__icon project_edition_dots"
+                                                    onClick={() => {
+                                                        openModal('Изменить', () => {
+                                                            editProject(value.id)
+                                                        }, null, null, value.id)
+                                                    }}>
+                                                <img src={threeDots} alt='edit' loading='lazy'/>
+                                            </button>
                                         </Link>
                                     </>
                                 )
@@ -193,29 +278,29 @@ export default function SidePanel() {
                 </nav>
             </aside>
             <Messages messages={messages} messagesCountSetter={setNewMessagesCount}/>
-            <Modal id='projects_modal' className='projects_modal_window'
+            <Modal id='projects_modal' className='projects_modal_window' status={projectStatus}
                    contentClassName='projects_modal_window_content' manageButtons={<>
-                       <Button id='projects_modal__manage_button'>Создать</Button>
-                   </>}>
+                <Button id='projects_modal__manage_button'/>
+            </>}>
                 <div className="projects_modal__content">
                     <div className="projects_modal__content__side">
                         <FilePicker id='project_icon' accept='image/*' className='projects_modal__content__filepicker'>
                             Иконка
                         </FilePicker>
-                        <FilePicker id='project_background' accept='image/*'
+                        <FilePicker id='project_header_image' accept='image/*'
                                     className='projects_modal__content__filepicker'>
                             Задний фон проекта
                         </FilePicker>
                     </div>
                     <div className="projects_modal__content__side">
-                        <Textbox id='name' label='Название' isRequired={true}/>
+                        <Textbox id='project_name' label='Название' isRequired={true}/>
                         <div className="projects_modal__content__inline">
-                            <Textbox id='start_date' type='date' label='Дата начала'/>
-                            <Textbox id='end_date' type='date' label='Дата окончания'/>
+                            <Textbox id='project_start_date' type='date' label='Дата начала'/>
+                            <Textbox id='project_end_date' type='date' label='Дата окончания'/>
                         </div>
                     </div>
                 </div>
-                <Textbox id='description' type='textarea' placeholder='Описание проекта:'
+                <Textbox id='project_description' type='textarea' placeholder='Описание проекта:'
                          className='projects_modal__description'/>
             </Modal>
         </>

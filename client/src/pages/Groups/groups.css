@@ -36,8 +36,20 @@
     }
 }
 
-@media (max-width: 768px) and (max-height: 517px) {
+@media (max-width: 768px) and (max-height: 541px) {
     .groups_modal_window {
         align-self: flex-start;
+    }
+}
+
+@media (max-width: 325px) {
+    .groups_modal_window{
+        width: 100%;
+    }
+}
+
+@media (max-width: 325px) and (max-height: 541px) {
+    .groups_modal_window{
+        border-radius: 0;
     }
 }

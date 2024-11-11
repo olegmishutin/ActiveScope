@@ -2,25 +2,25 @@ export function getDataByIDs(ids, isFormData, includeEmpty) {
     const data = isFormData ? new FormData() : {}
 
     ids.forEach((id) => {
-        let element = document.getElementById(id)
+        let element = id instanceof Array ? document.getElementById(id[0]) : document.getElementById(id)
 
         if (isFormData) {
             if (element.type === 'file' && element.files.length) {
-                data.append(id, element.files[0])
+                data.append(id instanceof Array ? id[1] : id, element.files[0])
                 element.value = ''
             } else if (element.type === 'checkbox') {
-                data.append(id, element.checked)
+                data.append(id instanceof Array ? id[1] : id, element.checked)
             } else {
                 if (element.value || (!element.value && includeEmpty)) {
-                    data.append(id, element.value)
+                    data.append(id instanceof Array ? id[1] : id, element.value)
                 }
             }
         } else {
             if (element.value || (!element.value && includeEmpty)) {
-                data[id] = element.value
+                data[id instanceof Array ? id[1] : id] = element.value
             }
         }
-        const errorElement = document.getElementById(`${id}_error`)
+        const errorElement = document.getElementById(`${id instanceof Array ? id[0] : id}_error`)
 
         if (errorElement) {
             errorElement.textContent = ''

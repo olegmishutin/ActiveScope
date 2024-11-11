@@ -49,8 +49,7 @@ export default function Groups(props) {
 
         axios(POST('/api/groups/', data)).then(
             (response) => {
-                checkResponse(response, null, null, () => {
-                    setStatus('Группа успешно создана!')
+                checkResponse(response, setStatus, 'Группа успешно создана!', () => {
                     setGroups([...groups, response.data])
                 })
             }
@@ -261,7 +260,7 @@ export default function Groups(props) {
                         <FilePicker id='icon' accept='image/*'>
                             Иконка
                         </FilePicker>
-                        <Textbox id='name' label='Название'/>
+                        <Textbox id='name' isRequired={true} label='Название'/>
                     </div>
                     <Textbox type='textarea' id='description' placeholder='Краткое описание для группы:'/>
                 </div>

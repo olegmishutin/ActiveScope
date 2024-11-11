@@ -1,4 +1,4 @@
-export function checkResponse(response, statusSetter, successfulStatus, successfulFunc, to404) {
+export function checkResponse(response, statusSetter, successfulStatus, successfulFunc, to404, suffix) {
     if (response.status === 200 || response.status === 201 || response.status === 204) {
         if (statusSetter) {
             statusSetter(successfulStatus)
@@ -22,7 +22,7 @@ export function checkResponse(response, statusSetter, successfulStatus, successf
             if (messages[0][0] === 'detail') {
                 statusSetter(messages[0][1])
             } else {
-                const element = document.getElementById(`${messages[0][0]}_error`)
+                const element = document.getElementById(suffix ? `${suffix}_${messages[0][0]}_error` : `${messages[0][0]}_error`)
                 element.textContent = messages[0][1]
             }
         }
