@@ -23,6 +23,14 @@ class ProjectBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         exclude = ['members']
+        extra_kwargs = {
+            'start_date': {
+                'format': '%d.%m.%Y'
+            },
+            'end_date': {
+                'format': '%d.%m.%Y'
+            }
+        }
 
 
 class ProjectSerializer(ProjectBaseSerializer):

@@ -1,0 +1,36 @@
+.project__info__name{
+    font-size: 40px;
+    font-weight: 800;
+    margin-bottom: 17px;
+}
+
+.project__info{
+    display: flex;
+    gap: 34px;
+}
+
+.project__info__incolumn{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.project__info__text{
+    white-space: nowrap;
+}
+
+.project__info__text b{
+    font-weight: 700;
+}
+
+.project_pages_button{
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 650px) {
+    .project__info{
+        flex-direction: column;
+        gap: 12px;
+    }
+}

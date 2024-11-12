@@ -10,6 +10,9 @@ import Profile from "./pages/Profile/profile.jsx"
 import UserTasks from "./pages/UserTasks/userTasks.jsx"
 import SearchUsers from "./pages/SearchUsers/searchUsers.jsx"
 import Groups from "./pages/Groups/groups.jsx"
+import ProjectTasks from "./pages/ProjectTasks/projectTasks.jsx";
+import ProjectMembers from "./pages/ProjectMembers/projectMembers.jsx";
+import ProjectDescription from "./pages/ProjectDescription/projectDescription.jsx";
 
 const router = createBrowserRouter([
     {
@@ -47,6 +50,18 @@ const router = createBrowserRouter([
             {
                 path: 'admin/groups/',
                 element: <Groups isAdmin={true}/>
+            },
+            {
+                path: 'project/:id/tasks',
+                element: <ProjectTasks/>
+            },
+            {
+                path: 'project/:id/members',
+                element: <ProjectMembers/>
+            },
+            {
+                path: 'project/:id/description',
+                element: <ProjectDescription/>
             },
             {
                 path: '404/',

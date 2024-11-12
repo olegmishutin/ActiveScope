@@ -45,7 +45,7 @@
     min-height: 63px;
 }
 
-.big_file_picker .default_file_picker__error {
+.default_file_picker__error {
     font-size: 12px;
     color: #EC625F;
 }

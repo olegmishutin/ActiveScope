@@ -25,6 +25,7 @@ import FilePicker from "../../widgets/FilePicker/filePicker.jsx";
 import Textbox from "../../widgets/Textbox/textbox.jsx";
 import Button from "../../widgets/Button/button.jsx";
 import {getDataByIDs} from "../../utils/data.jsx";
+import {getDateFromRequest} from "../../utils/date.jsx";
 
 export default function SidePanel() {
     const [user, setUser] = useState({photo: null})
@@ -81,7 +82,7 @@ export default function SidePanel() {
         event.preventDefault()
     }
 
-    function editProject(id){
+    function editProject(id) {
         const data = getDataByIDs([
             ['project_icon', 'icon'],
             ['project_header_image', 'header_image'],
@@ -97,10 +98,16 @@ export default function SidePanel() {
                     setProjects(projects.map(project =>
                         project.id === id ? response.data : project
                     ))
+                    document.getElementById('project_page_name').textContent = response.data.name
+                    document.getElementById('project_page_start_date').textContent = response.data.start_date
+                    document.getElementById('project_page_end_date').textContent = response.data.end_date
+                    document.getElementById('project_page_total_tasks').textContent = response.data.total_tasks
+                    document.getElementById('project_page_completed_tasks').textContent = response.data.completed_tasks
+                    document.getElementById('project_page_description').textContent = response.data.description
                 })
             }
         ).catch((error) => {
-            checkResponse(error.response, setProjectStatus)
+            checkResponse(error.response, setProjectStatus, null, null, null, 'project')
         })
     }
 
@@ -116,13 +123,13 @@ export default function SidePanel() {
         button.onclick = buttonFunc
 
 
-        if (id !== null){
+        if (id !== null) {
             axios(GET(`/api/projects/${id}/`)).then(
                 (response) => {
                     checkResponse(response, null, null, () => {
                         document.getElementById('project_name').value = response.data.name
-                        document.getElementById('project_start_date').value = response.data.start_date
-                        document.getElementById('project_end_date').value = response.data.end_date
+                        document.getElementById('project_start_date').value = getDateFromRequest(response.data.start_date)
+                        document.getElementById('project_end_date').value = getDateFromRequest(response.data.end_date)
                         document.getElementById('project_description').value = response.data.description
                     })
                 }
@@ -227,8 +234,8 @@ export default function SidePanel() {
                             projects.map((value) => {
                                 return (
                                     <>
-                                        <Link onClick={closePanelOnMobile} to='' className="panel__main__selector"
-                                              id={`project_${value.id}`}>
+                                        <Link onClick={closePanelOnMobile} to={`/project/${value.id}/tasks`}
+                                              className="panel__main__selector" id={`project_${value.id}`}>
                                             <div className="panel__main__selector__icon">
                                                 <img src={
                                                     value.icon ? value.icon : projectIcon
