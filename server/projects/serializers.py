@@ -62,7 +62,7 @@ class MemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['photo', 'get_full_name', 'email', 'tasks_count']
+        fields = ['id', 'photo', 'get_full_name', 'email', 'description', 'tasks_count']
 
 
 class StatusSerializer(BaseSerializer):

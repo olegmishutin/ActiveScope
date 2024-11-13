@@ -12,6 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from asgiref.sync import sync_to_async
 from server.utils.classes.permissions_classes import IsAdminUser
 from messages.models import Message
+from profiles.serializers import ShortUserProfile
 from .models import Group
 from .serializers import GroupSerializer, ShortGroupsSerializer
 from .permissions import IsGroupCanBeChangedOrDeleted
@@ -96,3 +97,11 @@ def get_user_own_groups(request):
     groups = request.user.groups.only('id', 'name').filter(founder=request.user)
     groups_serialzier = ShortGroupsSerializer(groups, many=True)
     return Response(groups_serialzier.data, status=status.HTTP_200_OK)
+
+
+@sync_to_async()
+@api_view(['GET'])
+def get_group_members(request, pk):
+    members = get_object_or_404(Group, pk=pk).members.all()
+    members_serialzier = ShortUserProfile(members, many=True)
+    return Response(members_serialzier.data, status=status.HTTP_200_OK)

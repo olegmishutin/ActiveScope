@@ -1,0 +1,21 @@
+.project_members_search {
+    display: flex;
+    margin-top: 15px;
+    margin-bottom: 25px;
+    gap: 13px;
+}
+
+.project_members_search .textbox {
+    width: 865px;
+}
+
+.project_members {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.project_members_invite_modal .invite_modal_content {
+    display: flex;
+    gap: 14px;
+}

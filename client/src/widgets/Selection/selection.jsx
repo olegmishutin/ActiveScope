@@ -7,7 +7,11 @@ export default function Selection(props) {
                 {props.children}:
                 {
                     props.data.length > 0 ? <>
-                        <select className='default_selection__select' id={props.id} onChange={props.onChange}>
+                        <select className='default_selection__select' id={props.id} onChange={(e) => {
+                            if (props.onChange) {
+                                props.onChange(e)
+                            }
+                        }}>
                             {
                                 props.data.map((value) => {
                                     return (

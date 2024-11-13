@@ -234,7 +234,7 @@ export default function SidePanel() {
                             projects.map((value) => {
                                 return (
                                     <>
-                                        <Link onClick={closePanelOnMobile} to={`/project/${value.id}/tasks`}
+                                        <Link onClick={closePanelOnMobile} to={`/project/${value.id}/tasks/`}
                                               className="panel__main__selector" id={`project_${value.id}`}>
                                             <div className="panel__main__selector__icon">
                                                 <img src={
