@@ -85,11 +85,9 @@ export default function Groups(props) {
                 user_id: memberId
             })).then(
                 (response) => {
-                    checkResponse(response, null, null, () => {
-                        setGroups(groups.map(group =>
-                            group.id === id ? response.data : group
-                        ))
-                    })
+                    checkResponse(response, setGroups, groups.map(group =>
+                        group.id === id ? response.data : group
+                    ))
                 }
             ).catch((error) => {
                 checkResponse(error.response)

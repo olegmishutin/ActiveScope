@@ -3,7 +3,7 @@ import {Link, useParams} from "react-router-dom";
 import ProjectBase from "../../components/ProjectBase/projectBase.jsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {GET} from "../../utils/methods.jsx";
+import {GET, POST} from "../../utils/methods.jsx";
 import {checkResponse} from "../../utils/response.jsx";
 import Button from "../../widgets/Button/button.jsx";
 import ListElement from "../../components/ListElement/listElement.jsx";
@@ -37,13 +37,60 @@ export default function ProjectMembers() {
         })
     }
 
+    function setMembersShortcut(response, single) {
+        const members = []
+        const data = single ? response.data : response.data[0]
+
+        data.members.forEach((member) => {
+            members.push({
+                id: member.id,
+                name: member.full_name
+            })
+        })
+        setGroupMembers(members)
+    }
+
     function getUserOwnGroups() {
-        axios(GET('/api/my_groups/')).then(
+        axios(GET('/api/groups/')).then(
             (response) => {
-                checkResponse(response, setGroups, response.data)
+                checkResponse(response, setGroups, response.data, () => {
+                    setMembersShortcut(response, false)
+                    document.getElementById('groups_selection').value = response.data[0].id
+                })
             }
         ).catch((error) => {
             checkResponse(error.response, setInviteStatus)
+        })
+    }
+
+    function inviteMember(event) {
+        const group_selection = document.getElementById('groups_selection')
+        const member_selection = document.getElementById('member_selection')
+
+        if (group_selection && member_selection) {
+            const data = {
+                group_id: group_selection.value,
+                user_id: member_selection.value
+            }
+
+            axios(POST(`/api/projects/${id}/members/invite_member/`, data)).then(
+                (response) => {
+                    checkResponse(response, setInviteStatus, response.data.detail)
+                }
+            ).catch((error) => {
+                checkResponse(error.response, setInviteStatus)
+            })
+            event.preventDefault()
+        }
+    }
+
+    function removeMember(user_id){
+        axios(POST(`/api/projects/${id}/members/remove_member/`, {user_id: user_id})).then(
+            (response) => {
+                checkResponse(response, setMembers, prevItems => prevItems.filter(item => item.id !== user_id))
+            }
+        ).catch((error) => {
+            checkResponse(error.response)
         })
     }
 
@@ -102,7 +149,9 @@ export default function ProjectMembers() {
                                         </p>
                                         {
                                             currentUser.id !== user.id ?
-                                                <Button className='red_button'>Исключить</Button> : ''
+                                                <Button className='red_button' onClick={() => {
+                                                    removeMember(user.id)
+                                                }}>Исключить</Button> : ''
                                         }
                                     </ListElement>
                                 </>
@@ -112,24 +161,17 @@ export default function ProjectMembers() {
                 </ul>
             </div>
             <InviteModal onChange={(e) => {
-                axios(GET(`/api/group/${e.target.value}/members/`)).then(
+                axios(GET(`/api/groups/${e.target.value}/`)).then(
                     (response) => {
                         checkResponse(response, null, null, () => {
-                            const members = []
-                            response.data.forEach((member) => {
-                                members.push({
-                                    id: member.id,
-                                    name: member.full_name
-                                })
-                            })
-                            setGroupMembers(members)
+                            setMembersShortcut(response, true)
                         })
                     }
                 ).catch((error) => {
                     checkResponse(error.response, setInviteStatus)
                 })
-            }} className='project_members_invite_modal' status={inviteStatus} groups={groups}
-                         id='project_members_modal'>
+            }} className='project_members_invite_modal' inviteStatus={inviteStatus} groups={groups}
+                         id='project_members_modal' inviteUserFunc={inviteMember}>
                 <Selection id='member_selection' data={groupMembers}>Выберите участника</Selection>
             </InviteModal>
         </>
