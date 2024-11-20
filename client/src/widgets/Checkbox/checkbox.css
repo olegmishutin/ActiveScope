@@ -41,3 +41,18 @@
     background-color: #414141;
     border-radius: 50%;
 }
+
+.splashed_checkbox {
+    padding: 8px;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+.splashed_checkbox_background {
+    background-color: #525252;
+}
+
+.splashed_checkbox .default_checkbox__background {
+    width: unset;
+    height: unset;
+}

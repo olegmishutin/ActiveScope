@@ -4,7 +4,11 @@ import '../../assets/styles/widgetsEffects.css'
 export default function Checkbox(props) {
     return (
         <>
-            <label className={`default_checkbox hoverEffect ${props.className}`} htmlFor={props.id}>
+            <label className={`default_checkbox ${props.className} ${
+                props.splash ? 'splashed_checkbox' : 'hoverEffect'
+            } ${
+                !props.background_color ? 'splashed_checkbox_background' : ''
+            }`} style={{backgroundColor: props.background_color}} htmlFor={props.id}>
                 <input type='checkbox' id={props.id} defaultChecked={props.defaultChecked} onClick={(e) => {
                     const indicator = document.getElementById(`${props.id}_indicator`)
                     if (e.target.checked) {
