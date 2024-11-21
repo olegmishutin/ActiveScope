@@ -5,7 +5,7 @@
     background-color: #414141;
     padding: 14px;
     box-sizing: border-box;
-    z-index: 4;
+    z-index: 100;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
 }
 

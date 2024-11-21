@@ -40,3 +40,9 @@
     width: 100%;
     white-space: nowrap;
 }
+
+@media (max-width: 425px) {
+    .dropdown{
+        background-color: #313131;
+    }
+}

@@ -7,7 +7,7 @@ export default function Checkbox(props) {
             <label className={`default_checkbox ${props.className} ${
                 props.splash ? 'splashed_checkbox' : 'hoverEffect'
             } ${
-                !props.background_color ? 'splashed_checkbox_background' : ''
+                !props.background_color && props.splash ? 'splashed_checkbox_background' : ''
             }`} style={{backgroundColor: props.background_color}} htmlFor={props.id}>
                 <input type='checkbox' id={props.id} defaultChecked={props.defaultChecked} onClick={(e) => {
                     const indicator = document.getElementById(`${props.id}_indicator`)

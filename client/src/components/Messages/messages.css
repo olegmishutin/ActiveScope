@@ -5,7 +5,7 @@
     min-height: 100svh;
     background: #313131;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-    z-index: 5;
+    z-index: 101;
     margin-left: -359px;
     padding: 14px;
     box-sizing: border-box;

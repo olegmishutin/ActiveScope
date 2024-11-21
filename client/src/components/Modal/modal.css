@@ -13,7 +13,7 @@
 }
 
 .show_modal {
-    z-index: 6;
+    z-index: 102;
     animation: show_modal_anim 0.5s;
 }
 
@@ -26,22 +26,22 @@
 @keyframes show_modal_anim {
     from {
         opacity: 0;
-        z-index: 5;
+        z-index: 101;
     }
     to {
         opacity: 1;
-        z-index: 6;
+        z-index: 102;
     }
 }
 
 @keyframes hide_modal_anim {
     from {
         opacity: 1;
-        z-index: 6;
+        z-index: 102;
     }
     to {
         opacity: 0;
-        z-index: 5;
+        z-index: 101;
     }
 }
 
