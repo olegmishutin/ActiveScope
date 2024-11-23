@@ -16,7 +16,9 @@ export function getDataByIDs(ids, isFormData, includeEmpty) {
                 }
             }
         } else {
-            if (element.value || (!element.value && includeEmpty)) {
+            if (element.type === 'checkbox'){
+                data[id instanceof Array ? id[1] : id] = element.checked
+            } else if (element.value || (!element.value && includeEmpty)) {
                 data[id instanceof Array ? id[1] : id] = element.value
             }
         }

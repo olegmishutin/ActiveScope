@@ -48,3 +48,18 @@
 .project_task_properties__list__element .default_button {
     height: 32px;
 }
+
+.project_task_properties_manage {
+    display: flex;
+    flex-direction: column;
+}
+
+.project_task_properties_manage__checkbox{
+    align-self: center;
+}
+
+.project_task_properties_manage__color {
+    width: 407px !important;
+    height: 139px !important;
+    margin: 8px 0;
+}

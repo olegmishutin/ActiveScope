@@ -3,7 +3,7 @@ import {useParams} from "react-router-dom";
 import ProjectBase from "../../components/ProjectBase/projectBase.jsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {DELETE, GET} from "../../utils/methods.jsx";
+import {DELETE, GET, POST} from "../../utils/methods.jsx";
 import {checkResponse} from "../../utils/response.jsx";
 import Button from "../../widgets/Button/button.jsx";
 import Filters from "../../components/Filters/filters.jsx";
@@ -12,7 +12,7 @@ import Dropdown from "../../widgets/Dropdown/dropdown.jsx";
 import Checkbox from "../../widgets/Checkbox/checkbox.jsx";
 import ListElement from "../../components/ListElement/listElement.jsx";
 import task_icon from '../../assets/images/project.svg'
-import {getFilters} from "../../utils/data.jsx";
+import {getDataByIDs, getFilters} from "../../utils/data.jsx";
 import ProjectTaskProperties from "../../components/ProjectTaskProperties/projectTaskProperties.jsx";
 
 export default function ProjectTasks() {
@@ -22,6 +22,9 @@ export default function ProjectTasks() {
     const [members, setMembers] = useState([])
     const [statuses, setStatuses] = useState([])
     const [priorities, setPriorities] = useState([])
+
+    const [statusesStatus, setStatusesStatus] = useState('')
+    const [prioritiesStatus, setPrioritiesStatus] = useState('')
 
     function getStatuses() {
         axios(GET(`/api/projects/${id}/statuses/`)).then(
@@ -83,6 +86,41 @@ export default function ProjectTasks() {
         getPriorities()
         getTasks()
     }, [id]);
+
+    function createStatus(color) {
+        const data = getDataByIDs([
+            ['status_name', 'name'],
+            ['status_is_means_completeness', 'is_means_completeness']
+        ])
+        data['color'] = color
+
+        axios(POST(`/api/projects/${id}/statuses/`, data)).then(
+            (response) => {
+                checkResponse(response, setStatusesStatus, 'Успешно создали статус!', () => {
+                    getStatuses()
+                })
+            }
+        ).catch((error) => {
+            checkResponse(error.response, setStatusesStatus, null, null, null, 'status')
+        })
+    }
+
+    function createPriority(color) {
+        const data = getDataByIDs([
+            ['priority_name', 'name']
+        ])
+        data['color'] = color
+
+        axios(POST(`/api/projects/${id}/priorities/`, data)).then(
+            (response) => {
+                checkResponse(response, setPrioritiesStatus, 'Успешно создали приоритет!', () => {
+                    getPriorities()
+                })
+            }
+        ).catch((error) => {
+            checkResponse(error.response, setPrioritiesStatus, null, null, null, 'priority')
+        })
+    }
 
     function deleteStatus(status_id) {
         axios(DELETE(`/api/projects/${id}/statuses/${status_id}/`)).then(
@@ -239,9 +277,11 @@ export default function ProjectTasks() {
                 </ul>
             </div>
             <ProjectTaskProperties id='project_statuses' whatCreate='статус' data={statuses} rounded={true}
-                                   deleteFunc={deleteStatus}/>
+                                   deleteFunc={deleteStatus} prefix='status' createFunc={createStatus}
+                                   status={statusesStatus} statusSetter={setStatusesStatus}/>
             <ProjectTaskProperties id='project_priorities' whatCreate='приоритет' data={priorities}
-                                   deleteFunc={deletePriority}/>
+                                   deleteFunc={deletePriority} prefix='priority' createFunc={createPriority}
+                                   status={prioritiesStatus} statusSetter={setPrioritiesStatus}/>
         </>
     )
 }
