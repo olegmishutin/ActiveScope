@@ -9,7 +9,7 @@ export default function Dropdown(props){
                     <summary className="dropdown__header">
                         {props.name}
                     </summary>
-                    <div className="dropdown__content">
+                    <div className="dropdown__content" id={props.id}>
                         {props.children}
                     </div>
                 </details>

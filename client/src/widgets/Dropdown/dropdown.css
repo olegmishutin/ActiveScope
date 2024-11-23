@@ -25,6 +25,10 @@
     max-height: unset;
 }
 
+.dropdown:hover{
+    cursor: pointer;
+}
+
 .dropdown__content {
     width: 154px;
     max-height: 200px;

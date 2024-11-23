@@ -44,6 +44,27 @@ export function getFilters(url, filtersIds) {
             } else {
                 urlParams += `&${id}=${filter.value}`
             }
+        } else if (filter.id.includes('dropdown_')) {
+            const filter_dict = {}
+
+            filter.childNodes.forEach((child) => {
+                child.childNodes.forEach((sub_child) => {
+                    if (sub_child.type === 'checkbox') {
+                        const splited_id = sub_child.id.split('_')
+
+                        if (typeof filter_dict[splited_id[1]] === 'undefined') {
+                            filter_dict[splited_id[1]] = []
+                        }
+
+                        if (sub_child.checked) {
+                            filter_dict[splited_id[1]].push(splited_id[2])
+                        }
+                    }
+                })
+            })
+            for (const [key, value] of Object.entries(filter_dict)) {
+                urlParams += `&${key}=${value}`
+            }
         }
     })
     urlParams += `&ordering=${ordering.join()}`

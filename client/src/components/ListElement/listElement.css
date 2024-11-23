@@ -82,6 +82,12 @@
     height: 32px;
 }
 
+.list_element__additional_buttons {
+    margin-top: 10px;
+    gap: 13px;
+    display: flex;
+}
+
 @media (max-width: 768px) {
     .list_element__details .base_list {
         padding-left: 0;

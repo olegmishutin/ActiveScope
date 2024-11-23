@@ -3,3 +3,24 @@
     gap: 13px;
     margin-bottom: 15px;
 }
+
+.project_tasks_list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.project_task_status,
+.project_task_priority {
+    padding: 2.5px 15px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.project_task_status {
+    border-radius: 10px;
+}
+
+.project_task_priority {
+    border-radius: 5px;
+}

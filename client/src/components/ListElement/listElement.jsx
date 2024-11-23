@@ -16,6 +16,9 @@ export default function ListElement(props) {
                     </div>
                     {props.children}
                 </div>
+                <div className="list_element__additional_buttons">
+                    {props.additionalButtons}
+                </div>
                 <div className="list_element__description">
                     <p className='list_element__description__text'>{props.text}</p>
                 </div>

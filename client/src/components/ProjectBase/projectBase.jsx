@@ -19,16 +19,31 @@ export default function ProjectBase(props) {
                         <div className="project">
                             <h1 className='project__info__name' id='project_page_name'>{project.name}</h1>
                             <div className="project__info">
-                                <div className="project__info__incolumn">
-                                    <p className='project__info__text'>
-                                        <b>Дата начала:</b> <span
-                                        id='project_page_start_date'>{project.start_date}</span>
-                                    </p>
-                                    <p className='project__info__text'>
-                                        <b>Дата окончания:</b> <span
-                                        id='project_page_end_date'>{project.end_date}</span>
-                                    </p>
-                                </div>
+                                {
+                                    project.start_date || project.end_date ?
+                                        <>
+                                            <div className="project__info__incolumn">
+                                                {
+                                                    project.start_date ?
+                                                        <>
+                                                            <p className='project__info__text'>
+                                                                <b>Дата начала:</b> <span
+                                                                id='project_page_start_date'>{project.start_date}</span>
+                                                            </p>
+                                                        </> : ''
+                                                }
+                                                {
+                                                    project.end_date ?
+                                                        <>
+                                                            <p className='project__info__text'>
+                                                                <b>Дата окончания:</b> <span
+                                                                id='project_page_end_date'>{project.end_date}</span>
+                                                            </p>
+                                                        </> : ''
+                                                }
+                                            </div>
+                                        </> : ''
+                                }
                                 <div className="project__info__incolumn">
                                     <p className='project__info__text'>
                                         <b>Количество задач:</b> <span
