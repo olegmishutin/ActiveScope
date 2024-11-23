@@ -3,7 +3,7 @@ import {useParams} from "react-router-dom";
 import ProjectBase from "../../components/ProjectBase/projectBase.jsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {GET} from "../../utils/methods.jsx";
+import {DELETE, GET} from "../../utils/methods.jsx";
 import {checkResponse} from "../../utils/response.jsx";
 import Button from "../../widgets/Button/button.jsx";
 import Filters from "../../components/Filters/filters.jsx";
@@ -13,6 +13,7 @@ import Checkbox from "../../widgets/Checkbox/checkbox.jsx";
 import ListElement from "../../components/ListElement/listElement.jsx";
 import task_icon from '../../assets/images/project.svg'
 import {getFilters} from "../../utils/data.jsx";
+import ProjectTaskProperties from "../../components/ProjectTaskProperties/projectTaskProperties.jsx";
 
 export default function ProjectTasks() {
     let {id} = useParams()
@@ -21,6 +22,26 @@ export default function ProjectTasks() {
     const [members, setMembers] = useState([])
     const [statuses, setStatuses] = useState([])
     const [priorities, setPriorities] = useState([])
+
+    function getStatuses() {
+        axios(GET(`/api/projects/${id}/statuses/`)).then(
+            (response) => {
+                checkResponse(response, setStatuses, response.data)
+            }
+        ).catch((error) => {
+            checkResponse(error.response)
+        })
+    }
+
+    function getPriorities() {
+        axios(GET(`/api/projects/${id}/priorities/`)).then(
+            (response) => {
+                checkResponse(response, setPriorities, response.data)
+            }
+        ).catch((error) => {
+            checkResponse(error.response)
+        })
+    }
 
     function getTasks() {
         let url = `/api/projects/${id}/tasks/`
@@ -58,24 +79,42 @@ export default function ProjectTasks() {
             checkResponse(error.response)
         })
 
-        axios(GET(`/api/projects/${id}/statuses/`)).then(
-            (response) => {
-                checkResponse(response, setStatuses, response.data)
-            }
-        ).catch((error) => {
-            checkResponse(error.response)
-        })
-
-        axios(GET(`/api/projects/${id}/priorities/`)).then(
-            (response) => {
-                checkResponse(response, setPriorities, response.data)
-            }
-        ).catch((error) => {
-            checkResponse(error.response)
-        })
-
+        getStatuses()
+        getPriorities()
         getTasks()
     }, [id]);
+
+    function deleteStatus(status_id) {
+        axios(DELETE(`/api/projects/${id}/statuses/${status_id}/`)).then(
+            (response) => {
+                checkResponse(response, null, null, () => {
+                    getTasks()
+                    getStatuses()
+                })
+            }
+        ).catch((error) => {
+            checkResponse(error.response)
+        })
+    }
+
+    function deletePriority(priority_id) {
+        axios(DELETE(`/api/projects/${id}/priorities/${priority_id}/`)).then(
+            (response) => {
+                checkResponse(response, null, null, () => {
+                    getTasks()
+                    getPriorities()
+                })
+            }
+        ).catch((error) => {
+            checkResponse(error.response)
+        })
+    }
+
+    function openModal(id) {
+        const modal = document.getElementById(id)
+        modal.classList.add('show_modal')
+        modal.classList.remove('hide_modal')
+    }
 
     return (
         <>
@@ -83,8 +122,14 @@ export default function ProjectTasks() {
             <div className="window_main_content">
                 <div className="project_task_manage_buttons">
                     <Button>Создать задачу</Button>
-                    <Button>Сатусы</Button>
-                    <Button>Приоритеты</Button>
+                    <Button onClick={() => {
+                        getStatuses()
+                        openModal('project_statuses')
+                    }}>Сатусы</Button>
+                    <Button onClick={() => {
+                        getPriorities()
+                        openModal('project_priorities')
+                    }}>Приоритеты</Button>
                 </div>
                 <Filters filterEvent={getTasks}>
                     <Textbox id='start_date' type='date' label='Дата начала'/>
@@ -193,6 +238,10 @@ export default function ProjectTasks() {
                     })}
                 </ul>
             </div>
+            <ProjectTaskProperties id='project_statuses' whatCreate='статус' data={statuses} rounded={true}
+                                   deleteFunc={deleteStatus}/>
+            <ProjectTaskProperties id='project_priorities' whatCreate='приоритет' data={priorities}
+                                   deleteFunc={deletePriority}/>
         </>
     )
 }
