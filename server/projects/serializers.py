@@ -133,4 +133,4 @@ class AdminProjectsSerializer(ProjectBaseSerializer):
 class ShortProjectsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ['id', 'icon', 'name']
+        fields = ['id', 'icon', 'name', 'owner']

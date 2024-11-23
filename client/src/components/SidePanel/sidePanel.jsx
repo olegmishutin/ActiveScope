@@ -243,14 +243,18 @@ export default function SidePanel() {
                                             </div>
                                             <p className='panel__main__selector__name'
                                                id={`project_${value.id}_name`}>{value.name}</p>
-                                            <button className="panel__main__selector__icon project_edition_dots"
-                                                    onClick={() => {
-                                                        openModal('Изменить', () => {
-                                                            editProject(value.id)
-                                                        }, null, null, value.id)
-                                                    }}>
-                                                <img src={threeDots} alt='edit' loading='lazy'/>
-                                            </button>
+                                            {
+                                                value.owner === user.id ? <>
+                                                    <button className="panel__main__selector__icon project_edition_dots"
+                                                            onClick={() => {
+                                                                openModal('Изменить', () => {
+                                                                    editProject(value.id)
+                                                                }, null, null, value.id)
+                                                            }}>
+                                                        <img src={threeDots} alt='edit' loading='lazy'/>
+                                                    </button>
+                                                </> : ''
+                                            }
                                         </Link>
                                     </>
                                 )
