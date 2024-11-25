@@ -9,23 +9,42 @@ import {useState} from "react";
 export default function ProjectTaskProperties(props) {
     const [color, setColor] = useState('#000000')
 
+    function buttonClick(func, text, textboxValue, checkboxChecked) {
+        const modal = document.getElementById(`${props.id}_manage`)
+        modal.classList.add('show_modal')
+        modal.classList.remove('hide_modal')
+
+        const button = document.getElementById(`${props.id}_manage_button`)
+        button.textContent = text
+        button.onclick = () => {
+            let color = document.getElementById(`${props.id}_hex_color_value`).innerHTML
+            color = color.replace('#', '')
+            func(color)
+        }
+
+        const textbox = document.getElementById(`${props.prefix}_name`)
+        textbox.value = textboxValue
+
+        if (props.prefix === 'status') {
+            const checkbox = document.getElementById(`${props.prefix}_is_means_completeness`)
+            checkbox.checked = checkboxChecked
+
+            const checkboxIndicator = document.getElementById(`${props.prefix}_is_means_completeness_indicator`)
+            if (checkboxChecked) {
+                checkboxIndicator.classList.add('default_checkbox__checked')
+            } else {
+                checkboxIndicator.classList.remove('default_checkbox__checked')
+            }
+        }
+
+        props.statusSetter('')
+    }
+
     return (
         <>
             <Modal id={props.id} manageButtons={<>
                 <Button onClick={() => {
-                    const modal = document.getElementById(`${props.id}_manage`)
-                    modal.classList.add('show_modal')
-                    modal.classList.remove('hide_modal')
-
-                    const button = document.getElementById(`${props.id}_manage_button`)
-                    button.textContent = 'Создать'
-                    button.onclick = () => {
-                        let color = document.getElementById(`${props.id}_hex_color_value`).innerHTML
-                        color = color.replace('#', '')
-                        props.createFunc(color)
-                    }
-
-                    props.statusSetter('')
+                    buttonClick(props.createFunc, 'Создать', '', false)
                 }}>Создать {props.whatCreate}</Button>
             </>}>
                 <ul className='project_task_properties__list'>
@@ -38,7 +57,12 @@ export default function ProjectTaskProperties(props) {
                                             <span className={props.rounded ? 'rounded' : ''}
                                                   style={{backgroundColor: `#${value.color}`}}></span>
                                         </p>
-                                        <Button className='light_button'>Изменить</Button>
+                                        <Button className='light_button' onClick={() => {
+                                            setColor(`#${value.color}`)
+                                            buttonClick((color) => {
+                                                props.editFunc(value.id, color)
+                                            }, 'Изменить', value.name, value.is_means_completeness)
+                                        }}>Изменить</Button>
                                         <Button className='red_button' onClick={() => {
                                             props.deleteFunc(value.id)
                                         }}>Удалить</Button>

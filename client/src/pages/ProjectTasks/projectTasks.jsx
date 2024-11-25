@@ -3,7 +3,7 @@ import {useParams} from "react-router-dom";
 import ProjectBase from "../../components/ProjectBase/projectBase.jsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {DELETE, GET, POST} from "../../utils/methods.jsx";
+import {DELETE, GET, POST, PUT} from "../../utils/methods.jsx";
 import {checkResponse} from "../../utils/response.jsx";
 import Button from "../../widgets/Button/button.jsx";
 import Filters from "../../components/Filters/filters.jsx";
@@ -105,6 +105,24 @@ export default function ProjectTasks() {
         })
     }
 
+    function editStatus(statusId, color) {
+        const data = getDataByIDs([
+            ['status_name', 'name'],
+            ['status_is_means_completeness', 'is_means_completeness']
+        ])
+        data['color'] = color
+
+        axios(PUT(`/api/projects/${id}/statuses/${statusId}/`, data)).then(
+            (response) => {
+                checkResponse(response, setStatusesStatus, 'Успешно изменили статус!', () => {
+                    getStatuses()
+                })
+            }
+        ).catch((error) => {
+            checkResponse(error.response, setStatusesStatus, null, null, null, 'status')
+        })
+    }
+
     function createPriority(color) {
         const data = getDataByIDs([
             ['priority_name', 'name']
@@ -114,6 +132,23 @@ export default function ProjectTasks() {
         axios(POST(`/api/projects/${id}/priorities/`, data)).then(
             (response) => {
                 checkResponse(response, setPrioritiesStatus, 'Успешно создали приоритет!', () => {
+                    getPriorities()
+                })
+            }
+        ).catch((error) => {
+            checkResponse(error.response, setPrioritiesStatus, null, null, null, 'priority')
+        })
+    }
+
+    function editPriority(priorityId, color){
+        const data = getDataByIDs([
+            ['priority_name', 'name']
+        ])
+        data['color'] = color
+
+        axios(PUT(`/api/projects/${id}/priorities/${priorityId}/`, data)).then(
+            (response) => {
+                checkResponse(response, setPrioritiesStatus, 'Успешно изменили приоритет!', () => {
                     getPriorities()
                 })
             }
@@ -278,10 +313,10 @@ export default function ProjectTasks() {
             </div>
             <ProjectTaskProperties id='project_statuses' whatCreate='статус' data={statuses} rounded={true}
                                    deleteFunc={deleteStatus} prefix='status' createFunc={createStatus}
-                                   status={statusesStatus} statusSetter={setStatusesStatus}/>
+                                   status={statusesStatus} statusSetter={setStatusesStatus} editFunc={editStatus}/>
             <ProjectTaskProperties id='project_priorities' whatCreate='приоритет' data={priorities}
                                    deleteFunc={deletePriority} prefix='priority' createFunc={createPriority}
-                                   status={prioritiesStatus} statusSetter={setPrioritiesStatus}/>
+                                   status={prioritiesStatus} statusSetter={setPrioritiesStatus} editFunc={editPriority}/>
         </>
     )
 }
