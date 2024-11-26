@@ -6,7 +6,13 @@ export function getDataByIDs(ids, isFormData, includeEmpty) {
 
         if (isFormData) {
             if (element.type === 'file' && element.files.length) {
-                data.append(id instanceof Array ? id[1] : id, element.files[0])
+                if (element.multiple){
+                    for (let i=0; i < element.files.length; i++){
+                        data.append(id instanceof Array ? id[1] : id, element.files[i])
+                    }
+                } else {
+                    data.append(id instanceof Array ? id[1] : id, element.files[0])
+                }
                 element.value = ''
             } else if (element.type === 'checkbox') {
                 data.append(id instanceof Array ? id[1] : id, element.checked)

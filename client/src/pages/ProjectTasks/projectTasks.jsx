@@ -14,6 +14,10 @@ import ListElement from "../../components/ListElement/listElement.jsx";
 import task_icon from '../../assets/images/project.svg'
 import {getDataByIDs, getFilters} from "../../utils/data.jsx";
 import ProjectTaskProperties from "../../components/ProjectTaskProperties/projectTaskProperties.jsx";
+import Modal from "../../components/Modal/modal.jsx";
+import Selection from "../../widgets/Selection/selection.jsx";
+import FilePicker from "../../widgets/FilePicker/filePicker.jsx";
+import {getDateFromInput} from "../../utils/date.jsx";
 
 export default function ProjectTasks() {
     let {id} = useParams()
@@ -25,6 +29,9 @@ export default function ProjectTasks() {
 
     const [statusesStatus, setStatusesStatus] = useState('')
     const [prioritiesStatus, setPrioritiesStatus] = useState('')
+
+    const [selectionMembers, setSelectionMembers] = useState([])
+    const [taskStatus, setTaskStatus] = useState('')
 
     function getStatuses() {
         axios(GET(`/api/projects/${id}/statuses/`)).then(
@@ -76,7 +83,17 @@ export default function ProjectTasks() {
 
         axios(GET(`/api/projects/${id}/members/`)).then(
             (response) => {
-                checkResponse(response, setMembers, response.data)
+                checkResponse(response, setMembers, response.data, () => {
+                    const data = []
+
+                    response.data.map((member) => {
+                        data.push({
+                            id: member.id,
+                            name: member.get_full_name
+                        })
+                    })
+                    setSelectionMembers(data)
+                })
             }
         ).catch((error) => {
             checkResponse(error.response)
@@ -140,7 +157,7 @@ export default function ProjectTasks() {
         })
     }
 
-    function editPriority(priorityId, color){
+    function editPriority(priorityId, color) {
         const data = getDataByIDs([
             ['priority_name', 'name']
         ])
@@ -183,6 +200,48 @@ export default function ProjectTasks() {
         })
     }
 
+    function createTask() {
+        function sendFiles(task_id){
+            if (task_id !== null) {
+                const formData = getDataByIDs([
+                    ['project_task_file', 'uploaded_files']
+                ], true)
+
+                axios(POST(`/api/projects/${id}/tasks/${task_id}/files/`, formData)).then(
+                    (response) => {
+                        checkResponse(response)
+                    }
+                ).catch((error) => {
+                    checkResponse(error.response)
+                })
+            }
+        }
+
+        const data = getDataByIDs([
+            ['project_task_name', 'name'],
+            ['project_task_status', 'status_id'],
+            ['project_task_start_date', 'start_date'],
+            ['project_task_priority', 'priority_id'],
+            ['project_task_end_date', 'end_date'],
+            ['project_task_executor', 'executor_id'],
+            ['project_task_description', 'description'],
+        ])
+
+        data['start_date'] = getDateFromInput(data['start_date'])
+        data['end_date'] = getDateFromInput(data['end_date'])
+
+        axios(POST(`/api/projects/${id}/tasks/`, data)).then(
+            (response) => {
+                checkResponse(response, setTaskStatus, 'Успешно создали задачу!', () => {
+                    sendFiles(response.data.id)
+                    getTasks()
+                })
+            }
+        ).catch((error) => {
+            checkResponse(error.response, setTaskStatus, null, null, null, 'project_task')
+        })
+    }
+
     function openModal(id) {
         const modal = document.getElementById(id)
         modal.classList.add('show_modal')
@@ -194,7 +253,15 @@ export default function ProjectTasks() {
             <ProjectBase project={project}/>
             <div className="window_main_content">
                 <div className="project_task_manage_buttons">
-                    <Button>Создать задачу</Button>
+                    <Button onClick={() => {
+                        const modal = document.getElementById('project_task_management')
+                        modal.classList.add('show_modal')
+                        modal.classList.remove('hide_modal')
+
+                        const button = document.getElementById('project_task_management_manage_button')
+                        button.textContent = 'Создать'
+                        button.onclick = createTask
+                    }}>Создать задачу</Button>
                     <Button onClick={() => {
                         getStatuses()
                         openModal('project_statuses')
@@ -316,7 +383,31 @@ export default function ProjectTasks() {
                                    status={statusesStatus} statusSetter={setStatusesStatus} editFunc={editStatus}/>
             <ProjectTaskProperties id='project_priorities' whatCreate='приоритет' data={priorities}
                                    deleteFunc={deletePriority} prefix='priority' createFunc={createPriority}
-                                   status={prioritiesStatus} statusSetter={setPrioritiesStatus} editFunc={editPriority}/>
+                                   status={prioritiesStatus} statusSetter={setPrioritiesStatus}
+                                   editFunc={editPriority}/>
+            <Modal id='project_task_management' status={taskStatus} manageButtons={<>
+                <Button id='project_task_management_manage_button'/>
+            </>}>
+                <div className="project_task_management">
+                    <div className="project_task_management__inline">
+                        <div className="project_task_management__column">
+                            <Textbox label='Название' id='project_task_name' isRequired={true}/>
+                            <Selection id='project_task_status' data={statuses}>Статус</Selection>
+                        </div>
+                        <div className="project_task_management__column">
+                            <Textbox type='date' label='Дата начала' id='project_task_start_date'/>
+                            <Selection id='project_task_priority' data={priorities}>Приоритет</Selection>
+                        </div>
+                        <div className="project_task_management__column">
+                            <Textbox type='date' label='Дата окончания' id='project_task_end_date'/>
+                            <FilePicker id='project_task_file' multiple={true}>Загрузить файлы</FilePicker>
+                        </div>
+                    </div>
+                    <Selection id='project_task_executor' data={selectionMembers}>Исполнитель</Selection>
+                    <Textbox type='textarea' id='project_task_description'
+                             placeholder='Краткое описание для задачи:'/>
+                </div>
+            </Modal>
         </>
     )
 }

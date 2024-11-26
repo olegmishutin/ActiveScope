@@ -56,3 +56,7 @@
     width: unset;
     height: unset;
 }
+
+.default_checkbox_radio__background {
+    border-radius: 50%;
+}

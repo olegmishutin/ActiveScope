@@ -24,3 +24,39 @@
 .project_task_priority {
     border-radius: 5px;
 }
+
+.project_task_management,
+.project_task_management__column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.project_task_management__column {
+    justify-content: flex-end;
+}
+
+.project_task_management {
+    max-width: 691px;
+}
+
+.project_task_management__inline {
+    display: flex;
+    gap: 14px;
+}
+
+.project_task_management .textbox,
+.project_task_management .default_file_picker,
+.project_task_management .default_selection {
+    width: 100%;
+}
+
+.project_task_management .default_selection .default_selection__select {
+    max-width: 100%;
+    width: 100%;
+}
+
+.project_task_management .textarea {
+    width: 100%;
+    min-height: 106px;
+}
