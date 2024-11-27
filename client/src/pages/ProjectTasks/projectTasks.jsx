@@ -17,7 +17,7 @@ import ProjectTaskProperties from "../../components/ProjectTaskProperties/projec
 import Modal from "../../components/Modal/modal.jsx";
 import Selection from "../../widgets/Selection/selection.jsx";
 import FilePicker from "../../widgets/FilePicker/filePicker.jsx";
-import {getDateFromInput} from "../../utils/date.jsx";
+import {getDateFromInput, getDateFromRequest} from "../../utils/date.jsx";
 
 export default function ProjectTasks() {
     let {id} = useParams()
@@ -200,8 +200,8 @@ export default function ProjectTasks() {
         })
     }
 
-    function createTask() {
-        function sendFiles(task_id){
+    function manageTask(taskId) {
+        function sendFiles(task_id) {
             if (task_id !== null) {
                 const formData = getDataByIDs([
                     ['project_task_file', 'uploaded_files']
@@ -225,14 +225,14 @@ export default function ProjectTasks() {
             ['project_task_end_date', 'end_date'],
             ['project_task_executor', 'executor_id'],
             ['project_task_description', 'description'],
-        ])
+        ], false, true)
 
         data['start_date'] = getDateFromInput(data['start_date'])
         data['end_date'] = getDateFromInput(data['end_date'])
 
-        axios(POST(`/api/projects/${id}/tasks/`, data)).then(
+        axios(taskId ? PUT(`/api/projects/${id}/tasks/${taskId}/`, data) : POST(`/api/projects/${id}/tasks/`, data)).then(
             (response) => {
-                checkResponse(response, setTaskStatus, 'Успешно создали задачу!', () => {
+                checkResponse(response, setTaskStatus, taskId ? 'Успешно изменили задачу!' : 'Успешно создали задачу!', () => {
                     sendFiles(response.data.id)
                     getTasks()
                 })
@@ -248,19 +248,53 @@ export default function ProjectTasks() {
         modal.classList.remove('hide_modal')
     }
 
+    function openTaskManagementModal(name, status, startDate, priority, endDate, executor, description, onclick) {
+        openModal('project_task_management')
+
+        const button = document.getElementById('project_task_management_manage_button')
+        button.textContent = 'Создать'
+        button.onclick = onclick
+
+        const taskName = document.getElementById('project_task_name')
+        const taskStatus = document.getElementById('project_task_status')
+        const taskStartDate = document.getElementById('project_task_start_date')
+        const taskPriority = document.getElementById('project_task_priority')
+        const taskEndDate = document.getElementById('project_task_end_date')
+        const taskExecutor = document.getElementById('project_task_executor')
+        const taskDescription = document.getElementById('project_task_description')
+
+        taskName.value = name
+        taskStatus.value = status
+        taskStartDate.value = startDate
+        taskPriority.value = priority
+        taskEndDate.value = endDate
+        taskExecutor.value = executor
+        taskDescription.value = description
+    }
+
     return (
         <>
             <ProjectBase project={project}/>
             <div className="window_main_content">
                 <div className="project_task_manage_buttons">
                     <Button onClick={() => {
-                        const modal = document.getElementById('project_task_management')
-                        modal.classList.add('show_modal')
-                        modal.classList.remove('hide_modal')
+                        let status = ''
+                        let priority = ''
+                        let executor = ''
 
-                        const button = document.getElementById('project_task_management_manage_button')
-                        button.textContent = 'Создать'
-                        button.onclick = createTask
+                        if (statuses.length > 0) {
+                            status = statuses[0].id
+                        }
+                        if (priorities.length > 0) {
+                            priority = priorities[0].id
+                        }
+                        if (members.length > 0) {
+                            executor = members[0].id
+                        }
+                        setTaskStatus('')
+                        openTaskManagementModal('', status, '', priority, '', executor, '', () => {
+                            manageTask()
+                        })
                     }}>Создать задачу</Button>
                     <Button onClick={() => {
                         getStatuses()
@@ -317,9 +351,35 @@ export default function ProjectTasks() {
                             <>
                                 <ListElement defaultIcon={task_icon} headerText={task.name} text={task.description}
                                              additionalButtons={<>
-                                                 <Button className='light_button'>Комментарии</Button>
                                                  <Button className='light_button'>Файлы</Button>
-                                                 <Button className='light_button'>Изменить</Button>
+                                                 <Button className='light_button' onClick={() => {
+                                                     let status = ''
+                                                     let priority = ''
+                                                     let executor = ''
+
+                                                     if (statuses.length > 0) {
+                                                         status = statuses[0].id
+                                                     }
+                                                     if (priorities.length > 0) {
+                                                         priority = priorities[0].id
+                                                     }
+                                                     if (members.length > 0) {
+                                                         executor = members[0].id
+                                                     }
+                                                     setTaskStatus('')
+                                                     openTaskManagementModal(
+                                                         task.name,
+                                                         task.status ? task.status.id : status,
+                                                         getDateFromRequest(task.start_date),
+                                                         task.priority ? task.priority.id : priority,
+                                                         getDateFromRequest(task.end_date),
+                                                         task.executor ? members.filter((member) => member.email === task.executor)[0].id : executor,
+                                                         task.description,
+                                                         () => {
+                                                             manageTask(task.id)
+                                                         }
+                                                     )
+                                                 }}>Изменить</Button>
                                              </>}>
                                     {
                                         task.executor ?

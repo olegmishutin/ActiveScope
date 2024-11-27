@@ -17,6 +17,11 @@
     position: relative;
 }
 
+.dropdown__header {
+    font-size: 14px;
+    font-weight: 500;
+}
+
 .dropdown[open] .dropdown__header {
     margin-bottom: 12px;
 }
@@ -26,7 +31,7 @@
     max-height: unset;
 }
 
-.dropdown:hover{
+.dropdown:hover {
     cursor: pointer;
 }
 
@@ -47,7 +52,7 @@
 }
 
 @media (max-width: 425px) {
-    .dropdown{
+    .dropdown {
         background-color: #313131;
     }
 }

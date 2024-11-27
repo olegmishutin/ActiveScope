@@ -4,28 +4,30 @@ export function getDataByIDs(ids, isFormData, includeEmpty) {
     ids.forEach((id) => {
         let element = id instanceof Array ? document.getElementById(id[0]) : document.getElementById(id)
 
-        if (isFormData) {
-            if (element.type === 'file' && element.files.length) {
-                if (element.multiple){
-                    for (let i=0; i < element.files.length; i++){
-                        data.append(id instanceof Array ? id[1] : id, element.files[i])
+        if (element) {
+            if (isFormData) {
+                if (element.type === 'file' && element.files.length) {
+                    if (element.multiple) {
+                        for (let i = 0; i < element.files.length; i++) {
+                            data.append(id instanceof Array ? id[1] : id, element.files[i])
+                        }
+                    } else {
+                        data.append(id instanceof Array ? id[1] : id, element.files[0])
                     }
+                    element.value = ''
+                } else if (element.type === 'checkbox') {
+                    data.append(id instanceof Array ? id[1] : id, element.checked)
                 } else {
-                    data.append(id instanceof Array ? id[1] : id, element.files[0])
+                    if (element.value || (!element.value && includeEmpty)) {
+                        data.append(id instanceof Array ? id[1] : id, element.value)
+                    }
                 }
-                element.value = ''
-            } else if (element.type === 'checkbox') {
-                data.append(id instanceof Array ? id[1] : id, element.checked)
             } else {
-                if (element.value || (!element.value && includeEmpty)) {
-                    data.append(id instanceof Array ? id[1] : id, element.value)
+                if (element.type === 'checkbox') {
+                    data[id instanceof Array ? id[1] : id] = element.checked
+                } else if (element.value || (!element.value && includeEmpty)) {
+                    data[id instanceof Array ? id[1] : id] = element.value
                 }
-            }
-        } else {
-            if (element.type === 'checkbox'){
-                data[id instanceof Array ? id[1] : id] = element.checked
-            } else if (element.value || (!element.value && includeEmpty)) {
-                data[id instanceof Array ? id[1] : id] = element.value
             }
         }
         const errorElement = document.getElementById(`${id instanceof Array ? id[0] : id}_error`)
