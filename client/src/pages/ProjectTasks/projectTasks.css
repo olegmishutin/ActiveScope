@@ -60,3 +60,45 @@
     width: 100%;
     min-height: 106px;
 }
+
+.project_task_files__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.project_task_files__list__file {
+    display: flex;
+    background-color: #414141;
+    padding: 8px;
+    border-radius: 10px;
+    align-items: center;
+}
+
+.project_task_files__list__file__info {
+    max-width: 300px;
+    overflow: hidden;
+}
+
+.project_task_files__list__file__info h4 {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 5px;
+    white-space: nowrap;
+}
+
+.project_task_files__list__file__info p {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.project_task_files__list__file .default_button {
+    max-height: 32px;
+    margin-left: 8px;
+}
+
+.project_task_files__list__file a {
+    margin-left: 25px !important;
+    display: flex;
+    align-items: center;
+}

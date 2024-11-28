@@ -33,6 +33,9 @@ export default function ProjectTasks() {
     const [selectionMembers, setSelectionMembers] = useState([])
     const [taskStatus, setTaskStatus] = useState('')
 
+    const [taskFiles, setTaskFiles] = useState([])
+    const [taskId, setTaskId] = useState(null)
+
     function getStatuses() {
         axios(GET(`/api/projects/${id}/statuses/`)).then(
             (response) => {
@@ -200,23 +203,27 @@ export default function ProjectTasks() {
         })
     }
 
-    function manageTask(taskId) {
-        function sendFiles(task_id) {
-            if (task_id !== null) {
-                const formData = getDataByIDs([
-                    ['project_task_file', 'uploaded_files']
-                ], true)
+    function sendFiles(task_id, fromModal) {
+        if (task_id !== null) {
+            const formData = getDataByIDs([
+                [fromModal ? 'project_task_files_uploaded_files' : 'project_task_file', 'uploaded_files']
+            ], true)
 
-                axios(POST(`/api/projects/${id}/tasks/${task_id}/files/`, formData)).then(
-                    (response) => {
-                        checkResponse(response)
-                    }
-                ).catch((error) => {
-                    checkResponse(error.response)
-                })
-            }
+            axios(POST(`/api/projects/${id}/tasks/${task_id}/files/`, formData)).then(
+                (response) => {
+                    checkResponse(response, null, null, () => {
+                        if (fromModal) {
+                            getTaskFiles(task_id)
+                        }
+                    })
+                }
+            ).catch((error) => {
+                checkResponse(error.response)
+            })
         }
+    }
 
+    function manageTask(taskId) {
         const data = getDataByIDs([
             ['project_task_name', 'name'],
             ['project_task_status', 'status_id'],
@@ -233,12 +240,22 @@ export default function ProjectTasks() {
         axios(taskId ? PUT(`/api/projects/${id}/tasks/${taskId}/`, data) : POST(`/api/projects/${id}/tasks/`, data)).then(
             (response) => {
                 checkResponse(response, setTaskStatus, taskId ? 'Успешно изменили задачу!' : 'Успешно создали задачу!', () => {
-                    sendFiles(response.data.id)
+                    sendFiles(response.data.id, false)
                     getTasks()
                 })
             }
         ).catch((error) => {
             checkResponse(error.response, setTaskStatus, null, null, null, 'project_task')
+        })
+    }
+
+    function getTaskFiles(taskId) {
+        axios(GET(`/api/projects/${id}/tasks/${taskId}/files/`)).then(
+            (response) => {
+                checkResponse(response, setTaskFiles, response.data)
+            }
+        ).catch((error) => {
+            checkResponse(error.response)
         })
     }
 
@@ -351,7 +368,11 @@ export default function ProjectTasks() {
                             <>
                                 <ListElement defaultIcon={task_icon} headerText={task.name} text={task.description}
                                              additionalButtons={<>
-                                                 <Button className='light_button'>Файлы</Button>
+                                                 <Button className='light_button' onClick={() => {
+                                                     getTaskFiles(task.id)
+                                                     setTaskId(task.id)
+                                                     openModal('project_task_files')
+                                                 }}>Файлы</Button>
                                                  <Button className='light_button' onClick={() => {
                                                      let status = ''
                                                      let priority = ''
@@ -467,6 +488,42 @@ export default function ProjectTasks() {
                     <Textbox type='textarea' id='project_task_description'
                              placeholder='Краткое описание для задачи:'/>
                 </div>
+            </Modal>
+            <Modal id='project_task_files' manageButtons={<>
+                <FilePicker id='project_task_files_uploaded_files' multiple={true}>Файлы</FilePicker>
+                <Button id='project_task_files_load_button' onClick={() => {
+                    sendFiles(taskId, true)
+                }}>Загрузить</Button>
+            </>}>
+                <ul className='project_task_files__list'>
+                    {
+                        taskFiles.map((file) => {
+                            return (
+                                <>
+                                    <li className='project_task_files__list__file'>
+                                        <div className="project_task_files__list__file__info">
+                                            <h4>{file.file_name}</h4>
+                                            <p>Дата: {file.upload_date}</p>
+                                        </div>
+                                        <a className='default_button light_button'
+                                           href={`/api/projects/${id}/tasks/${file.task}/files/${file.id}/`}>Скачать</a>
+                                        <Button className='red_button' onClick={() => {
+                                            axios(DELETE(`/api/projects/${id}/tasks/${file.task}/files/${file.id}/`)).then(
+                                                (response) => {
+                                                    checkResponse(response, null, null, () => {
+                                                        getTaskFiles(file.task)
+                                                    })
+                                                }
+                                            ).catch((error) => {
+                                                checkResponse(error.response)
+                                            })
+                                        }}>Удалить</Button>
+                                    </li>
+                                </>
+                            )
+                        })
+                    }
+                </ul>
             </Modal>
         </>
     )

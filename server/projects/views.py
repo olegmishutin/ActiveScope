@@ -112,10 +112,14 @@ class PrioritiesViewSet(BaseViewSet):
 
 class TaskFilesViewSet(TaskFilesBaseViewSet):
     serializer_class = serializers.TaskFilesSerializer
-    permission_classes = [IsAuthenticated, UserIsMemberOfProject]
 
     def get_queryset(self):
         return get_project_task_from_request(self.request, self.kwargs).files.all()
+
+    def get_permissions(self):
+        if self.action != 'retrieve':
+            return [IsAuthenticated(), UserIsMemberOfProject()]
+        return []
 
 
 class TaskCommentsView(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):

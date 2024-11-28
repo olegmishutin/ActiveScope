@@ -52,13 +52,16 @@ class TaskFilesBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = None
-        exclude = ['task']
+        fields = '__all__'
         extra_kwargs = {
             'file': {
                 'read_only': True
             },
             'upload_date': {
                 'format': '%d.%m.%Y %H:%M'
+            },
+            'task': {
+                'read_only': True
             }
         }
 
