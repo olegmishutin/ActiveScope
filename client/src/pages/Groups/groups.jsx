@@ -24,13 +24,18 @@ export default function Groups(props) {
 
     function getGroups() {
         let url = props.isAdmin ? '/api/admin_groups/' : '/api/groups/'
-        url = getFilters(url, [
+
+        const filters = [
             'min_members_count',
             'max_members_count',
             'ordering_members_count',
             'ordering_created_date',
-            'search'
-        ])
+        ]
+
+        if (props.isAdmin) {
+            filters.push('search')
+        }
+        url = getFilters(url, filters)
 
         axios(GET(url)).then(
             (response) => {
@@ -140,7 +145,7 @@ export default function Groups(props) {
                         <div className="group__search">
                             <Textbox id='search' className='group__search__textbox'
                                      placeholder='Поиск по группе или по email основателя'/>
-                            <Button onClick={getGroups}>Поиск</Button>
+                            <Button onClick={getGroups}>Искать</Button>
                         </div>
                     </> : <>
                         <div className="groups__creation">

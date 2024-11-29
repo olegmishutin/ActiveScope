@@ -29,7 +29,7 @@ export default function ListElement(props) {
                                 <div className="list_element__details__summary__icon">
                                     <img src={detailsIcon} alt='icon' loading='lazy'/>
                                 </div>
-                                Участники
+                                {props.detailName ? props.detailName : 'Участники'}
                             </summary>
                             {props.detail}
                         </details>

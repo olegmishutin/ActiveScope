@@ -13,6 +13,7 @@ import Groups from "./pages/Groups/groups.jsx"
 import ProjectTasks from "./pages/ProjectTasks/projectTasks.jsx";
 import ProjectMembers from "./pages/ProjectMembers/projectMembers.jsx";
 import ProjectDescription from "./pages/ProjectDescription/projectDescription.jsx";
+import AdminProjects from "./pages/AdminProjects/adminProjects.jsx";
 
 const router = createBrowserRouter([
     {
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
             {
                 path: 'project/:id/description',
                 element: <ProjectDescription/>
+            },
+            {
+                path: 'admin/projects/',
+                element: <AdminProjects/>
             },
             {
                 path: '404/',

@@ -1,0 +1,23 @@
+.admin_projects__search {
+    display: flex;
+    gap: 13px;
+    margin-bottom: 15px;
+}
+
+.admin_projects__search .textbox {
+    width: 865px;
+}
+
+.admin_projects__search__textbox {
+    width: 100%;
+}
+
+.admin_projects__filters__textbox {
+    max-width: 341px;
+}
+
+.admin_projects__list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}

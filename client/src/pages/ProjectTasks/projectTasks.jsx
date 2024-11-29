@@ -1,5 +1,5 @@
 import './projectTasks.css'
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import ProjectBase from "../../components/ProjectBase/projectBase.jsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
@@ -416,12 +416,10 @@ export default function ProjectTasks() {
                                     {
                                         task.executor ?
                                             <>
-                                                <p className='list_element__header__text'>
-                                                    Исполнитель: <span
-                                                    className='list_element__header__text__important'>
-                                                        {task.executor}
-                                                    </span>
-                                                </p>
+                                                <Link to={`/users/${task.executor_read_id}/`}
+                                                      className='list_element__header__text'>Исполнитель: <span
+                                                    className='list_element__header__text__important'>{task.executor}</span>
+                                                </Link>
                                             </> : ''
                                     }
                                     {

@@ -80,6 +80,7 @@ class TaskSerializer(TaskBaseSerializer, BaseSerializer):
     priority = PrioritySerializer(read_only=True)
 
     executor = serializers.ReadOnlyField(source='executor.email')
+    executor_read_id = serializers.ReadOnlyField(source='executor.id')
     executor_id = serializers.IntegerField(write_only=True, required=False)
 
     class Meta(TaskBaseSerializer.Meta, BaseSerializer.Meta):
@@ -121,6 +122,7 @@ class TaskCommentSerializer(serializers.ModelSerializer):
 
 class AdminProjectsTasksSerializer(serializers.ModelSerializer):
     executor = serializers.ReadOnlyField(source='executor.email')
+    executor_id = serializers.ReadOnlyField(source='executor.id')
 
     class Meta(TaskBaseSerializer.Meta, BaseSerializer.Meta):
         model = ProjectTask
@@ -128,6 +130,7 @@ class AdminProjectsTasksSerializer(serializers.ModelSerializer):
 
 class AdminProjectsSerializer(ProjectBaseSerializer):
     tasks = AdminProjectsTasksSerializer(many=True)
+    owner_id = serializers.ReadOnlyField(source='owner.id')
 
 
 class ShortProjectsSerializer(serializers.ModelSerializer):
