@@ -401,6 +401,17 @@ export default function ProjectTasks() {
                                                          }
                                                      )
                                                  }}>Изменить</Button>
+                                                 <Button className='red_button' onClick={() => {
+                                                     axios(DELETE(`/api/projects/${id}/tasks/${task.id}/`)).then(
+                                                         (response) => {
+                                                             checkResponse(response, null, null, () => {
+                                                                 getTasks()
+                                                             })
+                                                         }
+                                                     ).catch((error) => {
+                                                         checkResponse(error.response)
+                                                     })
+                                                 }}>Удалить</Button>
                                              </>}>
                                     {
                                         task.executor ?

@@ -28,7 +28,8 @@ export default function Groups(props) {
             'min_members_count',
             'max_members_count',
             'ordering_members_count',
-            'ordering_created_date'
+            'ordering_created_date',
+            'search'
         ])
 
         axios(GET(url)).then(
@@ -134,11 +135,21 @@ export default function Groups(props) {
     return (
         <>
             <div className="groups window_main_content">
-                <div className="groups__creation">
-                    <Button onClick={() => {
-                        openModal('Создать', createGroup, '', '')
-                    }}>Создать группу</Button>
-                </div>
+                {
+                    props.isAdmin ? <>
+                        <div className="group__search">
+                            <Textbox id='search' className='group__search__textbox'
+                                     placeholder='Поиск по группе или по email основателя'/>
+                            <Button onClick={getGroups}>Поиск</Button>
+                        </div>
+                    </> : <>
+                        <div className="groups__creation">
+                            <Button onClick={() => {
+                                openModal('Создать', createGroup, '', '')
+                            }}>Создать группу</Button>
+                        </div>
+                    </>
+                }
                 <Filters filterEvent={getGroups}>
                     <Textbox className='groups__filters__textbox' type='number' label='Минимальное кол-во участников'
                              min={0} id='min_members_count'/>
