@@ -6,7 +6,7 @@ import {useState, useEffect} from "react"
 import axios from "axios"
 import {GET, PUT, DELETE, POST} from "../../utils/methods.jsx"
 import {checkResponse} from "../../utils/response.jsx"
-import {getFilters, getDataByIDs} from "../../utils/data.jsx"
+import {getFilters, getDataByIDs, getImage} from "../../utils/data.jsx"
 import {getDateFromRequest, getDateFromInput} from "../../utils/date.jsx"
 
 import Header from "../../components/Header/header.jsx"
@@ -113,7 +113,7 @@ export default function Profile() {
 
                     if (response.data.photo) {
                         const panel_user_photo = document.getElementById('panel_user_photo')
-                        panel_user_photo.src = response.data.photo
+                        panel_user_photo.src = getImage(response.data.photo)
                     }
                     panel_user_name.textContent = response.data.full_name
                 })

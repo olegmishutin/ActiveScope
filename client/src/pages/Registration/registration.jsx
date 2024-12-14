@@ -25,7 +25,7 @@ export default function Registration() {
         ], false, false)
 
         if (data.birth_date) {
-            data.birth_date = getDateFromInput(birth_date)
+            data.birth_date = getDateFromInput(data.birth_date)
         }
 
         axios(POST('/api/registration/', data)).then(

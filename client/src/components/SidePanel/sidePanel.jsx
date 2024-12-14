@@ -24,7 +24,7 @@ import BackButton from "../../widgets/BackButton/backButton.jsx"
 import FilePicker from "../../widgets/FilePicker/filePicker.jsx";
 import Textbox from "../../widgets/Textbox/textbox.jsx";
 import Button from "../../widgets/Button/button.jsx";
-import {getDataByIDs} from "../../utils/data.jsx";
+import {getDataByIDs, getImage} from "../../utils/data.jsx";
 import {getDateFromRequest} from "../../utils/date.jsx";
 
 export default function SidePanel() {
@@ -95,15 +95,10 @@ export default function SidePanel() {
         axios(PUT(`/api/projects/${id}/`, data)).then(
             (response) => {
                 checkResponse(response, setProjectStatus, 'Проект изменен!', () => {
-                    setProjects(projects.map(project =>
-                        project.id === id ? response.data : project
-                    ))
-                    document.getElementById('project_page_name').textContent = response.data.name
-                    document.getElementById('project_page_start_date').textContent = response.data.start_date
-                    document.getElementById('project_page_end_date').textContent = response.data.end_date
-                    document.getElementById('project_page_total_tasks').textContent = response.data.total_tasks
-                    document.getElementById('project_page_completed_tasks').textContent = response.data.completed_tasks
-                    document.getElementById('project_page_description').textContent = response.data.description
+                    getProjects()
+                    if (window.location.href.includes(`/project/${id}/`)){
+                        window.location.reload()
+                    }
                 })
             }
         ).catch((error) => {
@@ -180,7 +175,7 @@ export default function SidePanel() {
                         <Link onClick={closePanelOnMobile} to={`/users/${user.id}`} className="panel__main__selector">
                             <div className="panel__main__selector__icon">
                                 <img className='panel__main__selector__icon__user' src={
-                                    user.photo ? user.photo : userIcon
+                                    user.photo ? getImage(user.photo) : userIcon
                                 } alt='user icon' loading='lazy' id='panel_user_photo'/>
                             </div>
                             <p className='panel__main__selector__name' id='panel_user_name'>{user.get_full_name}</p>
@@ -200,15 +195,9 @@ export default function SidePanel() {
                                     </div> : ''
                             }
                         </button>
-                        <Link onClick={closePanelOnMobile} to='' className="panel__main__selector">
-                            <div className="panel__main__selector__icon">
-                                <img src={userTasks} alt='icon'/>
-                            </div>
-                            <p className='panel__main__selector__name'>Мои задачи</p>
-                        </Link>
                     </div>
                     <div className="panel__main_box">
-                        <Link onClick={closePanelOnMobile} to='/users/' className="panel__main__selector">
+                        <Link onClick={closePanelOnMobile} to='/' className="panel__main__selector">
                             <div className="panel__main__selector__icon">
                                 <img src={loup} alt='icon'/>
                             </div>
@@ -238,7 +227,7 @@ export default function SidePanel() {
                                               className="panel__main__selector" id={`project_${value.id}`}>
                                             <div className="panel__main__selector__icon">
                                                 <img src={
-                                                    value.icon ? value.icon : projectIcon
+                                                    value.icon ? getImage(value.icon) : projectIcon
                                                 } alt='icon' loading='lazy'/>
                                             </div>
                                             <p className='panel__main__selector__name'

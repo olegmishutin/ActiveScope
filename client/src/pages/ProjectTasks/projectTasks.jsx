@@ -265,11 +265,11 @@ export default function ProjectTasks() {
         modal.classList.remove('hide_modal')
     }
 
-    function openTaskManagementModal(name, status, startDate, priority, endDate, executor, description, onclick) {
+    function openTaskManagementModal(buttonText, name, status, startDate, priority, endDate, executor, description, onclick) {
         openModal('project_task_management')
 
         const button = document.getElementById('project_task_management_manage_button')
-        button.textContent = 'Создать'
+        button.textContent = buttonText
         button.onclick = onclick
 
         const taskName = document.getElementById('project_task_name')
@@ -309,7 +309,7 @@ export default function ProjectTasks() {
                             executor = members[0].id
                         }
                         setTaskStatus('')
-                        openTaskManagementModal('', status, '', priority, '', executor, '', () => {
+                        openTaskManagementModal('Создать', '', status, '', priority, '', executor, '', () => {
                             manageTask()
                         })
                     }}>Создать задачу</Button>
@@ -389,6 +389,7 @@ export default function ProjectTasks() {
                                                      }
                                                      setTaskStatus('')
                                                      openTaskManagementModal(
+                                                         'Изменить',
                                                          task.name,
                                                          task.status ? task.status.id : status,
                                                          getDateFromRequest(task.start_date),

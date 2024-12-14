@@ -1,0 +1,43 @@
+services:
+  pgdb:
+    image: postgres:17.2
+    restart: always
+    container_name: 'pgdb'
+    environment:
+      POSTGRES_DB: 'active_scope'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: '123456'
+    volumes:
+      - pgdbdata:/var/lib/postgresql/data/
+    ports:
+      - '5432:5432'
+  redis:
+    image: redis:alpine
+    container_name: 'redis'
+    ports:
+      - '6379:6379'
+  server:
+    build: ./server
+    container_name: 'server'
+    command: >
+      sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8080"
+    volumes:
+      - .:/usr/src/app
+      - media:/usr/src/media
+    ports:
+      - '8080:8080'
+    depends_on:
+      - pgdb
+      - redis
+  client:
+    build: ./client
+    container_name: 'client'
+    command: 'npm run dev'
+    ports:
+      - '5174:5174'
+    depends_on:
+      - server
+
+volumes:
+  pgdbdata: {}
+  media: {}

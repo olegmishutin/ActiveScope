@@ -1,3 +1,7 @@
+export function getImage(url){
+    return url.replace('http://server:8080', '')
+}
+
 export function getDataByIDs(ids, isFormData, includeEmpty) {
     const data = isFormData ? new FormData() : {}
 
