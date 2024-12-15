@@ -24,6 +24,13 @@ services:
     volumes:
       - .:/usr/src/app
       - media:/usr/src/media
+    environment:
+      DOCKERIZED: 'True'
+      DB_NAME: 'active_scope'
+      DB_USER: 'postgres'
+      DB_PASSWORD: '123456'
+      DB_HOST: 'pgdb'
+      DB_PORT: '5432'
     ports:
       - '8080:8080'
     depends_on:
@@ -37,6 +44,32 @@ services:
       - '5174:5174'
     depends_on:
       - server
+  celery_worker:
+    build: ./server
+    container_name: 'celery_worker'
+    command: 'celery -A server worker -l INFO'
+    environment:
+      DOCKERIZED: 'True'
+      DB_NAME: 'active_scope'
+      DB_USER: 'postgres'
+      DB_PASSWORD: '123456'
+      DB_HOST: 'pgdb'
+      DB_PORT: '5432'
+    depends_on:
+      - server
+  celery_beat:
+    build: ./server
+    container_name: 'celery_beat'
+    command: 'celery -A server beat -l INFO'
+    environment:
+      DOCKERIZED: 'True'
+      DB_NAME: 'active_scope'
+      DB_USER: 'postgres'
+      DB_PASSWORD: '123456'
+      DB_HOST: 'pgdb'
+      DB_PORT: '5432'
+    depends_on:
+      - celery_worker
 
 volumes:
   pgdbdata: {}

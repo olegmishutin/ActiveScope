@@ -23,7 +23,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
-    'django_celery_beat',
     'rest_framework',
     'corsheaders',
     'auth_sys',
@@ -76,11 +75,11 @@ WSGI_APPLICATION = 'server.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT')
+        'NAME': os.environ['DB_NAME'] if os.environ.get('DOCKERIZED') else os.getenv('DB_NAME'),
+        'USER': os.environ['DB_USER'] if os.environ.get('DOCKERIZED') else os.getenv('DB_USER'),
+        'PASSWORD': os.environ['DB_PASSWORD'] if os.environ.get('DOCKERIZED') else os.getenv('DB_PASSWORD'),
+        'HOST': os.environ['DB_HOST'] if os.environ.get('DOCKERIZED') else os.getenv('DB_HOST'),
+        'PORT': os.environ['DB_PORT'] if os.environ.get('DOCKERIZED') else os.getenv('DB_PORT')
     }
 }
 
@@ -99,9 +98,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_BROKER_URL = f'redis://{"redis" if os.environ.get("DOCKERIZED") else "localhost"}:6379/0'
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+CELERY_BEAT_SCHEDULE = {
+    'task-name': {
+        'task': 'messages.tasks.check_projects_tasks',
+        'schedule': datetime.timedelta(minutes=30)
+    },
+}
 
 EXPIRE_TOKEN_IN = datetime.timedelta(days=int(os.getenv('EXPIRE_TOKEN_IN')))
 
@@ -116,6 +121,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 MEDIA_URL = 'media/'
-MEDIA_ROOT = PROJECT_DIR.parent / '/usr/src/media'
+MEDIA_ROOT = PROJECT_DIR.parent / '/usr/src/media' if os.environ.get("DOCKERIZED") else SERVER_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
