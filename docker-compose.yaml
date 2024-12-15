@@ -26,6 +26,7 @@ services:
       - media:/usr/src/media
     environment:
       DOCKERIZED: 'True'
+      SECRET_KEY: 'django-insecure-zfai=+sxsaugy+sy(7t77x$1vi-d)l#b&i9cpfgkbns0)o%ei3'
       DB_NAME: 'active_scope'
       DB_USER: 'postgres'
       DB_PASSWORD: '123456'
@@ -50,6 +51,7 @@ services:
     command: 'celery -A server worker -l INFO'
     environment:
       DOCKERIZED: 'True'
+      SECRET_KEY: 'django-insecure-zfai=+sxsaugy+sy(7t77x$1vi-d)l#b&i9cpfgkbns0)o%ei3'
       DB_NAME: 'active_scope'
       DB_USER: 'postgres'
       DB_PASSWORD: '123456'
@@ -63,6 +65,7 @@ services:
     command: 'celery -A server beat -l INFO'
     environment:
       DOCKERIZED: 'True'
+      SECRET_KEY: 'django-insecure-zfai=+sxsaugy+sy(7t77x$1vi-d)l#b&i9cpfgkbns0)o%ei3'
       DB_NAME: 'active_scope'
       DB_USER: 'postgres'
       DB_PASSWORD: '123456'

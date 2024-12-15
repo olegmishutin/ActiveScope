@@ -8,7 +8,7 @@ load_dotenv()
 SERVER_DIR = Path(__file__).resolve().parent.parent
 PROJECT_DIR = SERVER_DIR.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.environ['SECRET_KEY'] if os.environ.get('DOCKERIZED') else os.getenv('SECRET_KEY')
 
 DEBUG = True
 
