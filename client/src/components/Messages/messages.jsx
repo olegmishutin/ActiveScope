@@ -60,7 +60,7 @@ export default function Messages(props) {
     const [messages, setMessages] = useState([...props.messages])
     const [themes, setThemes] = useState([])
 
-    function readMessage(id, agreement) {
+    function readMessage(id, agreement, need_update_projects) {
         const data = {}
 
         if (agreement) {
@@ -71,6 +71,10 @@ export default function Messages(props) {
             (response) => {
                 checkResponse(response, null, null, () => {
                     getMessages(setMessages, props.messagesCountSetter)
+
+                    if (need_update_projects) {
+                        props.update_projects_method()
+                    }
                 })
             }
         ).catch((error) => {
@@ -137,12 +141,12 @@ export default function Messages(props) {
                                                                     <Button
                                                                         className='light_button messages__list__message__buttons__button'
                                                                         onClick={() => {
-                                                                            readMessage(message.id, true)
+                                                                            readMessage(message.id, true, true)
                                                                         }}>Принять</Button>
                                                                     <Button
                                                                         className='red_button messages__list__message__buttons__button'
                                                                         onClick={() => {
-                                                                            readMessage(message.id, false)
+                                                                            readMessage(message.id, false, false)
                                                                         }}>Отклонить</Button>
                                                                 </> :
                                                                 <>

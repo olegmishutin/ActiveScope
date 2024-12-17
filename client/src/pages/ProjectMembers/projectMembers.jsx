@@ -148,7 +148,7 @@ export default function ProjectMembers() {
                                             </span>
                                         </p>
                                         {
-                                            currentUser.id !== user.id && user.email !== project.owner ?
+                                            currentUser.email === project.owner && user.email !== project.owner ?
                                                 <Button className='red_button' onClick={() => {
                                                     removeMember(user.id)
                                                 }}>Исключить</Button> : ''

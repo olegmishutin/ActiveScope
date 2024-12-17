@@ -40,4 +40,4 @@ class LoginSerializer(serializers.Serializer):
 class UserShortInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ['id', 'is_admin', 'photo', 'get_full_name']
+        fields = ['id', 'is_admin', 'photo', 'get_full_name', 'email']

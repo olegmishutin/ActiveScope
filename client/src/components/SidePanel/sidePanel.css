@@ -246,6 +246,7 @@
 
     .projects_modal__content__filepicker {
         width: 100%;
+        max-width: unset;
     }
 }
 

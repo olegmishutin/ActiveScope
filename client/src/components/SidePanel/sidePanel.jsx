@@ -96,7 +96,7 @@ export default function SidePanel() {
             (response) => {
                 checkResponse(response, setProjectStatus, 'Проект изменен!', () => {
                     getProjects()
-                    if (window.location.href.includes(`/project/${id}/`)){
+                    if (window.location.href.includes(`/project/${id}/`)) {
                         window.location.reload()
                     }
                 })
@@ -266,7 +266,8 @@ export default function SidePanel() {
                                     </div>
                                     <p className='panel__main__selector__name'>Все группы</p>
                                 </Link>
-                                <Link onClick={closePanelOnMobile} to='/admin/projects/' className="panel__main__selector">
+                                <Link onClick={closePanelOnMobile} to='/admin/projects/'
+                                      className="panel__main__selector">
                                     <div className="panel__main__selector__icon">
                                         <img src={allProjectsIcon} alt='icon'/>
                                     </div>
@@ -277,7 +278,8 @@ export default function SidePanel() {
                     }
                 </nav>
             </aside>
-            <Messages messages={messages} messagesCountSetter={setNewMessagesCount}/>
+            <Messages messages={messages} messagesCountSetter={setNewMessagesCount}
+                      update_projects_method={getProjects}/>
             <Modal id='projects_modal' className='projects_modal_window' status={projectStatus}
                    contentClassName='projects_modal_window_content' manageButtons={<>
                 <Button id='projects_modal__manage_button'/>
