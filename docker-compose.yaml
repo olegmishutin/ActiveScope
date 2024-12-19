@@ -13,12 +13,14 @@ services:
       - '5432:5432'
   redis:
     image: redis:alpine
+    restart: always
     container_name: 'redis'
     ports:
       - '6379:6379'
   server:
     build: ./server
     container_name: 'server'
+    restart: always
     command: >
       sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8080"
     volumes:
@@ -40,6 +42,7 @@ services:
       - redis
   client:
     build: ./client
+    restart: always
     container_name: 'client'
     command: 'npm run dev'
     ports:
@@ -48,6 +51,7 @@ services:
       - server
   celery_worker:
     build: ./server
+    restart: always
     container_name: 'celery_worker'
     command: 'celery -A server worker -l INFO'
     environment:
@@ -63,6 +67,7 @@ services:
       - server
   celery_beat:
     build: ./server
+    restart: always
     container_name: 'celery_beat'
     command: 'celery -A server beat -l INFO'
     environment:
