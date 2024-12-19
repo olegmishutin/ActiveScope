@@ -108,7 +108,11 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-EXPIRE_TOKEN_IN = datetime.timedelta(days=int(os.getenv('EXPIRE_TOKEN_IN')))
+EXPIRE_TOKEN_IN = datetime.timedelta(
+    days=int(
+        os.environ.get("EXPIRE_TOKEN_IN") if os.environ.get("DOCKERIZED") else os.getenv('EXPIRE_TOKEN_IN')
+    )
+)
 
 LANGUAGE_CODE = 'Ru-ru'
 
