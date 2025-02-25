@@ -62,8 +62,12 @@ export default function ProjectBase(props) {
                               to={`/project/${project.id}/tasks/`}>Задачи</Link>
                         <Link className='widget default_button hoverEffect project_pages_button'
                               to={`/project/${project.id}/members/`}>Участники</Link>
-                        <Link className='widget default_button hoverEffect project_pages_button'
-                              to={`/project/${project.id}/description/`}>Описание проекта</Link>
+                        {
+                            project.description ? <>
+                                <Link className='widget default_button hoverEffect project_pages_button'
+                                      to={`/project/${project.id}/description/`}>Описание проекта</Link>
+                            </> : ''
+                        }
                     </>}/>
         </>
     )

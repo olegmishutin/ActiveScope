@@ -1,51 +1,55 @@
 .project_task_properties__list {
+    max-height: 295px;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-bottom: 16px;
 }
 
-.project_task_properties__list p {
-    text-align: center;
-}
-
 .project_task_properties__list__element {
-    width: 407px;
+    max-width: 100%;
+    width: 450px;
     background-color: #414141;
     border-radius: 10px;
     padding: 4px 8px;
     display: flex;
     align-items: center;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px;
 }
 
-.project_task_properties__list__element p {
-    font-weight: 500;
-    font-size: 14px;
+.project_task_properties__list__element__info {
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
-.project_task_properties__list__element p span {
+.project_task_properties__list__element__info p {
+    font-weight: 500;
+    font-size: 14px;
+    word-break: break-all;
+}
+
+.project_task_properties__list__element__info div {
     display: inline-block;
-    width: 16px;
-    height: 16px;
+    min-width: 16px;
+    min-height: 16px;
     border-radius: 5px;
 }
 
-.project_task_properties__list__element p span.rounded {
+.project_task_properties__list__element__info div.rounded {
     border-radius: 50%;
 }
 
-.project_task_properties__list__element .light_button {
-    margin-left: auto;
+.project_task_properties__list__element__button {
+    display: flex;
+    gap: 8px;
 }
 
-.project_task_properties__list__element .red_button {
-    margin-left: 8px;
-}
-
-.project_task_properties__list__element .default_button {
+.project_task_properties__list__element__button .default_button {
     height: 32px;
 }
 
@@ -54,7 +58,7 @@
     flex-direction: column;
 }
 
-.project_task_properties_manage__checkbox{
+.project_task_properties_manage__checkbox {
     align-self: center;
 }
 
@@ -62,4 +66,17 @@
     width: 407px !important;
     height: 139px !important;
     margin: 8px 0;
+}
+
+@media (max-height: 391px) {
+    .project_task_properties_modal{
+        align-self: flex-start;
+        height: 100%;
+    }
+}
+
+@media (max-height: 391px) and (max-width: 490px){
+    .project_task_properties_modal{
+        border-radius: 0;
+    }
 }

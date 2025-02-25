@@ -12,6 +12,7 @@
 
 .project_task_status,
 .project_task_priority {
+    word-break: break-all;
     padding: 2.5px 15px;
     font-size: 14px;
     font-weight: 500;
@@ -101,4 +102,34 @@
     margin-left: 25px !important;
     display: flex;
     align-items: center;
+}
+
+@media (max-width: 655px) {
+    .project_task_management__inline{
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .project_task_management__column{
+        width: 100%;
+    }
+}
+
+@media (max-height: 339px) {
+    .project_task_management_modal{
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 655px) and (max-height: 531px) {
+    .project_task_management_modal{
+        align-self: flex-start;
+        border-radius: 0;
+    }
+}
+
+@media (max-width: 731px) and (max-height: 339px) {
+    .project_task_management_modal{
+        border-radius: 0;
+    }
 }

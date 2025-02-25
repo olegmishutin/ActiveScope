@@ -17,16 +17,24 @@ export default function ListElement(props) {
                     </div>
                     {props.children}
                 </div>
-                <div className="list_element__additional_buttons">
-                    {props.additionalButtons}
-                </div>
-                <div className="list_element__description">
-                    <p className='list_element__description__text'>{props.text}</p>
-                </div>
+                {
+                    props.additionalButtons ? <>
+                        <div className="list_element__additional_buttons">
+                            {props.additionalButtons}
+                        </div>
+                    </> : ''
+                }
+                {
+                    props.text ? <>
+                        <div className="list_element__description">
+                            <p className='list_element__description__text'>{props.text}</p>
+                        </div>
+                    </> : ''
+                }
                 {
                     props.detail ? <>
                         <details className='list_element__details'>
-                            <summary className='list_element__details__summary'>
+                        <summary className='list_element__details__summary'>
                                 <div className="list_element__details__summary__icon">
                                     <img src={detailsIcon} alt='icon' loading='lazy'/>
                                 </div>

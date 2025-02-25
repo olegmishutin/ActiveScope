@@ -135,6 +135,7 @@ export default function ProjectTasks() {
         axios(PUT(`/api/projects/${id}/statuses/${statusId}/`, data)).then(
             (response) => {
                 checkResponse(response, setStatusesStatus, 'Успешно изменили статус!', () => {
+                    getTasks()
                     getStatuses()
                 })
             }
@@ -169,6 +170,7 @@ export default function ProjectTasks() {
         axios(PUT(`/api/projects/${id}/priorities/${priorityId}/`, data)).then(
             (response) => {
                 checkResponse(response, setPrioritiesStatus, 'Успешно изменили приоритет!', () => {
+                    getTasks()
                     getPriorities()
                 })
             }
@@ -476,9 +478,10 @@ export default function ProjectTasks() {
                                    deleteFunc={deletePriority} prefix='priority' createFunc={createPriority}
                                    status={prioritiesStatus} statusSetter={setPrioritiesStatus}
                                    editFunc={editPriority}/>
-            <Modal id='project_task_management' status={taskStatus} manageButtons={<>
-                <Button id='project_task_management_manage_button'/>
-            </>}>
+            <Modal id='project_task_management' className='project_task_management_modal' status={taskStatus}
+                   manageButtons={<>
+                       <Button id='project_task_management_manage_button'/>
+                   </>}>
                 <div className="project_task_management">
                     <div className="project_task_management__inline">
                         <div className="project_task_management__column">

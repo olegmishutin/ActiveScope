@@ -4,7 +4,6 @@
     max-height: 100svh;
     min-height: 100svh;
     background: #313131;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
     z-index: 101;
     margin-left: -359px;
     padding: 14px;
@@ -15,28 +14,34 @@
 .show_messages {
     margin-left: 0;
     animation: show_messages_anim backwards 0.5s;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .hide_messages {
     margin-left: -359px;
     animation: hide_messages_anim backwards 0.5s;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0);
 }
 
 @keyframes show_messages_anim {
     from {
         margin-left: -359px;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0);
     }
     to {
         margin-left: 0;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
     }
 }
 
 @keyframes hide_messages_anim {
     from {
         margin-left: 0;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
     }
     to {
         margin-left: -359px;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0);
     }
 }
 

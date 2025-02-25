@@ -42,7 +42,7 @@ export default function ProjectTaskProperties(props) {
 
     return (
         <>
-            <Modal id={props.id} manageButtons={<>
+            <Modal id={props.id} className='project_task_properties_modal' manageButtons={<>
                 <Button onClick={() => {
                     buttonClick(props.createFunc, 'Создать', '', false)
                 }}>Создать {props.whatCreate}</Button>
@@ -53,19 +53,22 @@ export default function ProjectTaskProperties(props) {
                             return (
                                 <>
                                     <li className='project_task_properties__list__element'>
-                                        <p>{value.name}
-                                            <span className={props.rounded ? 'rounded' : ''}
-                                                  style={{backgroundColor: `#${value.color}`}}></span>
-                                        </p>
-                                        <Button className='light_button' onClick={() => {
-                                            setColor(`#${value.color}`)
-                                            buttonClick((color) => {
-                                                props.editFunc(value.id, color)
-                                            }, 'Изменить', value.name, value.is_means_completeness)
-                                        }}>Изменить</Button>
-                                        <Button className='red_button' onClick={() => {
-                                            props.deleteFunc(value.id)
-                                        }}>Удалить</Button>
+                                        <div className="project_task_properties__list__element__info">
+                                            <p>{value.name}</p>
+                                            <div className={props.rounded ? 'rounded' : ''}
+                                                  style={{backgroundColor: `#${value.color}`}}></div>
+                                        </div>
+                                        <div className="project_task_properties__list__element__button">
+                                            <Button className='light_button' onClick={() => {
+                                                setColor(`#${value.color}`)
+                                                buttonClick((color) => {
+                                                    props.editFunc(value.id, color)
+                                                }, 'Изменить', value.name, value.is_means_completeness)
+                                            }}>Изменить</Button>
+                                            <Button className='red_button' onClick={() => {
+                                                props.deleteFunc(value.id)
+                                            }}>Удалить</Button>
+                                        </div>
                                     </li>
                                 </>
                             )

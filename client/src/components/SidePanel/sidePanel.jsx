@@ -74,7 +74,7 @@ export default function SidePanel() {
 
         axios(POST('/api/projects/', data)).then((response) => {
             checkResponse(response, setProjectStatus, 'Проект успешно создан!', () => {
-                setProjects([...projects, response.data])
+                getProjects()
             })
         }).catch((error) => {
             checkResponse(error.response, setProjectStatus, null, null, null, 'project')
@@ -223,15 +223,17 @@ export default function SidePanel() {
                             projects.map((value) => {
                                 return (
                                     <>
-                                        <Link onClick={closePanelOnMobile} to={`/project/${value.id}/tasks/`}
-                                              className="panel__main__selector" id={`project_${value.id}`}>
-                                            <div className="panel__main__selector__icon">
-                                                <img src={
-                                                    value.icon ? getImage(value.icon) : projectIcon
-                                                } alt='icon' loading='lazy'/>
-                                            </div>
-                                            <p className='panel__main__selector__name'
-                                               id={`project_${value.id}_name`}>{value.name}</p>
+                                        <div className="panel__main__selector">
+                                            <Link onClick={closePanelOnMobile} to={`/project/${value.id}/tasks/`}
+                                                  className="panel__main__selector__nested" id={`project_${value.id}`}>
+                                                <div className="panel__main__selector__icon">
+                                                    <img src={
+                                                        value.icon ? getImage(value.icon) : projectIcon
+                                                    } alt='icon' loading='lazy'/>
+                                                </div>
+                                                <p className='panel__main__selector__name'
+                                                   id={`project_${value.id}_name`}>{value.name}</p>
+                                            </Link>
                                             {
                                                 value.owner === user.id ? <>
                                                     <button className="panel__main__selector__icon project_edition_dots"
@@ -244,7 +246,7 @@ export default function SidePanel() {
                                                     </button>
                                                 </> : ''
                                             }
-                                        </Link>
+                                        </div>
                                     </>
                                 )
                             })
