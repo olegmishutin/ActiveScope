@@ -1,6 +1,5 @@
 import './projectMembers.css'
-import {Link, useParams} from "react-router-dom";
-import ProjectBase from "../../components/ProjectBase/projectBase.jsx";
+import {Link, useOutletContext, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {GET, POST} from "../../utils/methods.jsx";
@@ -15,7 +14,7 @@ import Selection from "../../widgets/Selection/selection.jsx";
 
 export default function ProjectMembers() {
     let {id} = useParams()
-    const [project, setProject] = useState({})
+    const {project} = useOutletContext()
     const [members, setMembers] = useState([])
     const [currentUser, setCurrentUser] = useState({})
     const [inviteStatus, setInviteStatus] = useState('')
@@ -95,14 +94,6 @@ export default function ProjectMembers() {
     }
 
     useEffect(() => {
-        axios(GET(`/api/projects/${id}/`)).then(
-            (response) => {
-                checkResponse(response, setProject, response.data)
-            }
-        ).catch((error) => {
-            checkResponse(error.response)
-        })
-
         axios(GET('/api/me/')).then(
             (response) => {
                 checkResponse(response, setCurrentUser, response.data)
@@ -116,7 +107,6 @@ export default function ProjectMembers() {
 
     return (
         <>
-            <ProjectBase project={project}/>
             <div className="window_main_content">
                 <Button onClick={() => {
                     setInviteStatus('')

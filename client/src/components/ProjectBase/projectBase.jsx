@@ -3,14 +3,24 @@ import Header from "../Header/header.jsx";
 
 import projectIcon from '../../assets/images/project big.svg'
 import {useEffect, useState} from "react";
-import {Link} from "react-router-dom";
+import {Link, Outlet, useParams} from "react-router-dom";
+import axios from "axios";
+import {GET} from "../../utils/methods.jsx";
+import {checkResponse} from "../../utils/response.jsx";
 
-export default function ProjectBase(props) {
-    const [project, setProject] = useState(props.project)
+export default function ProjectBase() {
+    let {id} = useParams()
+    const [project, setProject] = useState({})
 
     useEffect(() => {
-        setProject(props.project)
-    }, [props.project]);
+        axios(GET(`/api/projects/${id}/`)).then(
+            (response) => {
+                checkResponse(response, setProject, response.data)
+            }
+        ).catch((error) => {
+            checkResponse(error.response)
+        })
+    }, [id]);
 
     return (
         <>
@@ -69,6 +79,7 @@ export default function ProjectBase(props) {
                             </> : ''
                         }
                     </>}/>
+            <Outlet context={{ project: project }}/>
         </>
     )
 }

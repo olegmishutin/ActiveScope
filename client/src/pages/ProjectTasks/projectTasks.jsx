@@ -1,6 +1,5 @@
 import './projectTasks.css'
 import {Link, useParams} from "react-router-dom";
-import ProjectBase from "../../components/ProjectBase/projectBase.jsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {DELETE, GET, POST, PUT} from "../../utils/methods.jsx";
@@ -21,7 +20,6 @@ import {getDateFromInput, getDateFromRequest} from "../../utils/date.jsx";
 
 export default function ProjectTasks() {
     let {id} = useParams()
-    const [project, setProject] = useState({})
     const [tasks, setTasks] = useState([])
     const [members, setMembers] = useState([])
     const [statuses, setStatuses] = useState([])
@@ -76,14 +74,6 @@ export default function ProjectTasks() {
     }
 
     useEffect(() => {
-        axios(GET(`/api/projects/${id}/`)).then(
-            (response) => {
-                checkResponse(response, setProject, response.data)
-            }
-        ).catch((error) => {
-            checkResponse(error.response)
-        })
-
         axios(GET(`/api/projects/${id}/members/`)).then(
             (response) => {
                 checkResponse(response, setMembers, response.data, () => {
@@ -293,7 +283,6 @@ export default function ProjectTasks() {
 
     return (
         <>
-            <ProjectBase project={project}/>
             <div className="window_main_content">
                 <div className="project_task_manage_buttons">
                     <Button onClick={() => {

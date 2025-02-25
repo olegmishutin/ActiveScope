@@ -13,6 +13,7 @@ import ProjectTasks from "./pages/ProjectTasks/projectTasks.jsx";
 import ProjectMembers from "./pages/ProjectMembers/projectMembers.jsx";
 import ProjectDescription from "./pages/ProjectDescription/projectDescription.jsx";
 import AdminProjects from "./pages/AdminProjects/adminProjects.jsx";
+import ProjectBase from "./components/ProjectBase/projectBase.jsx";
 
 const router = createBrowserRouter([
     {
@@ -48,16 +49,22 @@ const router = createBrowserRouter([
                 element: <Groups isAdmin={true}/>
             },
             {
-                path: 'project/:id/tasks',
-                element: <ProjectTasks/>
-            },
-            {
-                path: 'project/:id/members',
-                element: <ProjectMembers/>
-            },
-            {
-                path: 'project/:id/description',
-                element: <ProjectDescription/>
+                path: 'project/:id',
+                element: <ProjectBase/>,
+                children: [
+                    {
+                        path: 'tasks',
+                        element: <ProjectTasks/>
+                    },
+                    {
+                        path: 'members',
+                        element: <ProjectMembers/>
+                    },
+                    {
+                        path: 'description',
+                        element: <ProjectDescription/>
+                    },
+                ]
             },
             {
                 path: 'admin/projects/',
