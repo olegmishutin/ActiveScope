@@ -88,6 +88,7 @@
 
 .messages__list__message__text {
     font-size: 14px;
+    overflow: hidden;
 }
 
 .messages__list__message__buttons {

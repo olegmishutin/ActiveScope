@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
-from user_tasks.models import UserTaskList
 from .models import Token
 
 
@@ -16,11 +15,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 'input_formats': ['%d.%m.%Y'],
             }
         }
-
-    def create(self, validated_data):
-        user = get_user_model().objects.create_user(**validated_data)
-        UserTaskList.objects.create(user=user)
-        return user
 
 
 class LoginSerializer(serializers.Serializer):

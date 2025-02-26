@@ -2,6 +2,7 @@
     display: flex;
     gap: 13px;
     margin-bottom: 15px;
+    flex-wrap: wrap;
 }
 
 .project_tasks_list {
@@ -86,6 +87,8 @@
     font-size: 16px;
     margin-bottom: 5px;
     white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .project_task_files__list__file__info p {

@@ -1,8 +1,8 @@
+import os
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from server.utils.classes.serializers import TaskBaseSerializer, TaskFilesBaseSerializer
-from .models import Project, ProjectTask, ProjectTaskFile, ProjectTaskStatus, ProjectTaskPriority, Comment
+from .models import Project, ProjectTask, ProjectTaskFile, ProjectTaskStatus, ProjectTaskPriority
 
 
 class BaseSerializer(serializers.ModelSerializer):
@@ -44,8 +44,7 @@ class ProjectSerializer(ProjectBaseSerializer):
         instance.change_icon(self.icon)
         instance.change_header_image(self.header_image)
 
-        super().update(instance, validated_data)
-        return instance
+        return super().update(instance, validated_data)
 
     def create(self, validated_data):
         user = self.context['request'].user
@@ -75,17 +74,36 @@ class PrioritySerializer(BaseSerializer):
         model = ProjectTaskPriority
 
 
-class TaskSerializer(TaskBaseSerializer, BaseSerializer):
+class TaskSerializer(BaseSerializer):
     status = StatusSerializer(read_only=True)
     priority = PrioritySerializer(read_only=True)
+
+    status_id = serializers.IntegerField(write_only=True, required=False)
+    priority_id = serializers.IntegerField(write_only=True, required=False)
+    uploaded_files = serializers.ListField(child=serializers.FileField(), write_only=True, required=False)
 
     executor = serializers.ReadOnlyField(source='executor.email')
     executor_read_id = serializers.ReadOnlyField(source='executor.id')
     executor_id = serializers.IntegerField(write_only=True, required=False)
 
-    class Meta(TaskBaseSerializer.Meta, BaseSerializer.Meta):
+    class Meta(BaseSerializer.Meta):
         model = ProjectTask
-        file_model = ProjectTaskFile
+        extra_kwargs = {
+            'start_date': {
+                'format': '%d.%m.%Y',
+                'input_formats': ['%d.%m.%Y']
+            },
+            'end_date': {
+                'format': '%d.%m.%Y',
+                'input_formats': ['%d.%m.%Y']
+            },
+        }
+
+    def is_object_exists(self, validated_data, field, queryset):
+        field_id = validated_data.get(field)
+
+        if field_id is not None:
+            get_object_or_404(queryset, pk=field_id)
 
     def check_states(self, validated_data):
         project = get_object_or_404(Project.objects.all(), pk=self.context['project_pk'])
@@ -94,38 +112,57 @@ class TaskSerializer(TaskBaseSerializer, BaseSerializer):
         self.is_object_exists(validated_data, 'priority_id', project.priorities.all())
         self.is_object_exists(validated_data, 'executor_id', project.members.all())
 
+    def update(self, instance, validated_data):
+        self.check_states(validated_data)
+        return super().update(instance, validated_data)
 
-class TaskFilesSerializer(TaskFilesBaseSerializer):
-    class Meta(TaskFilesBaseSerializer.Meta):
-        model = ProjectTaskFile
+    def create(self, validated_data):
+        self.check_states(validated_data)
+
+        files = validated_data.pop('uploaded_files', [])
+        task = super().create(validated_data)
+
+        for file in files:
+            ProjectTaskFile.objects.create(task=task, file=file)
+        return task
 
 
-class TaskCommentSerializer(serializers.ModelSerializer):
-    author = MemberSerializer(read_only=True)
-    likes_count = serializers.ReadOnlyField()
+class TaskFilesSerializer(serializers.ModelSerializer):
+    file_name = serializers.SerializerMethodField('get_file_name')
+    uploaded_files = serializers.ListField(child=serializers.FileField(), write_only=True)
 
     class Meta:
-        model = Comment
-        exclude = ['task', 'likes']
+        model = ProjectTaskFile
+        fields = '__all__'
         extra_kwargs = {
-            'date': {
-                'format': '%d.%m.%Y'
+            'file': {
+                'read_only': True
+            },
+            'upload_date': {
+                'format': '%d.%m.%Y %H:%M'
+            },
+            'task': {
+                'read_only': True
             }
         }
 
-    def create(self, validated_data):
-        user = self.context['request'].user
-        task_id = self.context['task_id']
+    def get_file_name(self, instance):
+        return os.path.basename(instance.file.name)
 
-        return Comment.objects.create(author=user, task_id=task_id, **validated_data)
+    def create(self, validated_data):
+        files = validated_data.pop('uploaded_files', [])
+        task_id = self.context.get('task_id')
+
+        files_to_create = [self.Meta.model(task_id=task_id, file=file) for file in files]
+        return self.Meta.model.objects.bulk_create(files_to_create)
 
 
 class AdminProjectsTasksSerializer(serializers.ModelSerializer):
     executor = serializers.ReadOnlyField(source='executor.email')
     executor_id = serializers.ReadOnlyField(source='executor.id')
 
-    class Meta(TaskBaseSerializer.Meta, BaseSerializer.Meta):
-        model = ProjectTask
+    class Meta(TaskSerializer.Meta, BaseSerializer.Meta):
+        pass
 
 
 class AdminProjectsSerializer(ProjectBaseSerializer):

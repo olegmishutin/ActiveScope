@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from server.utils.functions import files
-from server.utils.classes.models import TaskState, TaskFile
 
 
 class Project(models.Model):
@@ -34,6 +33,14 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class TaskState(models.Model):
+    name = models.CharField('название', max_length=128)
+    color = models.CharField('цвет', max_length=6)
+
+    class Meta:
+        abstract = True
 
 
 class ProjectTaskStatus(TaskState):
@@ -89,31 +96,22 @@ class ProjectTask(models.Model):
         return self.name
 
 
-class ProjectTaskFile(TaskFile):
+class ProjectTaskFile(models.Model):
     task = models.ForeignKey(ProjectTask, related_name='files', verbose_name='задача', on_delete=models.CASCADE)
     file = models.FileField('файл', upload_to=files.project_task_file_uploading_to)
+    upload_date = models.DateTimeField('дата загрузки', auto_now_add=True, editable=False)
 
     class Meta:
         db_table = 'ProjectTaskFile'
         verbose_name = 'Файл задачи проекта'
         verbose_name_plural = 'Файлы задач проектов'
 
+    def change_file(self, file):
+        files.set_new_file(self, 'file', file)
 
-class Comment(models.Model):
-    task = models.ForeignKey(ProjectTask, related_name='comments', verbose_name='задача', on_delete=models.CASCADE)
-    author = models.ForeignKey(
-        get_user_model(), related_name='comments', verbose_name='автор', on_delete=models.CASCADE)
-
-    date = models.DateField('дата', auto_now_add=True, editable=False)
-    text = models.TextField('текст')
-
-    likes = models.ManyToManyField(
-        get_user_model(), related_name='liked_comments', verbose_name='лайки', db_table='LikedBy')
-
-    class Meta:
-        db_table = 'Comment'
-        verbose_name = 'Комментарий'
-        verbose_name_plural = 'Комментарии'
+    def delete(self, using=None, keep_parents=False):
+        files.delete_old_files(self.file)
+        return super().delete(using, keep_parents)
 
     def __str__(self):
-        return self.text[:15]
+        return self.file.path

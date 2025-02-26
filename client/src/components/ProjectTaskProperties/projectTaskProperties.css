@@ -16,7 +16,6 @@
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    flex-wrap: wrap;
     justify-content: space-between;
     gap: 16px;
 }
@@ -25,12 +24,16 @@
     display: flex;
     align-items: center;
     gap: 5px;
+    overflow: hidden;
 }
 
 .project_task_properties__list__element__info p {
+    max-width: 100%;
     font-weight: 500;
     font-size: 14px;
-    word-break: break-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .project_task_properties__list__element__info div {
@@ -68,10 +71,22 @@
     margin: 8px 0;
 }
 
+@media (max-width: 425px) {
+    .project_task_properties__list__element{
+        gap: 8px;
+    }
+
+    .project_task_properties__list__element__info div {
+        min-width: 10px;
+        min-height: 10px;
+    }
+}
+
 @media (max-height: 391px) {
     .project_task_properties_modal{
         align-self: flex-start;
         height: 100%;
+        min-height: max-content;
     }
 }
 

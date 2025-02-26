@@ -46,14 +46,17 @@
 .list_element__header__text {
     font-size: 14px;
     font-weight: 500;
+    word-break: break-all;
 }
 
 .list_element__header__text__important {
+    word-break: break-all;
     color: #3777A0;
 }
 
 .list_element__description {
     margin-top: 14px;
+    overflow: hidden;
 }
 
 .list_element__details {
@@ -86,6 +89,7 @@
     margin-top: 10px;
     gap: 13px;
     display: flex;
+    flex-wrap: wrap;
 }
 
 @media (max-width: 768px) {

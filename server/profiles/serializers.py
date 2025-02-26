@@ -39,15 +39,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
             }
         }
 
-    def get_field(self, field):
-        return self.validated_data.pop(field, None)
-
     def update(self, instance, validated_data):
-        instance.change_photo(self.get_field('photo'))
-        instance.change_header_image(self.get_field('header_image'))
+        instance.change_photo(self.validated_data.pop('photo', None))
+        instance.change_header_image(self.validated_data.pop('header_image', None))
 
-        old_password = self.get_field('old_password')
-        new_password = self.get_field('new_password')
+        old_password = self.validated_data.pop('old_password', None)
+        new_password = self.validated_data.pop('new_password', None)
 
         if None not in (old_password, new_password):
             if not check_password(old_password, instance.password):

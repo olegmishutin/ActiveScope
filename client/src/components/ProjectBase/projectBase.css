@@ -2,6 +2,7 @@
     font-size: 40px;
     font-weight: 800;
     margin-bottom: 17px;
+    overflow: hidden;
 }
 
 .project__info{
@@ -16,7 +17,7 @@
 }
 
 .project__info__text{
-    white-space: nowrap;
+    word-break: break-all;
 }
 
 .project__info__text b{

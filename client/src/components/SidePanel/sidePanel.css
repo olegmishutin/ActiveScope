@@ -49,6 +49,11 @@
     align-items: center;
 }
 
+.panel__main__selector,
+.panel__main__selector__nested {
+    overflow: hidden;
+}
+
 .panel__header__logo {
     width: 30px;
     height: 30px;
@@ -147,10 +152,13 @@
 }
 
 .panel__main__selector__name {
+    width: 100%;
     white-space: nowrap;
     overflow: hidden;
     font-size: 14px;
     font-weight: 500;
+    text-overflow: ellipsis;
+    text-align: left;
 }
 
 .panel__main__selector__counter {

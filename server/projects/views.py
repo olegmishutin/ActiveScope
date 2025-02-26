@@ -13,7 +13,6 @@ from django.db.models import Count, Q
 from asgiref.sync import sync_to_async
 from messages.models import Message
 from groups.models import Group
-from server.utils.classes.viewsets import TaskFilesBaseViewSet
 from server.utils.classes.permissions_classes import IsAdminUser
 from .permissions import IsProjectCanBeChangedOrDeleted, UserIsMemberOfProject, UserIsOwnerOfTheProject
 from .utils import get_project_from_request, get_project_task_from_request
@@ -110,46 +109,36 @@ class PrioritiesViewSet(BaseViewSet):
         return get_project_from_request(self.request, self.kwargs).priorities.all()
 
 
-class TaskFilesViewSet(TaskFilesBaseViewSet):
+class TaskFilesViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+                       mixins.DestroyModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.TaskFilesSerializer
 
     def get_queryset(self):
         return get_project_task_from_request(self.request, self.kwargs).files.all()
-
-    def get_permissions(self):
-        if self.action != 'retrieve':
-            return [IsAuthenticated(), UserIsMemberOfProject()]
-        return []
-
-
-class TaskCommentsView(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
-    serializer_class = serializers.TaskCommentSerializer
-    permission_classes = [IsAuthenticated, UserIsMemberOfProject]
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context['task_id'] = self.kwargs.get('task_pk')
         return context
 
-    def get_queryset(self):
-        return get_project_task_from_request(self.request, self.kwargs).comments.all().annotate(
-            likes_count=Count('likes')).select_related('author')
+    def get_permissions(self):
+        if self.action != 'retrieve':
+            return [IsAuthenticated(), UserIsMemberOfProject()]
+        return []
 
-    @action(methods=['POST'], detail=True)
-    def like(self, request, project_pk=None, task_pk=None, pk=None):
-        task = get_project_task_from_request(request, {'project_pk': project_pk, 'task_pk': task_pk})
-        comment = get_object_or_404(task.comments.all(), pk=pk)
+    def create(self, request, *args, **kwargs):
+        file_serializer = self.get_serializer(data=request.data)
+        file_serializer.is_valid(raise_exception=True)
+        created_files = file_serializer.save()
 
-        if comment.likes.filter(id=request.user.id).exists():
-            comment.likes.remove(request.user)
-        else:
-            comment.likes.add(request.user)
+        ret_data = self.get_serializer(created_files, many=True).data
+        headers = self.get_success_headers(ret_data)
 
-        comment_serializer = self.get_serializer(comment)
-        data = comment_serializer.data
-        data.update({'likes_count': comment.likes.count()})
+        return Response(ret_data, status=status.HTTP_201_CREATED, headers=headers)
 
-        return Response(data, status=status.HTTP_200_OK)
+    def retrieve(self, request, *args, **kwargs):
+        instance = get_object_or_404(self.serializer_class.Meta.model.objects.all(), pk=self.kwargs['pk'])
+        return FileResponse(open(instance.file.path, 'rb'), as_attachment=True)
 
 
 class UserProjectsView(generics.ListAPIView):
@@ -195,17 +184,8 @@ class AdminFileView(generics.RetrieveAPIView):
     permission_classes = [IsAdminUser]
 
     def retrieve(self, request, *args, **kwargs):
-        insctance = self.get_object()
-        return FileResponse(open(insctance.file.path, 'rb'), as_attachment=True)
-
-
-class AdminTaskComments(generics.ListAPIView):
-    serializer_class = serializers.TaskCommentSerializer
-    permission_classes = [IsAdminUser]
-
-    def get_queryset(self):
-        task = get_object_or_404(ProjectTask.objects.all(), pk=self.kwargs.get('task_pk'))
-        return task.comments.all().annotate(likes_count=Count('likes')).select_related('author')
+        instance = self.get_object()
+        return FileResponse(open(instance.file.path, 'rb'), as_attachment=True)
 
 
 @sync_to_async()

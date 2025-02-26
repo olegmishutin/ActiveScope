@@ -58,7 +58,8 @@
 
 .header__content__main__top,
 .header__content__main__bottom {
-    width: fit-content;
+    width: 100%;
+    overflow: hidden;
 }
 
 .header__content__main__top {

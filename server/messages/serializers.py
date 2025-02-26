@@ -19,7 +19,7 @@ class MessageSerializer(serializers.ModelSerializer):
         }
 
     def update(self, instance, validated_data):
-        agreement_data = validated_data.pop('agreement', None)
+        agreement_data = validated_data.pop('agreement', False)
 
         if agreement_data:
             if instance.topic == 'INV_GROUP':

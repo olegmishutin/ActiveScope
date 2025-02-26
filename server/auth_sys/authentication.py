@@ -17,6 +17,6 @@ class TokenAuthentication(RestTokenAuthentication):
 
         if token.created < present_time - time_delta:
             token.delete()
-            raise ValidationError({'detail': 'Токен не действителен.'})
 
+            raise ValidationError({'detail': 'Токен не действителен.'})
         return user, token
