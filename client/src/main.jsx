@@ -14,6 +14,7 @@ import ProjectMembers from "./pages/ProjectMembers/projectMembers.jsx";
 import ProjectDescription from "./pages/ProjectDescription/projectDescription.jsx";
 import AdminProjects from "./pages/AdminProjects/adminProjects.jsx";
 import ProjectBase from "./components/ProjectBase/projectBase.jsx";
+import NotFound from "./components/NotFound/notFound.jsx";
 
 const router = createBrowserRouter([
     {
@@ -71,8 +72,8 @@ const router = createBrowserRouter([
                 element: <AdminProjects/>
             },
             {
-                path: '404/',
-                element: <h1>Не найдено</h1>
+                path: '*',
+                element: <NotFound/>
             }
         ]
     }

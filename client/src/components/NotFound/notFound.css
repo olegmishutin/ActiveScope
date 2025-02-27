@@ -1,0 +1,16 @@
+.not_found__box {
+    width: 100%;
+    height: 100svh;
+    justify-items: center;
+    align-content: center;
+}
+
+.not_found__box__icon {
+    width: 200px;
+    height: 200px;
+}
+
+.not_found__box__header {
+    text-align: center;
+    margin: 0 20px;
+}

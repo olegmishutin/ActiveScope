@@ -5,7 +5,7 @@ export default function Dropdown(props){
     return (
         <>
             <div className="dropdown_box" style={props.style}>
-                <details className="dropdown hoverEffect">
+                <details className="dropdown hoverEffect" id={`${props.id}_details`}>
                     <summary className="dropdown__header">
                         {props.name}
                     </summary>

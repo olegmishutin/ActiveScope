@@ -66,6 +66,7 @@
 }
 
 .project_task_properties_manage__color {
+    max-width: 100%;
     width: 407px !important;
     height: 139px !important;
     margin: 8px 0;

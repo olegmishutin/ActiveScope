@@ -153,7 +153,7 @@ export default function SidePanel() {
 
     return (
         <>
-            <aside className="panel show_panel" id='panel'>
+            <aside className="panel" id='panel'>
                 <header className="panel__header">
                     <div className="panel__header__box">
                         <div className="panel__header__logo">

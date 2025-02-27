@@ -55,6 +55,15 @@ export default function ProjectTasks() {
     }
 
     function getTasks() {
+        [
+            'dropdown_executor_details',
+            'dropdown_status_details',
+            'dropdown_priority_details'
+        ].forEach((value) => {
+            const dropdownElement = document.getElementById(value)
+            dropdownElement.removeAttribute('open')
+        })
+
         let url = `/api/projects/${id}/tasks/`
         url = getFilters(url, [
             'start_date',
@@ -201,17 +210,19 @@ export default function ProjectTasks() {
                 [fromModal ? 'project_task_files_uploaded_files' : 'project_task_file', 'uploaded_files']
             ], true)
 
-            axios(POST(`/api/projects/${id}/tasks/${task_id}/files/`, formData)).then(
-                (response) => {
-                    checkResponse(response, null, null, () => {
-                        if (fromModal) {
-                            getTaskFiles(task_id)
-                        }
-                    })
-                }
-            ).catch((error) => {
-                checkResponse(error.response)
-            })
+            if (Array.from(formData.keys()).length) {
+                axios(POST(`/api/projects/${id}/tasks/${task_id}/files/`, formData)).then(
+                    (response) => {
+                        checkResponse(response, null, null, () => {
+                            if (fromModal) {
+                                getTaskFiles(task_id)
+                            }
+                        })
+                    }
+                ).catch((error) => {
+                    checkResponse(error.response)
+                })
+            }
         }
     }
 
