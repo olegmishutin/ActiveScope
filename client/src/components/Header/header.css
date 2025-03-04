@@ -56,10 +56,13 @@
     justify-content: flex-end;
 }
 
+.header__content__main__top {
+    overflow: hidden;
+}
+
 .header__content__main__top,
 .header__content__main__bottom {
     width: 100%;
-    overflow: hidden;
 }
 
 .header__content__main__top {

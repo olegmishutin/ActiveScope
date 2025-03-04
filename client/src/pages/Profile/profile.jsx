@@ -19,6 +19,7 @@ import Modal from "../../components/Modal/modal.jsx"
 import FilePicker from "../../widgets/FilePicker/filePicker.jsx"
 import Checkbox from "../../widgets/Checkbox/checkbox.jsx"
 import InviteModal from "../../components/InviteMdal/inviteModal.jsx"
+import {checkConfirmation} from "../../utils/request.jsx";
 
 export default function Profile() {
     let {id} = useParams()
@@ -73,17 +74,22 @@ export default function Profile() {
     }
 
     function logout(event) {
-        axios(GET('/api/logout/')).then(
-            (response) => {
-                checkResponse(response, null, null, () => {
-                    window.localStorage.removeItem('token')
-                    window.location.href = '/login/'
+        checkConfirmation(
+            'Уверены, что хотит выйти из аккаунта?',
+            () => {
+                axios(GET('/api/logout/')).then(
+                    (response) => {
+                        checkResponse(response, null, null, () => {
+                            window.localStorage.removeItem('token')
+                            window.location.href = '/login/'
+                        })
+                    }
+                ).catch((error) => {
+                    checkResponse(error.response)
                 })
+                event.preventDefault()
             }
-        ).catch((error) => {
-            checkResponse(error.response)
-        })
-        event.preventDefault()
+        )
     }
 
     function changeUserInfo(event) {
@@ -100,10 +106,7 @@ export default function Profile() {
             'description',
             'may_be_invited'
         ], true, true)
-
-        if (data.get('birth_date')) {
-            data.set('birth_date', getDateFromInput(data.get('birth_date')))
-        }
+        data.set('birth_date', getDateFromInput(data.get('birth_date')))
 
         axios(PUT(`/api/users/${id}/`, data)).then(
             (response) => {
@@ -180,17 +183,20 @@ export default function Profile() {
                         {
                             currentUser.id !== user.id && currentUser.is_admin ?
                                 <Button className='red_button' onClick={() => {
-                                    if (confirm('Уверены, что требуется удалить данного пользователя?')) {
-                                        axios(DELETE(`/api/users/${id}/`)).then(
-                                            (response) => {
-                                                checkResponse(response, null, null, () => {
-                                                    window.location.href = '/users/'
-                                                })
-                                            }
-                                        ).catch((error) => {
-                                            checkResponse(error.response)
-                                        })
-                                    }
+                                    checkConfirmation(
+                                        'Уверены, что требуется удалить данного пользователя?',
+                                        () => {
+                                            axios(DELETE(`/api/users/${id}/`)).then(
+                                                (response) => {
+                                                    checkResponse(response, null, null, () => {
+                                                        window.location.href = '/users/'
+                                                    })
+                                                }
+                                            ).catch((error) => {
+                                                checkResponse(error.response)
+                                            })
+                                        }
+                                    )
                                 }}>Удалить аккаунт</Button> : ''
                         }
                         {

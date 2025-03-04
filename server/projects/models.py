@@ -8,7 +8,7 @@ class Project(models.Model):
         get_user_model(), related_name='my_projects', verbose_name='основатель', on_delete=models.SET_NULL, null=True,
         blank=True)
 
-    name = models.CharField('название', max_length=128)
+    name = models.CharField('название', max_length=128, db_index=True)
     icon = models.ImageField('иконка', upload_to=files.project_image_uploading_to, null=True, blank=True)
     header_image = models.ImageField(
         'фоновая картинка', upload_to=files.project_image_uploading_to, null=True, blank=True)

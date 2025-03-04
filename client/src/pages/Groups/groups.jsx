@@ -7,6 +7,7 @@ import {Link} from "react-router-dom"
 import axios from "axios"
 import {GET, POST, DELETE, PUT} from "../../utils/methods.jsx"
 import {checkResponse} from "../../utils/response.jsx"
+import {checkConfirmation} from "../../utils/request.jsx";
 import {getFilters, getDataByIDs} from "../../utils/data.jsx"
 
 import Button from "../../widgets/Button/button.jsx"
@@ -26,10 +27,10 @@ export default function Groups(props) {
         let url = props.isAdmin ? '/api/admin_groups/' : '/api/groups/'
 
         const filters = [
+            'ordering_created_date',
             'min_members_count',
             'max_members_count',
             'ordering_members_count',
-            'ordering_created_date',
         ]
 
         if (props.isAdmin) {
@@ -55,9 +56,7 @@ export default function Groups(props) {
 
         axios(POST('/api/groups/', data)).then(
             (response) => {
-                checkResponse(response, setStatus, 'Группа успешно создана!', () => {
-                    setGroups([...groups, response.data])
-                })
+                checkResponse(response, setStatus, 'Группа успешно создана!', getGroups)
             }
         ).catch((error) => {
             checkResponse(error.response, setStatus)
@@ -74,11 +73,7 @@ export default function Groups(props) {
 
         axios(PUT(`/api/groups/${id}/`, data)).then(
             (response) => {
-                checkResponse(response, setStatus, 'Группа изменена!', () => {
-                    setGroups(groups.map(group =>
-                        group.id === id ? response.data : group
-                    ))
-                })
+                checkResponse(response, setStatus, 'Группа изменена!', getGroups)
             }
         ).catch((error) => {
             checkResponse(error.response, setStatus)
@@ -86,19 +81,20 @@ export default function Groups(props) {
     }
 
     function removeMember(id, memberId) {
-        if (confirm('Уверены что требуется исключить участника?')) {
-            axios(POST(`/api/groups/${id}/remove_member/`, {
-                user_id: memberId
-            })).then(
-                (response) => {
-                    checkResponse(response, setGroups, groups.map(group =>
-                        group.id === id ? response.data : group
-                    ))
-                }
-            ).catch((error) => {
-                checkResponse(error.response)
-            })
-        }
+        checkConfirmation(
+            'Уверены что требуется исключить участника?',
+            () => {
+                axios(POST(`/api/groups/${id}/remove_member/`, {
+                    user_id: memberId
+                })).then(
+                    (response) => {
+                        checkResponse(response, null, null, getGroups)
+                    }
+                ).catch((error) => {
+                    checkResponse(error.response)
+                })
+            }
+        )
     }
 
     function leaveGroup(id) {
@@ -242,19 +238,20 @@ export default function Groups(props) {
                                         {
                                             props.isAdmin || group.founder_id === currentUser.id ?
                                                 <Button className='red_button' onClick={() => {
-                                                    if (confirm('Уверены что требуется удалить группу?')) {
-                                                        const url = props.isAdmin ? `/api/admin_groups/${group.id}` : `/api/groups/${group.id}/`
+                                                    checkConfirmation(
+                                                        'Уверены что требуется удалить группу?',
+                                                        () => {
+                                                            const url = props.isAdmin ? `/api/admin_groups/${group.id}` : `/api/groups/${group.id}/`
 
-                                                        axios(DELETE(url)).then(
-                                                            (response) => {
-                                                                checkResponse(response, null, null, () => {
-                                                                    setGroups(prevItems => prevItems.filter(item => item.id !== group.id))
-                                                                })
-                                                            }
-                                                        ).catch((error) => {
-                                                            checkResponse(error.response)
-                                                        })
-                                                    }
+                                                            axios(DELETE(url)).then(
+                                                                (response) => {
+                                                                    checkResponse(response, null, null, getGroups)
+                                                                }
+                                                            ).catch((error) => {
+                                                                checkResponse(error.response)
+                                                            })
+                                                        }
+                                                    )
                                                 }}>Удалить</Button> : ''
                                         }
                                     </ListElement>

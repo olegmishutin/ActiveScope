@@ -11,6 +11,7 @@ import {getFilters} from "../../utils/data.jsx";
 import userIcon from "../../assets/images/user.svg";
 import InviteModal from "../../components/InviteMdal/inviteModal.jsx";
 import Selection from "../../widgets/Selection/selection.jsx";
+import {checkConfirmation} from "../../utils/request.jsx";
 
 export default function ProjectMembers() {
     let {id} = useParams()
@@ -83,14 +84,19 @@ export default function ProjectMembers() {
         }
     }
 
-    function removeMember(user_id){
-        axios(POST(`/api/projects/${id}/members/remove_member/`, {user_id: user_id})).then(
-            (response) => {
-                checkResponse(response, setMembers, prevItems => prevItems.filter(item => item.id !== user_id))
+    function removeMember(user_id) {
+        checkConfirmation(
+            'Уверены, что хотит исключить этого участника?',
+            () => {
+                axios(POST(`/api/projects/${id}/members/remove_member/`, {user_id: user_id})).then(
+                    (response) => {
+                        checkResponse(response, null, null, getMembers)
+                    }
+                ).catch((error) => {
+                    checkResponse(error.response)
+                })
             }
-        ).catch((error) => {
-            checkResponse(error.response)
-        })
+        )
     }
 
     useEffect(() => {
@@ -108,13 +114,17 @@ export default function ProjectMembers() {
     return (
         <>
             <div className="window_main_content">
-                <Button onClick={() => {
-                    setInviteStatus('')
-                    getUserOwnGroups()
-                    const modal = document.getElementById('project_members_modal')
-                    modal.classList.remove('hide_modal')
-                    modal.classList.add('show_modal')
-                }}>Пригласить участника</Button>
+                {
+                    currentUser.email === project.owner ? <>
+                        <Button onClick={() => {
+                            setInviteStatus('')
+                            getUserOwnGroups()
+                            const modal = document.getElementById('project_members_modal')
+                            modal.classList.remove('hide_modal')
+                            modal.classList.add('show_modal')
+                        }} className='window_main_content__project_invite_button'>Пригласить участника</Button>
+                    </> : ''
+                }
                 <div className="project_members_search">
                     <Textbox placeholder='Поиск по email или ФИО' id='search'/>
                     <Button onClick={getMembers}>Искать</Button>

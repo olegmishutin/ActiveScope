@@ -46,7 +46,7 @@ class TasksViewSet(BaseViewSet):
     filterset_class = TaskFilter
 
     def get_queryset(self):
-        return get_project_from_request(self.request, self.kwargs).tasks.all().select_related(
+        return get_project_from_request(self.request, self.kwargs).tasks.all().order_by('name').select_related(
             'executor', 'status', 'priority')
 
 
@@ -79,6 +79,8 @@ class MembersView(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         if action == 'remove':
             if project.members.filter(id=user.id).exists():
+                user.projects_tasks.filter(project=project).update(executor=None)
+
                 project.members.remove(user)
                 Message.objects.create_remove_from_project_message(project, user)
 
@@ -99,14 +101,14 @@ class StatusesViewSet(BaseViewSet):
     serializer_class = serializers.StatusSerializer
 
     def get_queryset(self):
-        return get_project_from_request(self.request, self.kwargs).statuses.all()
+        return get_project_from_request(self.request, self.kwargs).statuses.all().order_by('name')
 
 
 class PrioritiesViewSet(BaseViewSet):
     serializer_class = serializers.PrioritySerializer
 
     def get_queryset(self):
-        return get_project_from_request(self.request, self.kwargs).priorities.all()
+        return get_project_from_request(self.request, self.kwargs).priorities.all().order_by('name')
 
 
 class TaskFilesViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,

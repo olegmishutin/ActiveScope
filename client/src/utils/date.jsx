@@ -8,7 +8,7 @@ export function getDateFromInput(inputDate) {
 
         return `${day}.${month}.${year}`
     }
-    return null
+    return ''
 }
 
 export function getDateFromRequest(dateString) {

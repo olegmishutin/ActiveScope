@@ -12,7 +12,7 @@ class Group(models.Model):
         get_user_model(), db_table='UserGroup', related_name='groups', verbose_name='участники')
 
     icon = models.ImageField('иконка', upload_to='groups/', null=True, blank=True)
-    name = models.CharField('название', max_length=128, db_index=True, unique=True)
+    name = models.CharField('название', max_length=128, db_index=True)
     created_date = models.DateField('дата создания', auto_now_add=True, editable=False)
     members_count = models.IntegerField('количество участников', default=0, editable=False)
     description = models.TextField('описание', null=True, blank=True)

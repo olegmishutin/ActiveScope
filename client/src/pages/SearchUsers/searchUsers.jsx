@@ -15,6 +15,7 @@ import Ordering from "../../widgets/Ordering/ordering.jsx"
 import Textbox from "../../widgets/Textbox/textbox.jsx"
 import Button from "../../widgets/Button/button.jsx"
 import InviteModal from "../../components/InviteMdal/inviteModal.jsx"
+import {checkConfirmation} from "../../utils/request.jsx";
 
 export default function SearchUsers(props) {
     const [users, setUser] = useState([])
@@ -106,17 +107,18 @@ export default function SearchUsers(props) {
                                         {
                                             props.isAdmin ? <Button
                                                     className='red_button' onClick={() => {
-                                                    if (confirm('Уверены, что требуется удалить данного пользователя?')) {
-                                                        axios(DELETE(`/api/users/${user.id}/`)).then(
-                                                            (response) => {
-                                                                checkResponse(response, null, null, () => {
-                                                                    setUser(prevItems => prevItems.filter(item => item.id !== user.id))
-                                                                })
-                                                            }
-                                                        ).catch((error) => {
-                                                            checkResponse(error.response)
-                                                        })
-                                                    }
+                                                    checkConfirmation(
+                                                        'Уверены, что требуется удалить данного пользователя?',
+                                                        () => {
+                                                            axios(DELETE(`/api/users/${user.id}/`)).then(
+                                                                (response) => {
+                                                                    checkResponse(response, null, null, getUsers)
+                                                                }
+                                                            ).catch((error) => {
+                                                                checkResponse(error.response)
+                                                            })
+                                                        }
+                                                    )
                                                 }}>Удалить</Button> :
                                                 <Button className='light_button'
                                                         onClick={() => {

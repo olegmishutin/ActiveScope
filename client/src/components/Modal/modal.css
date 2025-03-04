@@ -26,11 +26,9 @@
 @keyframes show_modal_anim {
     from {
         opacity: 0;
-        z-index: 101;
     }
     to {
         opacity: 1;
-        z-index: 102;
     }
 }
 
@@ -41,7 +39,7 @@
     }
     to {
         opacity: 0;
-        z-index: 101;
+        z-index: 102;
     }
 }
 

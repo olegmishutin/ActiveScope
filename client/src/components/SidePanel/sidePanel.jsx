@@ -73,9 +73,7 @@ export default function SidePanel() {
         ], true, false)
 
         axios(POST('/api/projects/', data)).then((response) => {
-            checkResponse(response, setProjectStatus, 'Проект успешно создан!', () => {
-                getProjects()
-            })
+            checkResponse(response, setProjectStatus, 'Проект успешно создан!', getProjects)
         }).catch((error) => {
             checkResponse(error.response, setProjectStatus, null, null, null, 'project')
         })
@@ -106,7 +104,7 @@ export default function SidePanel() {
         })
     }
 
-    function openModal(buttonText, buttonFunc, nameText, descriptionText, id) {
+    function openModal(buttonText, buttonFunc, id) {
         setProjectStatus('')
 
         const modal = document.getElementById('projects_modal')
@@ -132,10 +130,10 @@ export default function SidePanel() {
                 checkResponse(error.response)
             })
         } else {
-            document.getElementById('project_name').value = nameText
-            document.getElementById('project_start_date').value = nameText
-            document.getElementById('project_end_date').value = nameText
-            document.getElementById('project_description').value = descriptionText
+            document.getElementById('project_name').value = ''
+            document.getElementById('project_start_date').value = ''
+            document.getElementById('project_end_date').value = ''
+            document.getElementById('project_description').value = ''
         }
     }
 
@@ -212,7 +210,7 @@ export default function SidePanel() {
                     </div>
                     <div className="panel__main_box">
                         <button onClick={() => {
-                            openModal('Создать', createProject, '', '', null)
+                            openModal('Создать', createProject, null)
                         }} className="panel__main__selector">
                             <div className="panel__main__selector__icon">
                                 <img src={addIcon} alt='icon'/>
@@ -240,7 +238,7 @@ export default function SidePanel() {
                                                             onClick={() => {
                                                                 openModal('Изменить', () => {
                                                                     editProject(value.id)
-                                                                }, null, null, value.id)
+                                                                }, value.id)
                                                             }}>
                                                         <img src={threeDots} alt='edit' loading='lazy'/>
                                                     </button>

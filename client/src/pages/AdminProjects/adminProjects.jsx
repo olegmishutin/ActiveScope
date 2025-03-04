@@ -11,6 +11,7 @@ import {checkResponse} from "../../utils/response.jsx";
 import projectDefaultIcon from '../../assets/images/project.svg'
 import {Link} from "react-router-dom";
 import {getFilters} from "../../utils/data.jsx";
+import {checkConfirmation} from "../../utils/request.jsx";
 
 export default function AdminProjects() {
     const [projects, setProjects] = useState([])
@@ -122,15 +123,18 @@ export default function AdminProjects() {
                                             </span>
                                         </p>
                                         <Button className='red_button' onClick={() => {
-                                            axios(DELETE(`/api/admin_projects/${project.id}/`)).then(
-                                                (response) => {
-                                                    checkResponse(response, null, null, () => {
-                                                        getProjects()
+                                            checkConfirmation(
+                                                'Уверены, что требуется удалить этот проект?',
+                                                () => {
+                                                    axios(DELETE(`/api/admin_projects/${project.id}/`)).then(
+                                                        (response) => {
+                                                            checkResponse(response, null, null, getProjects)
+                                                        }
+                                                    ).catch((error) => {
+                                                        checkResponse(error.response)
                                                     })
                                                 }
-                                            ).catch((error) => {
-                                                checkResponse(error.response)
-                                            })
+                                            )
                                         }}>Удалить</Button>
                                     </ListElement>
                                 </>

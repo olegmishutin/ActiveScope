@@ -17,6 +17,7 @@ import Modal from "../../components/Modal/modal.jsx";
 import Selection from "../../widgets/Selection/selection.jsx";
 import FilePicker from "../../widgets/FilePicker/filePicker.jsx";
 import {getDateFromInput, getDateFromRequest} from "../../utils/date.jsx";
+import {checkConfirmation} from "../../utils/request.jsx";
 
 export default function ProjectTasks() {
     let {id} = useParams()
@@ -115,9 +116,7 @@ export default function ProjectTasks() {
 
         axios(POST(`/api/projects/${id}/statuses/`, data)).then(
             (response) => {
-                checkResponse(response, setStatusesStatus, 'Успешно создали статус!', () => {
-                    getStatuses()
-                })
+                checkResponse(response, setStatusesStatus, 'Успешно создали статус!', getStatuses)
             }
         ).catch((error) => {
             checkResponse(error.response, setStatusesStatus, null, null, null, 'status')
@@ -151,9 +150,7 @@ export default function ProjectTasks() {
 
         axios(POST(`/api/projects/${id}/priorities/`, data)).then(
             (response) => {
-                checkResponse(response, setPrioritiesStatus, 'Успешно создали приоритет!', () => {
-                    getPriorities()
-                })
+                checkResponse(response, setPrioritiesStatus, 'Успешно создали приоритет!', getPriorities)
             }
         ).catch((error) => {
             checkResponse(error.response, setPrioritiesStatus, null, null, null, 'priority')
@@ -204,19 +201,17 @@ export default function ProjectTasks() {
         })
     }
 
-    function sendFiles(task_id, fromModal) {
+    function sendFiles(task_id) {
         if (task_id !== null) {
             const formData = getDataByIDs([
-                [fromModal ? 'project_task_files_uploaded_files' : 'project_task_file', 'uploaded_files']
+                ['project_task_files_uploaded_files', 'uploaded_files']
             ], true)
 
             if (Array.from(formData.keys()).length) {
                 axios(POST(`/api/projects/${id}/tasks/${task_id}/files/`, formData)).then(
                     (response) => {
                         checkResponse(response, null, null, () => {
-                            if (fromModal) {
-                                getTaskFiles(task_id)
-                            }
+                            getTaskFiles(task_id)
                         })
                     }
                 ).catch((error) => {
@@ -235,17 +230,19 @@ export default function ProjectTasks() {
             ['project_task_end_date', 'end_date'],
             ['project_task_executor', 'executor_id'],
             ['project_task_description', 'description'],
-        ], false, true)
+            ['project_task_file', 'uploaded_files']
+        ], true, true)
 
-        data['start_date'] = getDateFromInput(data['start_date'])
-        data['end_date'] = getDateFromInput(data['end_date'])
+        if (typeof data.get('uploaded_files') === "string"){
+            data.delete('uploaded_files')
+        }
+
+        data.set('start_date', getDateFromInput(data.get('start_date')))
+        data.set('end_date', getDateFromInput(data.get('end_date')))
 
         axios(taskId ? PUT(`/api/projects/${id}/tasks/${taskId}/`, data) : POST(`/api/projects/${id}/tasks/`, data)).then(
             (response) => {
-                checkResponse(response, setTaskStatus, taskId ? 'Успешно изменили задачу!' : 'Успешно создали задачу!', () => {
-                    sendFiles(response.data.id, false)
-                    getTasks()
-                })
+                checkResponse(response, setTaskStatus, taskId ? 'Успешно изменили задачу!' : 'Успешно создали задачу!', getTasks)
             }
         ).catch((error) => {
             checkResponse(error.response, setTaskStatus, null, null, null, 'project_task')
@@ -405,15 +402,18 @@ export default function ProjectTasks() {
                                                      )
                                                  }}>Изменить</Button>
                                                  <Button className='red_button' onClick={() => {
-                                                     axios(DELETE(`/api/projects/${id}/tasks/${task.id}/`)).then(
-                                                         (response) => {
-                                                             checkResponse(response, null, null, () => {
-                                                                 getTasks()
+                                                     checkConfirmation(
+                                                         'Уверены, что хотит эту удалить задачу?',
+                                                         () => {
+                                                             axios(DELETE(`/api/projects/${id}/tasks/${task.id}/`)).then(
+                                                                 (response) => {
+                                                                     checkResponse(response, null, null, getTasks)
+                                                                 }
+                                                             ).catch((error) => {
+                                                                 checkResponse(error.response)
                                                              })
                                                          }
-                                                     ).catch((error) => {
-                                                         checkResponse(error.response)
-                                                     })
+                                                     )
                                                  }}>Удалить</Button>
                                              </>}>
                                     {
@@ -505,7 +505,7 @@ export default function ProjectTasks() {
             <Modal id='project_task_files' manageButtons={<>
                 <FilePicker id='project_task_files_uploaded_files' multiple={true}>Файлы</FilePicker>
                 <Button id='project_task_files_load_button' onClick={() => {
-                    sendFiles(taskId, true)
+                    sendFiles(taskId)
                 }}>Загрузить</Button>
             </>}>
                 <ul className='project_task_files__list'>
@@ -521,15 +521,20 @@ export default function ProjectTasks() {
                                         <a className='default_button light_button'
                                            href={`/api/projects/${id}/tasks/${file.task}/files/${file.id}/`}>Скачать</a>
                                         <Button className='red_button' onClick={() => {
-                                            axios(DELETE(`/api/projects/${id}/tasks/${file.task}/files/${file.id}/`)).then(
-                                                (response) => {
-                                                    checkResponse(response, null, null, () => {
-                                                        getTaskFiles(file.task)
+                                            checkConfirmation(
+                                                'Уверены, что хотит удалить этот файл?',
+                                                () => {
+                                                    axios(DELETE(`/api/projects/${id}/tasks/${file.task}/files/${file.id}/`)).then(
+                                                        (response) => {
+                                                            checkResponse(response, null, null, () => {
+                                                                getTaskFiles(file.task)
+                                                            })
+                                                        }
+                                                    ).catch((error) => {
+                                                        checkResponse(error.response)
                                                     })
                                                 }
-                                            ).catch((error) => {
-                                                checkResponse(error.response)
-                                            })
+                                            )
                                         }}>Удалить</Button>
                                     </li>
                                 </>

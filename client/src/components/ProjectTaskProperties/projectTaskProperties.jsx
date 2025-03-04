@@ -5,6 +5,7 @@ import Textbox from "../../widgets/Textbox/textbox.jsx";
 import {HexColorPicker} from "react-colorful";
 import Checkbox from "../../widgets/Checkbox/checkbox.jsx";
 import {useState} from "react";
+import {checkConfirmation} from "../../utils/request.jsx";
 
 export default function ProjectTaskProperties(props) {
     const [color, setColor] = useState('#000000')
@@ -56,7 +57,7 @@ export default function ProjectTaskProperties(props) {
                                         <div className="project_task_properties__list__element__info">
                                             <p>{value.name}</p>
                                             <div className={props.rounded ? 'rounded' : ''}
-                                                  style={{backgroundColor: `#${value.color}`}}></div>
+                                                 style={{backgroundColor: `#${value.color}`}}></div>
                                         </div>
                                         <div className="project_task_properties__list__element__button">
                                             <Button className='light_button' onClick={() => {
@@ -66,7 +67,12 @@ export default function ProjectTaskProperties(props) {
                                                 }, 'Изменить', value.name, value.is_means_completeness)
                                             }}>Изменить</Button>
                                             <Button className='red_button' onClick={() => {
-                                                props.deleteFunc(value.id)
+                                                checkConfirmation(
+                                                    `Уверены, что хотите удалить этот ${props.whatCreate}?`,
+                                                    () => {
+                                                        props.deleteFunc(value.id)
+                                                    }
+                                                )
                                             }}>Удалить</Button>
                                         </div>
                                     </li>

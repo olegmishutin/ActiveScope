@@ -18,8 +18,8 @@ class User(AbstractBaseUser):
 
     email = models.EmailField('email', max_length=256, unique=True)
     password = models.CharField('пароль', max_length=128, validators=[validate_password])
-    first_name = models.CharField('имя', max_length=128)
-    last_name = models.CharField('фамилия', max_length=128)
+    first_name = models.CharField('имя', max_length=128, db_index=True)
+    last_name = models.CharField('фамилия', max_length=128, db_index=True)
 
     patronymic = models.CharField('отчество', max_length=128, null=True, blank=True)
     birth_date = models.DateField('дата рождения', null=True, blank=True)

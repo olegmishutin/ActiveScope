@@ -1,6 +1,9 @@
+.window_main_content__project_invite_button{
+    margin-bottom: 15px;
+}
+
 .project_members_search {
     display: flex;
-    margin-top: 15px;
     margin-bottom: 25px;
     gap: 13px;
 }

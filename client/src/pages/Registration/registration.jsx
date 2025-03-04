@@ -23,10 +23,7 @@ export default function Registration() {
         const data = getDataByIDs([
             'first_name', 'last_name', 'patronymic', 'email', 'password', 'birth_date'
         ], false, false)
-
-        if (data.birth_date) {
-            data.birth_date = getDateFromInput(data.birth_date)
-        }
+        data.birth_date = getDateFromInput(data.birth_date)
 
         axios(POST('/api/registration/', data)).then(
             (response) => {
