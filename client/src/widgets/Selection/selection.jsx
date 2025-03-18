@@ -18,7 +18,9 @@ export default function Selection(props) {
                                         <>
                                             {
                                                 props.flat ? <option value={value[0]}>{value[1]}</option> :
-                                                    <option value={value.id}>{value.name}</option>
+                                                    <option
+                                                        style={props.colorAttr ? {backgroundColor: `#${value[props.colorAttr]}`} : {}}
+                                                        value={value.id}>{value.name}</option>
                                             }
                                         </>
                                     )

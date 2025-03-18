@@ -18,7 +18,7 @@ export default function ProjectBase() {
                 checkResponse(response, setProject, response.data)
             }
         ).catch((error) => {
-            checkResponse(error.response)
+            checkResponse(error.response, null, null, null, true)
         })
     }, [id]);
 

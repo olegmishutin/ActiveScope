@@ -13,7 +13,7 @@ import threeDots from '../../assets/images/three dots.svg'
 import Modal from "../Modal/modal.jsx";
 
 import {useState, useEffect} from "react"
-import {GET, POST, PUT} from "../../utils/methods.jsx"
+import {DELETE, GET, POST, PUT} from "../../utils/methods.jsx"
 import {checkResponse} from "../../utils/response.jsx"
 import axios from "axios"
 import {Link} from "react-router-dom"
@@ -26,6 +26,7 @@ import Textbox from "../../widgets/Textbox/textbox.jsx";
 import Button from "../../widgets/Button/button.jsx";
 import {getDataByIDs, getImage} from "../../utils/data.jsx";
 import {getDateFromRequest} from "../../utils/date.jsx";
+import {checkConfirmation} from "../../utils/request.jsx";
 
 export default function SidePanel() {
     const [user, setUser] = useState({photo: null})
@@ -33,6 +34,7 @@ export default function SidePanel() {
     const [newMessagesCount, setNewMessagesCount] = useState(0)
     const [messages, setMessages] = useState([])
     const [projectStatus, setProjectStatus] = useState('')
+    const [editingProjectId, setEditingProjectId] = useState(null)
 
     function getProjects() {
         axios(GET('/api/my_projects/')).then(
@@ -100,12 +102,35 @@ export default function SidePanel() {
                 })
             }
         ).catch((error) => {
-            checkResponse(error.response, setProjectStatus, null, null, null, 'project')
+            checkResponse(error.response, setProjectStatus, null, null, true, 'project')
         })
+    }
+
+    function deleteProject() {
+        checkConfirmation(
+            'Уверены, что хотите удалить этот проект?',
+            () => {
+                axios(DELETE(`/api/projects/${editingProjectId}/`)).then(
+                    (response) => {
+                        checkResponse(response, null, null, () => {
+                            getProjects()
+
+                            if (window.location.href.includes(`/project/${editingProjectId}/`)) {
+                                window.location.href = '/'
+                            }
+                            closeProjectsModal()
+                        })
+                    }
+                ).catch((error) => {
+                    checkResponse(error.response, setProjectStatus, null, null, true)
+                })
+            }
+        )
     }
 
     function openModal(buttonText, buttonFunc, id) {
         setProjectStatus('')
+        setEditingProjectId(id)
 
         const modal = document.getElementById('projects_modal')
         modal.classList.add('show_modal')
@@ -147,6 +172,16 @@ export default function SidePanel() {
         if (window.innerWidth <= 768) {
             changePanel('panel', 'show_panel', 'hidden_panel')
         }
+    }
+
+    function closeProjectsModal() {
+        const modal = document.getElementById('projects_modal')
+        modal.classList.remove('show_modal')
+        modal.classList.add('hide_modal')
+
+        setTimeout(() => {
+            setEditingProjectId(null)
+        }, 500)
     }
 
     return (
@@ -283,7 +318,12 @@ export default function SidePanel() {
             <Modal id='projects_modal' className='projects_modal_window' status={projectStatus}
                    contentClassName='projects_modal_window_content' manageButtons={<>
                 <Button id='projects_modal__manage_button'/>
-            </>}>
+                {
+                    editingProjectId !== null ? <>
+                        <Button className='red_button' onClick={deleteProject}>Удалить</Button>
+                    </> : ''
+                }
+            </>} customCloseFunc={closeProjectsModal}>
                 <div className="projects_modal__content">
                     <div className="projects_modal__content__side">
                         <FilePicker id='project_icon' accept='image/*' className='projects_modal__content__filepicker'>

@@ -13,13 +13,22 @@ export default function Modal(props) {
         <>
             <div className='modal' id={props.id}>
                 <div className={`modal__window ${props.className}`}>
-                    <div className={`modal__window__content ${props.contentClassName}`}>
-                        {props.children}
-                    </div>
-                    <p className='modal__window__status'>{props.status}</p>
+                    {
+                        props.children ? <>
+                            <div className={`modal__window__content ${props.contentClassName}`}>
+                                {props.children}
+                            </div>
+                        </> : ''
+                    }
+                    {
+                        props.status !== undefined ? <>
+                            <p className='modal__window__status'>{props.status}</p>
+                        </> : ''
+                    }
                     <div className="modal__window__manage_button">
                         {props.manageButtons}
-                        <Button className='red_button' onClick={closeModal}>Закрыть</Button>
+                        <Button className='red_button'
+                                onClick={props.customCloseFunc ? props.customCloseFunc : closeModal}>Закрыть</Button>
                     </div>
                 </div>
             </div>

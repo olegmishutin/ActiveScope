@@ -233,7 +233,7 @@ export default function ProjectTasks() {
             ['project_task_file', 'uploaded_files']
         ], true, true)
 
-        if (typeof data.get('uploaded_files') === "string"){
+        if (typeof data.get('uploaded_files') === "string") {
             data.delete('uploaded_files')
         }
 
@@ -486,11 +486,13 @@ export default function ProjectTasks() {
                     <div className="project_task_management__inline">
                         <div className="project_task_management__column">
                             <Textbox label='Название' id='project_task_name' isRequired={true}/>
-                            <Selection id='project_task_status' data={statuses}>Статус</Selection>
+                            <Selection id='project_task_status' data={statuses} colorAttr={'color'}>
+                                Статус</Selection>
                         </div>
                         <div className="project_task_management__column">
                             <Textbox type='date' label='Дата начала' id='project_task_start_date'/>
-                            <Selection id='project_task_priority' data={priorities}>Приоритет</Selection>
+                            <Selection id='project_task_priority' data={priorities}
+                                       colorAttr={'color'}>Приоритет</Selection>
                         </div>
                         <div className="project_task_management__column">
                             <Textbox type='date' label='Дата окончания' id='project_task_end_date'/>
