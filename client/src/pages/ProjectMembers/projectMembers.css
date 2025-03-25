@@ -1,4 +1,4 @@
-.window_main_content__project_invite_button{
+.window_main_content__project_invite_button {
     margin-bottom: 15px;
 }
 
@@ -18,7 +18,22 @@
     gap: 25px;
 }
 
+.project_members_invite_modal {
+    max-width: 350px;
+}
+
 .project_members_invite_modal .invite_modal_content {
     display: flex;
-    gap: 14px;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.project_members_invite_modal__selection,
+.project_members_invite_modal__dropdown,
+.project_members_invite_modal__dropdown .dropdown,
+.project_members_invite_modal__dropdown .dropdown__content,
+.project_members_invite_modal__selection .default_selection__select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }

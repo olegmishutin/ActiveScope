@@ -21,14 +21,9 @@ class MessageSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         agreement_data = validated_data.pop('agreement', False)
 
-        if agreement_data:
-            if instance.topic == 'INV_GROUP':
-                instance.sender_group.add_member(instance.receiver)
-                Message.objects.create_joined_group_message(instance.sender_group, instance.receiver)
-
-            elif instance.topic == 'INV_PROJECT':
-                instance.sender_project.members.add(instance.receiver)
-                Message.objects.create_joined_project_message(instance.sender_project, instance.receiver)
+        if agreement_data and instance.topic == 'INV_GROUP':
+            instance.sender_group.add_member(instance.receiver)
+            Message.objects.create_joined_group_message(instance.sender_group, instance.receiver)
 
         instance.is_readed = True
         return super().update(instance, validated_data)

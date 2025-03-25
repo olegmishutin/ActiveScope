@@ -10,15 +10,16 @@ import Textbox from "../../widgets/Textbox/textbox.jsx";
 import {getFilters} from "../../utils/data.jsx";
 import userIcon from "../../assets/images/user.svg";
 import InviteModal from "../../components/InviteMdal/inviteModal.jsx";
-import Selection from "../../widgets/Selection/selection.jsx";
 import {checkConfirmation} from "../../utils/request.jsx";
+import Dropdown from "../../widgets/Dropdown/dropdown.jsx";
+import Checkbox from "../../widgets/Checkbox/checkbox.jsx";
 
 export default function ProjectMembers() {
     let {id} = useParams()
     const {project} = useOutletContext()
     const [members, setMembers] = useState([])
     const [currentUser, setCurrentUser] = useState({})
-    const [inviteStatus, setInviteStatus] = useState('')
+    const [addingStatus, setAddingStatus] = useState('')
     const [groups, setGroups] = useState([])
     const [groupMembers, setGroupMembers] = useState([])
 
@@ -59,27 +60,36 @@ export default function ProjectMembers() {
                 })
             }
         ).catch((error) => {
-            checkResponse(error.response, setInviteStatus)
+            checkResponse(error.response, setAddingStatus)
         })
     }
 
-    function inviteMember(event) {
+    function addMember(event) {
         const group_selection = document.getElementById('groups_selection')
-        const member_selection = document.getElementById('member_selection')
 
-        if (group_selection && member_selection) {
+        if (group_selection.value) {
             const data = {
                 group_id: group_selection.value,
-                user_id: member_selection.value
+                users_ids: []
             }
 
-            axios(POST(`/api/projects/${id}/members/invite_member/`, data)).then(
+            groupMembers.forEach((member) => {
+                const checkbox = document.getElementById(`member_selection_checkbox_${member.id}`)
+
+                if (checkbox.checked) {
+                    data['users_ids'].push(member.id)
+                }
+            })
+
+            axios(POST(`/api/projects/${id}/add_member/`, data)).then(
                 (response) => {
-                    checkResponse(response, setInviteStatus, response.data.detail)
+                    checkResponse(response, setAddingStatus, response.data.detail, getMembers)
                 }
             ).catch((error) => {
-                checkResponse(error.response, setInviteStatus)
+                checkResponse(error.response, setAddingStatus)
             })
+
+            document.getElementById('dropdown_project_member_selection_details').removeAttribute('open')
             event.preventDefault()
         }
     }
@@ -88,7 +98,7 @@ export default function ProjectMembers() {
         checkConfirmation(
             'Уверены, что хотит исключить этого участника?',
             () => {
-                axios(POST(`/api/projects/${id}/members/remove_member/`, {user_id: user_id})).then(
+                axios(POST(`/api/projects/${id}/remove_member/`, {user_id: user_id})).then(
                     (response) => {
                         checkResponse(response, null, null, getMembers)
                     }
@@ -117,12 +127,12 @@ export default function ProjectMembers() {
                 {
                     currentUser.email === project.owner ? <>
                         <Button onClick={() => {
-                            setInviteStatus('')
+                            setAddingStatus('')
                             getUserOwnGroups()
                             const modal = document.getElementById('project_members_modal')
                             modal.classList.remove('hide_modal')
                             modal.classList.add('show_modal')
-                        }} className='window_main_content__project_invite_button'>Пригласить участника</Button>
+                        }} className='window_main_content__project_invite_button'>Добавить участника</Button>
                     </> : ''
                 }
                 <div className="project_members_search">
@@ -168,11 +178,32 @@ export default function ProjectMembers() {
                         })
                     }
                 ).catch((error) => {
-                    checkResponse(error.response, setInviteStatus)
+                    checkResponse(error.response, setAddingStatus)
                 })
-            }} className='project_members_invite_modal' inviteStatus={inviteStatus} groups={groups}
-                         id='project_members_modal' inviteUserFunc={inviteMember}>
-                <Selection id='member_selection' data={groupMembers}>Выберите участника</Selection>
+            }} extendCloseFunc={() => {
+                document.getElementById('dropdown_project_member_selection_details').removeAttribute('open')
+
+                groupMembers.forEach((member) => {
+                    document.getElementById(`member_selection_checkbox_${member.id}`).checked = false
+                    document.getElementById(`member_selection_checkbox_${member.id}_indicator`).classList.remove('default_checkbox__checked')
+                })
+            }} className='project_members_invite_modal' inviteStatus={addingStatus} groups={groups}
+                         id='project_members_modal' inviteUserFunc={addMember} inviteButtonText='Добавить'
+                         selectionClassName='project_members_invite_modal__selection'>
+                <Dropdown className='project_members_invite_modal__dropdown' id='dropdown_project_member_selection'
+                          name='Выберите участника'>
+                    {
+                        groupMembers.map((member) => {
+                            return (
+                                <>
+                                    <Checkbox splash={true} id={`member_selection_checkbox_${member.id}`}>
+                                        {member.name}
+                                    </Checkbox>
+                                </>
+                            )
+                        })
+                    }
+                </Dropdown>
             </InviteModal>
         </>
     )

@@ -39,6 +39,56 @@ class ProjectsViewSet(viewsets.ModelViewSet):
             completed_tasks=Count('tasks', filter=Q(tasks__status__is_means_completeness=True)),
             total_tasks=Count('tasks')).select_related('owner')
 
+    def handle_member_action(self, request, action):
+        project = self.get_object()
+
+        if action == 'add':
+            users_ids = request.data.get('users_ids')
+            users = get_user_model().objects.filter(id__in=users_ids).only('id', 'email')
+
+            if users:
+                group = get_object_or_404(Group.objects.filter(founder=request.user), pk=request.data.get('group_id'))
+
+                if group.members.filter(id__in=users.values_list('id', flat=True)).exists():
+                    project.members.add(*users)
+                    return Response({'detail': 'Пользователи добавлены в проект.'}, status=status.HTTP_200_OK)
+
+                raise ValidationError({'detail': 'Пользователь в группе не найден.'})
+            raise ValidationError({'detail': 'Пользователи не найдены.'})
+
+        elif action == 'remove':
+            user = get_object_or_404(get_user_model().objects.all().only('id', 'email'), pk=request.data.get('user_id'))
+
+            if project.members.filter(id=user.id).exists():
+                user.projects_tasks.filter(project=project).update(executor=None)
+
+                project.members.remove(user)
+                Message.objects.create_remove_from_project_message(project, user)
+
+                return Response(status=status.HTTP_200_OK)
+            return ValidationError({'detail': 'Пользователь в проекте не найден.'})
+
+        elif action == 'leave':
+            request.user.projects_tasks.filter(project=project).update(executor=None)
+            project.members.remove(request.user)
+
+            Message.objects.create_leave_from_project_message(project, request.user)
+
+            projects_serializer = serializers.ShortProjectsSerializer(request.user.projects.all(), many=True)
+            return Response(projects_serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['POST'], detail=True)
+    def add_member(self, request, pk=None):
+        return self.handle_member_action(request, 'add')
+
+    @action(methods=['POST'], detail=True)
+    def remove_member(self, request, pk=None):
+        return self.handle_member_action(request, 'remove')
+
+    @action(methods=['POST'], detail=True, permission_classes=[UserIsMemberOfProject])
+    def leave_project(self, request, pk=None):
+        return self.handle_member_action(request, 'leave')
+
 
 class TasksViewSet(BaseViewSet):
     serializer_class = serializers.TaskSerializer
@@ -60,41 +110,6 @@ class MembersView(mixins.ListModelMixin, viewsets.GenericViewSet):
         return get_project_from_request(self.request, self.kwargs).members.all().annotate(
             tasks_count=Count(
                 'projects_tasks', filter=Q(projects_tasks__project_id=self.kwargs.get('project_pk'))))
-
-    def handle_member_action(self, request, action):
-        project = get_project_from_request(request, self.kwargs)
-        user = get_object_or_404(get_user_model().objects.all().only('id', 'email'), pk=request.data.get('user_id'))
-
-        if action == 'invite':
-            if project.members.filter(id=user.id).exists():
-                raise ValidationError({'detail': 'Пользователь уже является участником проекта.'})
-
-            group = get_object_or_404(Group.objects.filter(founder=request.user), pk=request.data.get('group_id'))
-            if group.members.filter(id=user.id).exists():
-                Message.objects.create_invite_in_project_message(project, user)
-
-                return Response(
-                    {'detail': f'Пользователю {user.email} отправлено приглашение.'}, status=status.HTTP_200_OK)
-            raise ValidationError({'detail': 'Пользователь в группе не найден.'})
-
-        if action == 'remove':
-            if project.members.filter(id=user.id).exists():
-                user.projects_tasks.filter(project=project).update(executor=None)
-
-                project.members.remove(user)
-                Message.objects.create_remove_from_project_message(project, user)
-
-                members_serializer = serializers.MemberSerializer(self.get_queryset(), many=True)
-                return Response(members_serializer.data, status=status.HTTP_200_OK)
-            return ValidationError({'detail': 'Пользователь в проекте не найден.'})
-
-    @action(methods=['POST'], detail=False)
-    def invite_member(self, request, project_pk=None):
-        return self.handle_member_action(request, 'invite')
-
-    @action(methods=['POST'], detail=False)
-    def remove_member(self, request, project_pk=None):
-        return self.handle_member_action(request, 'remove')
 
 
 class StatusesViewSet(BaseViewSet):
@@ -195,5 +210,5 @@ class AdminFileView(generics.RetrieveAPIView):
 @permission_classes([IsAuthenticated])
 def get_user_projects(request):
     projects = request.user.projects.all()
-    projects_serializer = serializers.ShortProjectsSerializer(projects, many=True, context={'request': request})
+    projects_serializer = serializers.ShortProjectsSerializer(projects, many=True)
     return Response(projects_serializer.data, status=status.HTTP_200_OK)

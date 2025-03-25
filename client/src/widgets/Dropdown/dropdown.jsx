@@ -4,7 +4,7 @@ import '../../assets/styles/widgetsEffects.css'
 export default function Dropdown(props){
     return (
         <>
-            <div className="dropdown_box" style={props.style}>
+            <div className={`dropdown_box ${props.className}`} style={props.style}>
                 <details className="dropdown hoverEffect" id={`${props.id}_details`}>
                     <summary className="dropdown__header">
                         {props.name}

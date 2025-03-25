@@ -12,9 +12,8 @@ class Message(models.Model):
         'EXC_GROUP': 'Исключен из группы',
         'LEAVE_GROUP': 'Убавление в группе',
 
-        'INV_PROJECT': 'Приглашение в проект',
-        'JOINED_PROJECT': 'Пополнение в проекте',
-        'EXC_PROJECT': 'Исключен из проекта',
+        'EXC_PROJECT': 'Исключение из проекта',
+        'LEAVE_PROJECT': 'Убавление в проекте',
 
         'TASKS': 'Уведомление о задаче'
     }

@@ -16,4 +16,9 @@ class UserIsMemberOfProject(BasePermission):
     message = 'Вы не являетесь участником проекта.'
 
     def has_permission(self, request, view):
-        return request.user.projects.filter(id=view.kwargs['project_pk']).exists()
+        project_id = view.kwargs.get('project_pk')
+
+        if project_id is None:
+            project_id = view.kwargs['pk']
+
+        return request.user.projects.filter(id=project_id).exists()

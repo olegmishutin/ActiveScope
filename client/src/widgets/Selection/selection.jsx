@@ -3,7 +3,7 @@ import './selection.css'
 export default function Selection(props) {
     return (
         <>
-            <label className={`default_selection ${props.className}`} htmlFor={props.id}>
+            <label className={`hoverEffect default_selection ${props.className}`} htmlFor={props.id}>
                 {props.children}:
                 {
                     props.data.length > 0 ? <>

@@ -7,6 +7,8 @@ export default function Modal(props) {
         const modal = document.getElementById(props.id)
         modal.classList.remove('show_modal')
         modal.classList.add('hide_modal')
+
+        props.extendCloseFunc()
     }
 
     return (

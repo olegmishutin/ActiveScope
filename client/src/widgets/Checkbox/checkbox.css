@@ -60,3 +60,8 @@
 .default_checkbox_radio__background {
     border-radius: 50%;
 }
+
+.dropdown__content .default_checkbox {
+    width: 100%;
+    word-break: break-word;
+}
