@@ -48,8 +48,7 @@ class GroupsViewSet(ModelViewSet):
             group.remove_member(user, 'Пользователь в группе не найден.')
             Message.objects.create_remove_from_group_message(group, user)
 
-            group_serializer = GroupSerializer(group, context={'request': request})
-            return Response(group_serializer.data, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=True)
     def invite_member(self, request, pk=None):
@@ -66,8 +65,7 @@ class GroupsViewSet(ModelViewSet):
         group.remove_member(request.user, 'Вы не являетесь участником этой группы.')
         Message.objects.create_leave_from_group_message(group, request.user)
 
-        groups_serializer = GroupSerializer(self.get_queryset(), many=True, context={'request': request})
-        return Response(groups_serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
 
 
 class AdminGroupsView(generics.ListAPIView):

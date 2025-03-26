@@ -82,7 +82,7 @@ export default function Groups(props) {
 
     function removeMember(id, memberId) {
         checkConfirmation(
-            'Уверены что требуется исключить участника?',
+            'Уверены, что требуется исключить участника?',
             () => {
                 axios(POST(`/api/groups/${id}/remove_member/`, {
                     user_id: memberId
@@ -98,13 +98,18 @@ export default function Groups(props) {
     }
 
     function leaveGroup(id) {
-        axios(POST(`/api/groups/${id}/leave_group/`)).then(
-            (response) => {
-                checkResponse(response, setGroups, response.data)
+        checkConfirmation(
+            'Уверены, что хотите выйти из группы?',
+            () => {
+                axios(POST(`/api/groups/${id}/leave_group/`)).then(
+                    (response) => {
+                        checkResponse(response, null, null, getGroups)
+                    }
+                ).catch((error) => {
+                    checkResponse(error.response)
+                })
             }
-        ).catch((error) => {
-            checkResponse(error.response)
-        })
+        )
     }
 
     function openModal(buttonText, buttonFunc, nameText, descriptionText) {
@@ -239,7 +244,7 @@ export default function Groups(props) {
                                             props.isAdmin || group.founder_id === currentUser.id ?
                                                 <Button className='red_button' onClick={() => {
                                                     checkConfirmation(
-                                                        'Уверены что требуется удалить группу?',
+                                                        'Уверены, что требуется удалить группу?',
                                                         () => {
                                                             const url = props.isAdmin ? `/api/admin_groups/${group.id}` : `/api/groups/${group.id}/`
 

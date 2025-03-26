@@ -34,7 +34,9 @@ export default function SidePanel() {
     const [newMessagesCount, setNewMessagesCount] = useState(0)
     const [messages, setMessages] = useState([])
     const [projectStatus, setProjectStatus] = useState('')
+    const [leaveStatus, setLeaveStatus] = useState(undefined)
     const [editingProjectId, setEditingProjectId] = useState(null)
+    const [leavingProjectId, setLeavingProjectId] = useState(null)
 
     function getProjects() {
         axios(GET('/api/my_projects/')).then(
@@ -184,6 +186,33 @@ export default function SidePanel() {
         }, 500)
     }
 
+    function leaveProject() {
+        checkConfirmation(
+            'Уверены, что хотите выйти из этого проекта?',
+            () => {
+                if (leavingProjectId !== null) {
+                    axios(POST(`/api/projects/${leavingProjectId}/leave_project/`)).then(
+                        (response) => {
+                            checkResponse(response, null, null, () => {
+                                const modal = document.getElementById('leave_projects_modal')
+                                modal.classList.remove('show_modal')
+                                modal.classList.add('hide_modal')
+
+                                if (window.location.href.includes(`/project/${leavingProjectId}/`)) {
+                                    window.location.href = '/'
+                                } else {
+                                    getProjects()
+                                }
+                            })
+                        }
+                    ).catch((error) => {
+                        checkResponse(error.response, setLeaveStatus)
+                    })
+                }
+            }
+        )
+    }
+
     return (
         <>
             <aside className="panel" id='panel'>
@@ -269,15 +298,25 @@ export default function SidePanel() {
                                             </Link>
                                             {
                                                 value.owner === user.id ? <>
+                                                        <button className="panel__main__selector__icon project_edition_dots"
+                                                                onClick={() => {
+                                                                    openModal('Изменить', () => {
+                                                                        editProject(value.id)
+                                                                    }, value.id)
+                                                                }}>
+                                                            <img src={threeDots} alt='edit' loading='lazy'/>
+                                                        </button>
+                                                    </> :
                                                     <button className="panel__main__selector__icon project_edition_dots"
                                                             onClick={() => {
-                                                                openModal('Изменить', () => {
-                                                                    editProject(value.id)
-                                                                }, value.id)
+                                                                const modal = document.getElementById('leave_projects_modal')
+                                                                modal.classList.add('show_modal')
+                                                                modal.classList.remove('hide_modal')
+
+                                                                setLeavingProjectId(value.id)
                                                             }}>
                                                         <img src={threeDots} alt='edit' loading='lazy'/>
                                                     </button>
-                                                </> : ''
                                             }
                                         </div>
                                     </>
@@ -345,6 +384,16 @@ export default function SidePanel() {
                 <Textbox id='project_description' type='textarea' placeholder='Описание проекта:'
                          className='projects_modal__description'/>
             </Modal>
+            <Modal id='leave_projects_modal' status={leaveStatus} extendCloseFunc={() => {
+                setLeavingProjectId(null)
+                setLeaveStatus(undefined)
+            }} manageButtons={
+                <>
+                    <Button className='red_button' id='leave_projects_modal__manage_button' onClick={leaveProject}>
+                        Выйти
+                    </Button>
+                </>
+            }/>
         </>
     )
 }

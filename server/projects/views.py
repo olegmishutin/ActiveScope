@@ -73,9 +73,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
             project.members.remove(request.user)
 
             Message.objects.create_leave_from_project_message(project, request.user)
-
-            projects_serializer = serializers.ShortProjectsSerializer(request.user.projects.all(), many=True)
-            return Response(projects_serializer.data, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=True)
     def add_member(self, request, pk=None):
