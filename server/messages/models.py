@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from groups.models import Group
+from groups.models import Group, GroupMessanger
 from projects.models import Project, ProjectTask
 from .managers import MessagesManager
 
@@ -14,6 +14,9 @@ class Message(models.Model):
 
         'EXC_PROJECT': 'Исключение из проекта',
         'LEAVE_PROJECT': 'Убавление в проекте',
+
+        'EXC_GROUP_MESSANGER': 'Исключен из мессенджера группы',
+        'LEAVE_GROUP_MESSANGER': 'Убавление в месенджере группы',
 
         'TASKS': 'Уведомление о задаче'
     }

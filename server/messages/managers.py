@@ -30,6 +30,14 @@ class MessagesManager(Manager):
         self.create(receiver=project.owner, topic='LEAVE_PROJECT',
                     text=f'Пользователь {user.email} покинул проект {project.name}')
 
+    def create_remove_from_group_messanger_message(self, messanger, user):
+        self.create(receiver=user, topic='EXC_GROUP_MESSANGER',
+                    text=f'Вы были исключены из мессенджера {messanger.name} группы {messanger.group.name}')
+
+    def create_leave_from_group_messanger_message(self, messanger, user):
+        self.create(receiver=messanger.group.founder, topic='LEAVE_GROUP_MESSANGER',
+                    text=f'Пользователь {user.email} покинул мессенджер {messanger.name} группы {messanger.group.name}')
+
     def get_project_task_messages_objects(self, data):
         ret_data = []
         users_data, projects_data, tasks_data, days_data = [], [], [], []

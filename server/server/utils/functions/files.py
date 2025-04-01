@@ -18,11 +18,11 @@ def group_image_uploading_to(instance, file):
 
 
 def group_messanger_image_uploading_to(instance, file):
-    return f'groups/{instance.group.id}/message_group/{instance.id}/{file}'
+    return f'groups/{instance.group.id}/messanger/{instance.id}/{file}'
 
 
 def group_messanger_message_file_uploading_to(instance, file):
-    return f'groups/{instance.message.messanger.group.id}/message_group/{instance.id}/files/{file}'
+    return f'groups/{instance.message.messanger.group.id}/messanger/{instance.id}/files/{file}'
 
 
 def delete_old_files(*args):

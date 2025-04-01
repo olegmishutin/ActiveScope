@@ -14,6 +14,7 @@ from asgiref.sync import sync_to_async
 from messages.models import Message
 from groups.models import Group
 from server.utils.classes.permissions_classes import IsAdminUser
+from server.utils.classes.mixins import ManipulateMembersFromGroups
 from .permissions import IsProjectCanBeChangedOrDeleted, UserIsMemberOfProject, UserIsOwnerOfTheProject
 from .utils import get_project_from_request, get_project_task_from_request
 from .filters import TaskFilter, TasksCountFilter
@@ -30,50 +31,38 @@ class BaseViewSet(viewsets.ModelViewSet):
         return context
 
 
-class ProjectsViewSet(viewsets.ModelViewSet):
+class ProjectsViewSet(ManipulateMembersFromGroups, viewsets.ModelViewSet):
     serializer_class = serializers.ProjectSerializer
     permission_classes = [IsAuthenticated, IsProjectCanBeChangedOrDeleted]
+
+    ADDED_TEXT = 'Пользователи добавлены в проект.'
+    USER_IN_OBJ_NOT_FOUND = 'Пользователь в проекте не найден.'
 
     def get_queryset(self):
         return self.request.user.projects.all().annotate(
             completed_tasks=Count('tasks', filter=Q(tasks__status__is_means_completeness=True)),
             total_tasks=Count('tasks')).select_related('owner')
 
-    def handle_member_action(self, request, action):
-        project = self.get_object()
+    def pre_remove(self, request, obj, user):
+        user.projects_tasks.filter(project=obj).update(executor=None)
 
-        if action == 'add':
-            users_ids = request.data.get('users_ids')
-            users = get_user_model().objects.filter(id__in=users_ids).only('id', 'email')
+    def pre_leave(self, request, obj, user):
+        request.user.projects_tasks.filter(project=obj).update(executor=None)
 
-            if users:
-                group = get_object_or_404(Group.objects.filter(founder=request.user), pk=request.data.get('group_id'))
+    def obj_add_members(self, obj, users):
+        obj.members.add(*users)
 
-                if group.members.filter(id__in=users.values_list('id', flat=True)).exists():
-                    project.members.add(*users)
-                    return Response({'detail': 'Пользователи добавлены в проект.'}, status=status.HTTP_200_OK)
+    def obj_remove_member(self, obj, user):
+        obj.members.remove(user)
 
-                raise ValidationError({'detail': 'Пользователь в группе не найден.'})
-            raise ValidationError({'detail': 'Пользователи не найдены.'})
+    def obj_leave_member(self, obj, user):
+        obj.members.remove(user)
 
-        elif action == 'remove':
-            user = get_object_or_404(get_user_model().objects.all().only('id', 'email'), pk=request.data.get('user_id'))
+    def create_remove_message(self, obj, user):
+        Message.objects.create_remove_from_project_message(obj, user)
 
-            if project.members.filter(id=user.id).exists():
-                user.projects_tasks.filter(project=project).update(executor=None)
-
-                project.members.remove(user)
-                Message.objects.create_remove_from_project_message(project, user)
-
-                return Response(status=status.HTTP_200_OK)
-            return ValidationError({'detail': 'Пользователь в проекте не найден.'})
-
-        elif action == 'leave':
-            request.user.projects_tasks.filter(project=project).update(executor=None)
-            project.members.remove(request.user)
-
-            Message.objects.create_leave_from_project_message(project, request.user)
-            return Response(status=status.HTTP_200_OK)
+    def create_leave_message(self, obj, user):
+        Message.objects.create_leave_from_project_message(obj, user)
 
     @action(methods=['POST'], detail=True)
     def add_member(self, request, pk=None):
