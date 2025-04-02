@@ -13,6 +13,8 @@ class ManipulateMembersFromGroups:
     USERS_NOT_FOUND = 'Пользователи не найдены.'
     USER_IN_OBJ_NOT_FOUND = None
 
+    need_check_before_remove = True
+
     def handle_member_action(self, request, action):
         obj = self.get_object()
 
@@ -21,7 +23,7 @@ class ManipulateMembersFromGroups:
             users = get_user_model().objects.filter(id__in=users_ids).only('id', 'email')
 
             if users:
-                group = get_object_or_404(Group.objects.filter(founder=request.user), pk=request.data.get('group_id'))
+                group = get_object_or_404(request.user.my_groups.all(), pk=request.data.get('group_id'))
 
                 if group.members.filter(id__in=users.values_list('id', flat=True)).exists():
                     self.obj_add_members(obj, users)
@@ -37,20 +39,21 @@ class ManipulateMembersFromGroups:
             else:
                 user = request.user
 
-            if obj.members.filter(id=user.id).exists():
-                if action == 'remove':
-                    self.pre_remove(request, obj, user)
-                    self.obj_remove_member(obj, user)
+            if self.need_check_before_remove and not obj.members.filter(id=user.id).exists():
+                raise ValidationError({'detail': self.USER_IN_OBJ_NOT_FOUND})
 
-                    self.create_remove_message(obj, user)
-                    return Response(status=status.HTTP_200_OK)
-                else:
-                    self.pre_leave(request, obj, request.user)
-                    self.obj_leave_member(obj, request.user)
+            if action == 'remove':
+                self.pre_remove(request, obj, user)
+                self.obj_remove_member(obj, user)
 
-                    self.create_leave_message(obj, request.user)
-                    return Response(status=status.HTTP_200_OK)
-            raise ValidationError({'detail': self.USER_IN_OBJ_NOT_FOUND})
+                self.create_remove_message(obj, user)
+                return Response(status=status.HTTP_200_OK)
+            else:
+                self.pre_leave(request, obj, request.user)
+                self.obj_leave_member(obj, request.user)
+
+                self.create_leave_message(obj, request.user)
+                return Response(status=status.HTTP_200_OK)
 
     def pre_remove(self, request, obj, user):
         pass

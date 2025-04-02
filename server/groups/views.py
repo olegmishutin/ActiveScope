@@ -80,8 +80,10 @@ class GroupMessangerViewSet(ManipulateMembersFromGroups, CreateModelMixin, Retri
     ADDED_TEXT = 'Пользователи добавлены в мессенджер.'
     USER_IN_OBJ_NOT_FOUND = 'Пользователь в мессенджере не найден.'
 
+    need_check_before_remove = False
+
     def get_queryset(self):
-        return self.request.user.groups_messangers.all()
+        return self.request.user.groups_messangers.all().select_related('group')
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
