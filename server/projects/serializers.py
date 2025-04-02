@@ -122,8 +122,9 @@ class TaskSerializer(BaseSerializer):
         files = validated_data.pop('uploaded_files', [])
         task = super().create(validated_data)
 
-        for file in files:
-            ProjectTaskFile.objects.create(task=task, file=file)
+        created_files = [ProjectTaskFile(task=task, file=file) for file in files]
+        ProjectTaskFile.objects.bulk_create(created_files)
+
         return task
 
 

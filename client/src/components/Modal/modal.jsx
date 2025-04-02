@@ -8,7 +8,9 @@ export default function Modal(props) {
         modal.classList.remove('show_modal')
         modal.classList.add('hide_modal')
 
-        props.extendCloseFunc()
+        if (props.extendCloseFunc) {
+            props.extendCloseFunc()
+        }
     }
 
     return (
@@ -23,7 +25,7 @@ export default function Modal(props) {
                         </> : ''
                     }
                     {
-                        props.status !== undefined ? <>
+                        props.status ? <>
                             <p className='modal__window__status'>{props.status}</p>
                         </> : ''
                     }

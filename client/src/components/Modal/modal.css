@@ -54,7 +54,6 @@
 .modal__window__status {
     text-align: center;
     font-size: 14px;
-    margin-bottom: 8px;
     margin-top: 8px;
 }
 
@@ -62,4 +61,5 @@
     display: flex;
     justify-content: center;
     gap: 13px;
+    margin-top: 8px;
 }

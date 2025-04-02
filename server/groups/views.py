@@ -1,11 +1,12 @@
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin
+from rest_framework import mixins
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.pagination import LimitOffsetPagination
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.db.models import Prefetch, Count, Q
@@ -15,8 +16,9 @@ from server.utils.classes.permissions_classes import IsAdminUser
 from server.utils.classes.mixins import ManipulateMembersFromGroups
 from messages.models import Message
 from .models import Group, GroupMessanger
-from .serializers import GroupSerializer, ShortGroupsSerializer, GroupMessangerSerializer
-from .permissions import IsGroupCanBeChangedOrDeleted, IsGroupMessangerCanBeChangedOrDeleted
+from .serializers import GroupSerializer, ShortGroupsSerializer, GroupMessangerSerializer, \
+    GroupMessangerMessageSerializer
+from .permissions import IsGroupCanBeChangedOrDeleted, IsGroupMessangerCanBeChangedOrDeleted, UserIsMemberOfMessanger
 from .filters import MembersCountFilter
 
 
@@ -72,8 +74,8 @@ class GroupsViewSet(ModelViewSet):
         return Response(status=status.HTTP_200_OK)
 
 
-class GroupMessangerViewSet(ManipulateMembersFromGroups, CreateModelMixin, RetrieveModelMixin,
-                            UpdateModelMixin, DestroyModelMixin, GenericViewSet):
+class GroupMessangerViewSet(ManipulateMembersFromGroups, mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+                            mixins.UpdateModelMixin, mixins.DestroyModelMixin, GenericViewSet):
     serializer_class = GroupMessangerSerializer
     permission_classes = [IsAuthenticated, IsGroupMessangerCanBeChangedOrDeleted]
 
@@ -116,6 +118,24 @@ class GroupMessangerViewSet(ManipulateMembersFromGroups, CreateModelMixin, Retri
     @action(methods=['POST'], detail=True, permission_classes=[])
     def leave_messanger(self, request, group_pk=None, pk=None):
         return self.handle_member_action(request, 'leave')
+
+
+class GroupMessangerMessageViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
+                                   mixins.UpdateModelMixin, mixins.DestroyModelMixin, GenericViewSet):
+    serializer_class = GroupMessangerMessageSerializer
+    permission_classes = [IsAuthenticated, UserIsMemberOfMessanger]
+    pagination_class = LimitOffsetPagination
+
+    def get_queryset(self):
+        return get_object_or_404(
+            self.request.user.groups_messangers.all(),
+            pk=self.kwargs.get('messanger_pk')
+        ).messages.all().select_related('sender').prefetch_related('files').order_by('timestamp')
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['messanger_pk'] = self.kwargs.get('messanger_pk')
+        return context
 
 
 class AdminGroupsView(generics.ListAPIView):

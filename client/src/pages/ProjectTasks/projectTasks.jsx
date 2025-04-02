@@ -35,6 +35,9 @@ export default function ProjectTasks() {
     const [taskFiles, setTaskFiles] = useState([])
     const [taskId, setTaskId] = useState(null)
 
+    const [taskManagementType, setTaskManagementType] = useState('')
+    const [taskFileManagementSatus, setTaskFileManagementSatus] = useState('')
+
     function getStatuses() {
         axios(GET(`/api/projects/${id}/statuses/`)).then(
             (response) => {
@@ -210,19 +213,19 @@ export default function ProjectTasks() {
             if (Array.from(formData.keys()).length) {
                 axios(POST(`/api/projects/${id}/tasks/${task_id}/files/`, formData)).then(
                     (response) => {
-                        checkResponse(response, null, null, () => {
+                        checkResponse(response, setTaskFileManagementSatus, 'Успешно загрузили файлы!', () => {
                             getTaskFiles(task_id)
                         })
                     }
                 ).catch((error) => {
-                    checkResponse(error.response)
+                    checkResponse(error.response, setTaskFileManagementSatus)
                 })
             }
         }
     }
 
     function manageTask(taskId) {
-        const data = getDataByIDs([
+        const ids = [
             ['project_task_name', 'name'],
             ['project_task_status', 'status_id'],
             ['project_task_start_date', 'start_date'],
@@ -230,8 +233,12 @@ export default function ProjectTasks() {
             ['project_task_end_date', 'end_date'],
             ['project_task_executor', 'executor_id'],
             ['project_task_description', 'description'],
-            ['project_task_file', 'uploaded_files']
-        ], true, true)
+        ]
+
+        if (!taskId) {
+            ids.push(['project_task_file', 'uploaded_files'])
+        }
+        const data = getDataByIDs(ids, true, true)
 
         if (typeof data.get('uploaded_files') === "string") {
             data.delete('uploaded_files')
@@ -263,10 +270,15 @@ export default function ProjectTasks() {
         const modal = document.getElementById(id)
         modal.classList.add('show_modal')
         modal.classList.remove('hide_modal')
+
+        if (id === 'project_task_files') {
+            setTaskFileManagementSatus('')
+        }
     }
 
     function openTaskManagementModal(buttonText, name, status, startDate, priority, endDate, executor, description, onclick) {
         openModal('project_task_management')
+        setTaskManagementType(buttonText)
 
         const button = document.getElementById('project_task_management_manage_button')
         button.textContent = buttonText
@@ -305,6 +317,7 @@ export default function ProjectTasks() {
                             priority = priorities[0].id
                         }
                         if (members.length > 0) {
+                            ``
                             executor = members[0].id
                         }
                         setTaskStatus('')
@@ -496,10 +509,13 @@ export default function ProjectTasks() {
                         </div>
                         <div className="project_task_management__column">
                             <Textbox type='date' label='Дата окончания' id='project_task_end_date'/>
-                            <FilePicker id='project_task_file' multiple={true}>Загрузить файлы</FilePicker>
+                            <Selection id='project_task_executor' data={selectionMembers}>Исполнитель</Selection>
                         </div>
                     </div>
-                    <Selection id='project_task_executor' data={selectionMembers}>Исполнитель</Selection>
+                    {
+                        taskManagementType === 'Создать' ?
+                            <FilePicker id='project_task_file' multiple={true}>Загрузить файлы</FilePicker> : ''
+                    }
                     <Textbox type='textarea' id='project_task_description'
                              placeholder='Краткое описание для задачи:'/>
                 </div>
@@ -509,7 +525,7 @@ export default function ProjectTasks() {
                 <Button id='project_task_files_load_button' onClick={() => {
                     sendFiles(taskId)
                 }}>Загрузить</Button>
-            </>}>
+            </>} status={taskFileManagementSatus}>
                 <ul className='project_task_files__list'>
                     {
                         taskFiles.map((file) => {

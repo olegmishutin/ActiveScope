@@ -1,4 +1,5 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
+from server.utils.classes.permissions_classes import UserIsMemberOfObject
 from .utils import get_project_from_request
 
 
@@ -12,13 +13,9 @@ class UserIsOwnerOfTheProject(BasePermission):
         return request.method in SAFE_METHODS or get_project_from_request(request, view.kwargs).owner == request.user
 
 
-class UserIsMemberOfProject(BasePermission):
+class UserIsMemberOfProject(UserIsMemberOfObject):
     message = 'Вы не являетесь участником проекта.'
 
-    def has_permission(self, request, view):
-        project_id = view.kwargs.get('project_pk')
-
-        if project_id is None:
-            project_id = view.kwargs['pk']
-
-        return request.user.projects.filter(id=project_id).exists()
+    kwargs_name = 'project_pk'
+    spare_kwargs_name = 'pk'
+    obj_related_name = 'projects'

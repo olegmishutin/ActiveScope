@@ -1,7 +1,8 @@
+import os
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from profiles.serializers import ShortUserProfile
-from .models import Group, GroupMessanger
+from .models import Group, GroupMessanger, GroupMessangerMessage, GroupMessangerMessageFile
 
 
 class GroupMessangerSerializer(serializers.ModelSerializer):
@@ -59,3 +60,59 @@ class ShortGroupsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ['id', 'name']
+
+
+class GroupMessangerMessageFileSerializer(serializers.ModelSerializer):
+    file_name = serializers.SerializerMethodField('get_file_name')
+
+    class Meta:
+        model = GroupMessangerMessageFile
+        exclude = ['message']
+
+    def get_file_name(self, instance):
+        return os.path.basename(instance.file.name)
+
+
+class GroupMessangerMessageSimpleSerializer(serializers.ModelSerializer):
+    files = GroupMessangerMessageFileSerializer(many=True, read_only=True)
+
+    sender = ShortUserProfile(read_only=True)
+    sender_id = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
+
+    class Meta:
+        model = GroupMessangerMessage
+        fields = '__all__'
+        extra_kwargs = {
+            'timestamp': {
+                'format': '%d.%m.%Y %H:%M'
+            },
+            'sender_id': {
+                'write_only': True
+            }
+        }
+
+
+class GroupMessangerMessageSerializer(GroupMessangerMessageSimpleSerializer):
+    sender_id = None
+    uploaded_files = serializers.ListField(child=serializers.FileField(), write_only=True, required=False)
+
+    class Meta:
+        model = GroupMessangerMessage
+        exclude = ['messanger']
+        extra_kwargs = {
+            'timestamp': {
+                'format': '%d.%m.%Y %H:%M'
+            }
+        }
+
+    def save(self, **kwargs):
+        self.validated_data['messanger_id'] = self.context['messanger_pk']
+        self.validated_data['sender'] = self.context['request'].user
+
+        files = self.validated_data.pop('uploaded_files', [])
+        message = super().save(**kwargs)
+
+        created_files = [GroupMessangerMessageFile(message=message, file=file) for file in files]
+        GroupMessangerMessageFile.objects.bulk_create(created_files)
+
+        return message

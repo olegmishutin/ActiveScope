@@ -58,8 +58,8 @@ class GroupMessangerMessage(models.Model):
         GroupMessanger, related_name='messages', verbose_name='мессенджер', on_delete=models.CASCADE)
 
     sender = models.ForeignKey(
-        get_user_model(), related_name='groups_messangers_messages', verbose_name='отправитель',
-        null=True, blank=False, on_delete=models.SET_NULL)
+        get_user_model(), related_name='groups_messangers_messages',
+        verbose_name='отправитель', on_delete=models.CASCADE)
 
     message = models.TextField('сообщение')
     timestamp = models.DateTimeField('временная метка', auto_now_add=True, editable=False)
