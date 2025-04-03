@@ -16,7 +16,7 @@ class GroupMessangerSerializer(serializers.ModelSerializer):
             **validated_data, group_id=self.context['group_pk']
         )
 
-        group_messanger.add_member(self.context['request'].user)
+        group_messanger.add_member([self.context['request'].user])
         return group_messanger
 
 
@@ -51,7 +51,7 @@ class GroupSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
 
         group = Group.objects.create(founder=user, **validated_data)
-        group.add_member(user)
+        group.add_member([user])
         return group
 
 
