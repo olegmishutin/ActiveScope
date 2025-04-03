@@ -11,11 +11,13 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.db.models import Prefetch, Count, Q
 from django_filters.rest_framework import DjangoFilterBackend
-from asgiref.sync import sync_to_async
+from asgiref.sync import sync_to_async, async_to_sync
+from channels.layers import get_channel_layer
+from server.utils.ws_message import get_message
 from server.utils.classes.permissions_classes import IsAdminUser
 from server.utils.classes.mixins import ManipulateMembersFromGroups
 from messages.models import Message
-from .models import Group, GroupMessanger
+from .models import Group
 from .serializers import GroupSerializer, ShortGroupsSerializer, GroupMessangerSerializer, \
     GroupMessangerMessageSerializer
 from .permissions import IsGroupCanBeChangedOrDeleted, IsGroupMessangerCanBeChangedOrDeleted, UserIsMemberOfMessanger
@@ -130,12 +132,41 @@ class GroupMessangerMessageViewSet(mixins.CreateModelMixin, mixins.ListModelMixi
         return get_object_or_404(
             self.request.user.groups_messangers.all(),
             pk=self.kwargs.get('messanger_pk')
-        ).messages.all().select_related('sender').prefetch_related('files').order_by('timestamp')
+        ).messages.all().select_related('sender').prefetch_related('files').order_by('-timestamp')
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context['messanger_pk'] = self.kwargs.get('messanger_pk')
         return context
+
+    def perform_create(self, serializer):
+        self.prepare_and_send_to_socket(serializer)
+
+    def perform_update(self, serializer):
+        self.prepare_and_send_to_socket(serializer, True)
+
+    def perform_destroy(self, instance):
+        self.send_to_socket(
+            instance, {
+                'id': instance.id
+            }
+        )
+        super().perform_destroy(instance)
+
+    def prepare_and_send_to_socket(self, serializer, refresh=False):
+        saved = serializer.save()
+        if refresh:
+            saved.refresh_from_db()
+
+        content = self.get_serializer(saved).data
+        self.send_to_socket(saved, content)
+
+    def send_to_socket(self, saved, content):
+        channel_group = f'group_messanger_{saved.messanger.id}'
+
+        async_to_sync(get_channel_layer().group_send)(
+            channel_group, get_message(self.action, content)
+        )
 
 
 class AdminGroupsView(generics.ListAPIView):

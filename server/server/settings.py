@@ -116,6 +116,15 @@ EXPIRE_TOKEN_IN = datetime.timedelta(
     )
 )
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis" if os.environ.get("DOCKERIZED") else "localhost", 6379)],
+        },
+    },
+}
+
 LANGUAGE_CODE = 'Ru-ru'
 
 TIME_ZONE = 'Europe/Moscow'

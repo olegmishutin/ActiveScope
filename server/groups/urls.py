@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework_nested.routers import DefaultRouter, NestedDefaultRouter
+from .consumer import GroupMessangerConsumer
 from . import views
 
 router = DefaultRouter()
@@ -19,4 +20,8 @@ urlpatterns = [
     path('', include(router.urls)),
     path('', include(goup_messagenger_router.urls)),
     path('', include(goup_messagenger_messages_router.urls))
+]
+
+group_websocket_urlpatterns = [
+    path('ws/group_messanger/<int:messanger_id>/', GroupMessangerConsumer.as_asgi())
 ]

@@ -85,6 +85,12 @@ class GroupMessangerMessageSimpleSerializer(serializers.ModelSerializer):
             },
         }
 
+    def save(self, **kwargs):
+        self.validated_data['messanger'] = self.context['messanger']
+        self.validated_data['sender'] = self.context['user']
+
+        return super().save(**kwargs)
+
 
 class GroupMessangerMessageSerializer(GroupMessangerMessageSimpleSerializer):
     uploaded_files = serializers.ListField(child=serializers.FileField(), write_only=True, required=False)
@@ -103,7 +109,7 @@ class GroupMessangerMessageSerializer(GroupMessangerMessageSimpleSerializer):
         self.validated_data['sender'] = self.context['request'].user
 
         files = self.validated_data.pop('uploaded_files', [])
-        message = super().save(**kwargs)
+        message = super(serializers.ModelSerializer, self).save(**kwargs)
 
         created_files = [GroupMessangerMessageFile(message=message, file=file) for file in files]
         GroupMessangerMessageFile.objects.bulk_create(created_files)
