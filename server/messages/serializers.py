@@ -26,4 +26,5 @@ class MessageSerializer(serializers.ModelSerializer):
             Message.objects.create_joined_group_message(instance.sender_group, instance.receiver)
 
         instance.is_readed = True
-        return super().update(instance, validated_data)
+        instance.save(update_fields=['is_readed'])
+        return instance

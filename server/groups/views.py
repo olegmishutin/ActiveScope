@@ -36,7 +36,9 @@ class GroupsViewSet(ModelViewSet):
         return self.request.user.groups.all().annotate(
             can_be_change_by_user=Q(founder=self.request.user)).select_related('founder').prefetch_related(
             Prefetch('members', queryset=get_user_model().objects.all().annotate(
-                projects_count=Count('projects'))), 'messangers')
+                projects_count=Count('projects'))),
+            Prefetch('messangers', queryset=self.request.user.groups_messangers.all())
+        )
 
     def handle_member_action(self, request, action):
         group = self.get_object()
