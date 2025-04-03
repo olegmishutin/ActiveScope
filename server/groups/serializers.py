@@ -1,6 +1,5 @@
 import os
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
 from profiles.serializers import ShortUserProfile
 from .models import Group, GroupMessanger, GroupMessangerMessage, GroupMessangerMessageFile
 
@@ -75,34 +74,28 @@ class GroupMessangerMessageFileSerializer(serializers.ModelSerializer):
 
 class GroupMessangerMessageSimpleSerializer(serializers.ModelSerializer):
     files = GroupMessangerMessageFileSerializer(many=True, read_only=True)
-
-    sender = ShortUserProfile(read_only=True)
-    sender_id = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
+    sender_profile = ShortUserProfile(source='sender', read_only=True)
 
     class Meta:
         model = GroupMessangerMessage
-        fields = '__all__'
+        exclude = ['messanger', 'sender']
         extra_kwargs = {
             'timestamp': {
                 'format': '%d.%m.%Y %H:%M'
             },
-            'sender_id': {
-                'write_only': True
-            }
         }
 
 
 class GroupMessangerMessageSerializer(GroupMessangerMessageSimpleSerializer):
-    sender_id = None
     uploaded_files = serializers.ListField(child=serializers.FileField(), write_only=True, required=False)
 
     class Meta:
         model = GroupMessangerMessage
-        exclude = ['messanger']
+        exclude = ['messanger', 'sender']
         extra_kwargs = {
             'timestamp': {
                 'format': '%d.%m.%Y %H:%M'
-            }
+            },
         }
 
     def save(self, **kwargs):

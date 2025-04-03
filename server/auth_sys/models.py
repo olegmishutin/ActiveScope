@@ -1,3 +1,5 @@
+from django.utils import timezone
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from rest_framework.authtoken.models import Token as RestTokenModel
@@ -10,6 +12,14 @@ class Token(RestTokenModel):
     class Meta(RestTokenModel.Meta):
         db_table = 'Token'
         abstract = False
+
+    def is_not_valid(self, delete=False):
+        result = self.created < timezone.now() - settings.EXPIRE_TOKEN_IN
+
+        if result and delete:
+            self.delete()
+
+        return result
 
 
 class User(AbstractBaseUser):

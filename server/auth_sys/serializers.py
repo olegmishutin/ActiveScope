@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
+from django.utils import timezone
 from .models import Token
 
 
@@ -28,7 +29,11 @@ class LoginSerializer(serializers.Serializer):
         user = authenticate(**self.validated_data)
 
         if user is not None:
-            token, created_token = Token.objects.get_or_create(user=user)
+            token, is_created = Token.objects.get_or_create(user=user)
+
+            if token.is_not_valid(delete=True):
+                token = Token.objects.create(user=user)
+
             return token.key
 
         raise serializers.ValidationError({'detail': 'Пользователь не найден.'})

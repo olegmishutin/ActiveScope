@@ -19,6 +19,8 @@ CORS_ORIGIN_ALLOW_ALL = True
 AUTH_USER_MODEL = 'auth_sys.User'
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -70,6 +72,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'server.wsgi.application'
+ASGI_APPLICATION = 'server.asgi.application'
 
 DATABASES = {
     'default': {
