@@ -16,6 +16,10 @@ export default defineConfig({
             '/media': {
                 target: `http://${DOCKERIZED() ? 'server' : 'localhost'}:8080/`,
                 changeOrigin: true,
+            },
+            '/ws': {
+                target: `ws://${DOCKERIZED() ? 'server' : 'localhost'}:8080/`,
+                changeOrigin: true,
             }
         }
     }

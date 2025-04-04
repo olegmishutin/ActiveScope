@@ -2,11 +2,7 @@ import {DOCKERIZED} from "../../other_conf.js";
 
 
 export function getWsConnection(uri) {
-    if (DOCKERIZED()) {
-        return new WebSocket(`ws://server:8080/ws${uri}`)
-    } else {
-        return new WebSocket(`ws://localhost:8080/ws${uri}`)
-    }
+    return new WebSocket(`/ws${uri}`)
 }
 
 export function getImage(url) {
