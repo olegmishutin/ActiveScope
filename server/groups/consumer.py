@@ -12,17 +12,17 @@ class GroupMessangerConsumer(AsyncJsonWebsocketConsumer):
         self.user = self.scope['user']
 
         if self.user is None:
-            await self.close()
+            return await self.close()
 
         messanger_id = self.scope['url_route']['kwargs']['messanger_id']
         try:
             self.messanger = await GroupMessanger.objects.aget(id=messanger_id)
         except GroupMessanger.DoesNotExist:
-            await self.close()
+            return await self.close()
 
         is_member = await self.messanger.members.filter(id=self.user.id).aexists()
         if not is_member:
-            await self.close()
+            return await self.close()
 
         self.room_group_name = f'group_messanger_{messanger_id}'
 
@@ -32,9 +32,10 @@ class GroupMessangerConsumer(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, code):
-        await self.channel_layer.group_discard(
-            self.room_group_name, self.channel_name
-        )
+        if hasattr(self, 'room_group_name'):
+            await self.channel_layer.group_discard(
+                self.room_group_name, self.channel_name
+            )
 
     async def receive_json(self, content, **kwargs):
         if content.get('method') is not None and content.get('object') is not None:

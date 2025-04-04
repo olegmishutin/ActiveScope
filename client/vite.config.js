@@ -1,7 +1,6 @@
 import {defineConfig} from 'vite'
 import react from '@vitejs/plugin-react'
-
-const DOCKERIZED = true
+import {DOCKERIZED} from "./other_conf.js";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,11 +10,11 @@ export default defineConfig({
         port: '5174',
         proxy: {
             '/api': {
-                target: `http://${DOCKERIZED ? 'server' : 'localhost'}:8080/`,
+                target: `http://${DOCKERIZED() ? 'server' : 'localhost'}:8080/`,
                 changeOrigin: true,
             },
             '/media': {
-                target: `http://${DOCKERIZED ? 'server' : 'localhost'}:8080/`,
+                target: `http://${DOCKERIZED() ? 'server' : 'localhost'}:8080/`,
                 changeOrigin: true,
             }
         }

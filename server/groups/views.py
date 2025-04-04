@@ -13,7 +13,7 @@ from django.db.models import Prefetch, Count, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from asgiref.sync import sync_to_async, async_to_sync
 from channels.layers import get_channel_layer
-from server.utils.ws_message import get_message
+from server.utils.for_websockets import get_message
 from server.utils.classes.permissions_classes import IsAdminUser
 from server.utils.classes.mixins import ManipulateMembersFromGroups
 from messages.models import Message
@@ -56,8 +56,9 @@ class GroupsViewSet(ModelViewSet):
 
         if action == 'remove':
             group.remove_member(user, 'Пользователь в группе не найден.')
-            Message.objects.create_remove_from_group_message(group, user)
+            self.remove_from_group_messangers(group, user)
 
+            Message.objects.create_remove_from_group_message(group, user)
             return Response(status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=True)
@@ -73,9 +74,15 @@ class GroupsViewSet(ModelViewSet):
         group = self.get_object()
 
         group.remove_member(request.user, 'Вы не являетесь участником этой группы.')
-        Message.objects.create_leave_from_group_message(group, request.user)
+        self.remove_from_group_messangers(group, request.user)
 
+        Message.objects.create_leave_from_group_message(group, request.user)
         return Response(status=status.HTTP_200_OK)
+
+    @staticmethod
+    def remove_from_group_messangers(group, user):
+        for messanger in group.messangers.all():
+            messanger.remove_member(user)
 
 
 class GroupMessangerViewSet(ManipulateMembersFromGroups, mixins.CreateModelMixin, mixins.RetrieveModelMixin,
@@ -167,7 +174,7 @@ class GroupMessangerMessageViewSet(mixins.CreateModelMixin, mixins.ListModelMixi
         channel_group = f'group_messanger_{saved.messanger.id}'
 
         async_to_sync(get_channel_layer().group_send)(
-            channel_group, get_message(self.action, content)
+            channel_group, get_message(content, self.action)
         )
 
 

@@ -16,9 +16,11 @@ class AbstractModelWithMembers(models.Model):
         self.members.add(*users)
         self.update_members_count()
 
-    def remove_member(self, user, validation_error_message):
+    def remove_member(self, user, validation_error_message=None):
         if not self.members.filter(id=user.id).exists():
-            raise ValidationError({'detail': validation_error_message})
+            if validation_error_message:
+                raise ValidationError({'detail': validation_error_message})
+            return None
 
         self.members.remove(user)
         self.update_members_count()

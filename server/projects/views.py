@@ -2,7 +2,6 @@ from rest_framework import viewsets, generics, mixins, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -12,9 +11,9 @@ from django.http import FileResponse
 from django.db.models import Count, Q
 from asgiref.sync import sync_to_async
 from messages.models import Message
-from groups.models import Group
 from server.utils.classes.permissions_classes import IsAdminUser
 from server.utils.classes.mixins import ManipulateMembersFromGroups
+from server.utils.for_websockets import send_signal_to_socket
 from .permissions import IsProjectCanBeChangedOrDeleted, UserIsMemberOfProject, UserIsOwnerOfTheProject
 from .utils import get_project_from_request, get_project_task_from_request
 from .filters import TaskFilter, TasksCountFilter
@@ -52,8 +51,14 @@ class ProjectsViewSet(ManipulateMembersFromGroups, viewsets.ModelViewSet):
     def obj_add_members(self, obj, users):
         obj.members.add(*users)
 
+        for user in users:
+            send_signal_to_socket('Projects', user.id)
+
     def obj_remove_member(self, obj, user):
         obj.members.remove(user)
+        send_signal_to_socket('Projects', user.id, {
+            'project_id': obj.id
+        })
 
     def obj_leave_member(self, obj, user):
         obj.members.remove(user)
@@ -75,6 +80,17 @@ class ProjectsViewSet(ManipulateMembersFromGroups, viewsets.ModelViewSet):
     @action(methods=['POST'], detail=True, permission_classes=[UserIsMemberOfProject])
     def leave_project(self, request, pk=None):
         return self.handle_member_action(request, 'leave')
+
+    def perform_destroy(self, instance):
+        instance_id = instance.id
+        members = list(instance.members.all())
+
+        super().perform_destroy(instance)
+
+        for member in members:
+            send_signal_to_socket('Projects', member.id, {
+                'project_id': instance_id
+            })
 
 
 class TasksViewSet(BaseViewSet):

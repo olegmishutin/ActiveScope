@@ -1,5 +1,20 @@
-export function getImage(url){
-    return url.replace('http://server:8080', '')
+import {DOCKERIZED} from "../../other_conf.js";
+
+
+export function getWsConnection(uri) {
+    if (DOCKERIZED()) {
+        return new WebSocket(`ws://server:8080/ws${uri}`)
+    } else {
+        return new WebSocket(`ws://localhost:8080/ws${uri}`)
+    }
+}
+
+export function getImage(url) {
+    if (DOCKERIZED()) {
+        return url.replace('http://server:8080', '')
+    } else {
+        return url.replace('http://localhost:8080', '')
+    }
 }
 
 export function getDataByIDs(ids, isFormData, includeEmpty) {

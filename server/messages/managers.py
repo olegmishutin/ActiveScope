@@ -1,5 +1,6 @@
 from django.db.models import Manager
 from rest_framework.exceptions import ValidationError
+from server.utils.for_websockets import send_signal_to_socket
 
 
 class MessagesManager(Manager):
@@ -82,3 +83,8 @@ class MessagesManager(Manager):
                     text=f'Задача "{task.name}" проекта "{project.name}" должна быть выполнена через {days_left_text}'))
 
         return ret_data
+
+    def create(self, **kwargs):
+        instance = super().create(**kwargs)
+        send_signal_to_socket('Messages', instance.receiver.id)
+        return instance

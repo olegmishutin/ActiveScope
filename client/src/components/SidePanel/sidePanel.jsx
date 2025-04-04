@@ -1,7 +1,6 @@
 import './sidePanel.css'
 import userIcon from '../../assets/images/user.svg'
 import inbox from '../../assets/images/inbox.svg'
-import userTasks from '../../assets/images/user tasks.svg'
 import loup from '../../assets/images/loup.svg'
 import groups from '../../assets/images/groups.svg'
 import addIcon from '../../assets/images/add.svg'
@@ -24,7 +23,7 @@ import BackButton from "../../widgets/BackButton/backButton.jsx"
 import FilePicker from "../../widgets/FilePicker/filePicker.jsx";
 import Textbox from "../../widgets/Textbox/textbox.jsx";
 import Button from "../../widgets/Button/button.jsx";
-import {getDataByIDs, getImage} from "../../utils/data.jsx";
+import {getDataByIDs, getImage, getWsConnection} from "../../utils/data.jsx";
 import {getDateFromRequest} from "../../utils/date.jsx";
 import {checkConfirmation} from "../../utils/request.jsx";
 
@@ -57,13 +56,25 @@ export default function SidePanel() {
             checkResponse(error.response)
         })
 
+        const signaling_socket = getWsConnection(`/signals/?token=${localStorage.getItem('token')}`)
+        signaling_socket.onopen = () => {
+            signaling_socket.onmessage = (event) => {
+                let ws_object = JSON.parse(event.data)['object']
+
+                if (ws_object['signal_from'] === 'Messages') {
+                    getMessages(setMessages, setNewMessagesCount)
+                } else if (ws_object['signal_from'] === 'Projects') {
+                    if (ws_object['project_id'] && window.location.href.includes(`/project/${ws_object['project_id']}/`)) {
+                        window.location.href = '/'
+                    } else {
+                        getProjects()
+                    }
+                }
+            }
+        }
+
         getProjects()
         getNewMessagesCount(setNewMessagesCount)
-
-        setInterval(getProjects, 30000)
-        setInterval(() => {
-            getNewMessagesCount(setNewMessagesCount)
-        }, 30000)
     }, []);
 
     function createProject(event) {
@@ -115,12 +126,12 @@ export default function SidePanel() {
                 axios(DELETE(`/api/projects/${editingProjectId}/`)).then(
                     (response) => {
                         checkResponse(response, null, null, () => {
-                            getProjects()
-
                             if (window.location.href.includes(`/project/${editingProjectId}/`)) {
                                 window.location.href = '/'
+                            } else {
+                                getProjects()
+                                closeProjectsModal()
                             }
-                            closeProjectsModal()
                         })
                     }
                 ).catch((error) => {
