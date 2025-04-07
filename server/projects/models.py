@@ -5,8 +5,7 @@ from server.utils.functions import files
 
 class Project(models.Model):
     owner = models.ForeignKey(
-        get_user_model(), related_name='my_projects', verbose_name='основатель', on_delete=models.SET_NULL, null=True,
-        blank=True)
+        get_user_model(), related_name='my_projects', verbose_name='основатель', on_delete=models.CASCADE)
 
     name = models.CharField('название', max_length=128, db_index=True)
     icon = models.ImageField('иконка', upload_to=files.project_image_uploading_to, null=True, blank=True)
@@ -30,6 +29,10 @@ class Project(models.Model):
 
     def change_header_image(self, file):
         files.set_new_file(self, 'header_image', file)
+
+    def delete(self, using=None, keep_parents=False):
+        files.delete_folder(f'projects/{self.id}')
+        return super().delete(using, keep_parents)
 
     def __str__(self):
         return self.name
@@ -91,6 +94,10 @@ class ProjectTask(models.Model):
         db_table = 'ProjectTask'
         verbose_name = 'Задача проекта'
         verbose_name_plural = 'Задачи проектов'
+
+    def delete(self, using=None, keep_parents=False):
+        files.delete_folder(f'projects/{self.project.id}/task_{self.id}')
+        return super().delete(using, keep_parents)
 
     def __str__(self):
         return self.name

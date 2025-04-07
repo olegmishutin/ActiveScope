@@ -13,13 +13,13 @@ from django.db.models import Prefetch, Count, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from asgiref.sync import sync_to_async, async_to_sync
 from channels.layers import get_channel_layer
-from server.utils.for_websockets import get_message
+from server.utils.functions.for_websockets import get_message
 from server.utils.classes.permissions_classes import IsAdminUser
 from server.utils.classes.mixins import ManipulateMembersFromGroups
 from messages.models import Message
 from .models import Group
 from .serializers import GroupSerializer, ShortGroupsSerializer, GroupMessangerSerializer, \
-    GroupMessangerMessageSerializer
+    GroupMessangerMessageSerializer, GroupMessangerMessageFileSerializer
 from .permissions import IsGroupCanBeChangedOrDeleted, IsGroupMessangerCanBeChangedOrDeleted, UserIsMemberOfMessanger
 from .filters import MembersCountFilter
 
@@ -155,11 +155,7 @@ class GroupMessangerMessageViewSet(mixins.CreateModelMixin, mixins.ListModelMixi
         self.prepare_and_send_to_socket(serializer, True)
 
     def perform_destroy(self, instance):
-        self.send_to_socket(
-            instance, {
-                'id': instance.id
-            }
-        )
+        instance.send_to_socket({'id': instance.id}, self.action)
         super().perform_destroy(instance)
 
     def prepare_and_send_to_socket(self, serializer, refresh=False):
@@ -168,15 +164,21 @@ class GroupMessangerMessageViewSet(mixins.CreateModelMixin, mixins.ListModelMixi
             saved.refresh_from_db()
 
         content = self.get_serializer(saved).data
-        self.send_to_socket(saved, content)
+        saved.send_to_socket(content, self.action)
 
-    def send_to_socket(self, saved, content):
-        channel_group = f'group_messanger_{saved.messanger.id}'
 
-        async_to_sync(get_channel_layer().group_send)(
-            channel_group, get_message(content, self.action)
-        )
+class GroupMessangerMessageFileViewSet(mixins.DestroyModelMixin, GenericViewSet):
+    serializer_class = GroupMessangerMessageFileSerializer
+    permission_classes = [IsAuthenticated, UserIsMemberOfMessanger]
 
+    def get_queryset(self):
+        return get_object_or_404(self.request.user.groups_messangers_messages, pk=self.kwargs.get('message_pk')).files
+
+    def perform_destroy(self, instance):
+        message = instance.message
+        super().perform_destroy(instance)
+
+        message.send_to_socket(GroupMessangerMessageSerializer(message).data, 'update')
 
 class AdminGroupsView(generics.ListAPIView):
     queryset = Group.objects.all().select_related('founder').prefetch_related(

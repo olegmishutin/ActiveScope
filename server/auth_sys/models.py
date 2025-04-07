@@ -3,7 +3,7 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from rest_framework.authtoken.models import Token as RestTokenModel
-from server.utils.functions.files import user_file_uploading_to, set_new_file, delete_old_files
+from server.utils.functions import files
 from .validators import validate_password
 from .managers import UserManager
 
@@ -34,8 +34,8 @@ class User(AbstractBaseUser):
     patronymic = models.CharField('отчество', max_length=128, null=True, blank=True)
     birth_date = models.DateField('дата рождения', null=True, blank=True)
 
-    photo = models.ImageField('фото', upload_to=user_file_uploading_to, null=True, blank=True)
-    header_image = models.ImageField('фоновая картинка', upload_to=user_file_uploading_to, null=True, blank=True)
+    photo = models.ImageField('фото', upload_to=files.user_file_uploading_to, null=True, blank=True)
+    header_image = models.ImageField('фоновая картинка', upload_to=files.user_file_uploading_to, null=True, blank=True)
     description = models.TextField('описание', null=True, blank=True)
     may_be_invited = models.BooleanField('может быть приглашен', default=True)
 
@@ -58,16 +58,24 @@ class User(AbstractBaseUser):
         return f'{self.last_name} {self.first_name}{" " + self.patronymic if self.patronymic else ""}'
 
     def change_photo(self, file):
-        set_new_file(self, 'photo', file)
+        files.set_new_file(self, 'photo', file)
 
     def change_header_image(self, file):
-        set_new_file(self, 'header_image', file)
+        files.set_new_file(self, 'header_image', file)
 
     def delete(self, using=None, keep_parents=False):
-        delete_old_files(self.photo, self.header_image)
+        files.delete_old_files(self.photo, self.header_image)
 
         for group in self.my_groups.all():
-            delete_old_files(group.icon)
+            files.delete_folder(f'groups/{group.id}')
+
+        for message in self.groups_messangers_messages.all().prefetch_related('files'):
+            files.delete_files_by_related(
+                message.files.all(), 'file'
+            )
+
+        for project in self.my_projects.all():
+            files.delete_folder(f'projects/{project.id}')
 
         super().delete(using, keep_parents)
 

@@ -7,10 +7,17 @@ router = DefaultRouter()
 router.register('groups', views.GroupsViewSet, basename='groups')
 
 goup_messagenger_router = NestedDefaultRouter(router, 'groups', lookup='group')
-goup_messagenger_router.register('messangers', views.GroupMessangerViewSet, basename='messangers')
+goup_messagenger_router.register('messangers', views.GroupMessangerViewSet, basename='groups_messangers')
 
 goup_messagenger_messages_router = NestedDefaultRouter(goup_messagenger_router, 'messangers', lookup='messanger')
-goup_messagenger_messages_router.register('messages', views.GroupMessangerMessageViewSet, basename='messages')
+goup_messagenger_messages_router.register(
+    'messages', views.GroupMessangerMessageViewSet, basename='groups_messangers_messages')
+
+goup_messagenger_message_files_router = NestedDefaultRouter(
+    goup_messagenger_messages_router, 'messages', lookup='message')
+
+goup_messagenger_message_files_router.register(
+    'files', views.GroupMessangerMessageFileViewSet, basename='groups_messangers_messages_files')
 
 app_name = 'groups'
 urlpatterns = [
@@ -19,7 +26,8 @@ urlpatterns = [
     path('admin_groups/<int:pk>/', views.AdminGroupDestroyView.as_view(), name='admin-groups-destroy'),
     path('', include(router.urls)),
     path('', include(goup_messagenger_router.urls)),
-    path('', include(goup_messagenger_messages_router.urls))
+    path('', include(goup_messagenger_messages_router.urls)),
+    path('', include(goup_messagenger_message_files_router.urls))
 ]
 
 group_websocket_urlpatterns = [

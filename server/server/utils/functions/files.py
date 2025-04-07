@@ -1,4 +1,6 @@
 import os
+import shutil
+from django.conf import settings
 
 
 def user_file_uploading_to(instance, file):
@@ -35,3 +37,18 @@ def set_new_file(model, field_name, file):
     if file is not None:
         delete_old_files(getattr(model, field_name))
         setattr(model, field_name, file)
+
+
+def delete_folder(path):
+    path = f'{settings.MEDIA_ROOT}/{path}'
+
+    if os.path.exists(path):
+        shutil.rmtree(path)
+
+
+def delete_files_by_related(queryset, related_file_name):
+    for obj in queryset:
+        path = getattr(obj, related_file_name).path
+
+        if os.path.exists(path):
+            os.remove(path)

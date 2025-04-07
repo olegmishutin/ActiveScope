@@ -1,7 +1,10 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from server.utils.functions import files
+from server.utils.functions.for_websockets import get_message
 from server.utils.classes.models import AbstractModelWithMembers
 
 
@@ -26,7 +29,7 @@ class Group(AbstractModelWithMembers):
         files.set_new_file(self, 'icon', file)
 
     def delete(self, using=None, keep_parents=False):
-        files.delete_old_files(self.icon)
+        files.delete_folder(f'groups/{self.id}')
         return super().delete(using, keep_parents)
 
     def __str__(self):
@@ -52,6 +55,10 @@ class GroupMessanger(AbstractModelWithMembers):
         verbose_name = 'Мессенджер группы'
         verbose_name_plural = 'Мессенджеры группы'
 
+    def delete(self, using=None, keep_parents=False):
+        files.delete_folder(f'groups/{self.group.id}/messanger/{self.id}')
+        return super().delete(using, keep_parents)
+
 
 class GroupMessangerMessage(models.Model):
     messanger = models.ForeignKey(
@@ -69,6 +76,19 @@ class GroupMessangerMessage(models.Model):
         verbose_name = 'Сообщение мессенджера группы'
         verbose_name_plural = 'Сообщения мессенджера группы'
 
+    def delete(self, using=None, keep_parents=False):
+        files.delete_files_by_related(
+            self.files.all(), 'file'
+        )
+        return super().delete(using, keep_parents)
+
+    def send_to_socket(self, content, action):
+        channel_group = f'group_messanger_{self.messanger.id}'
+
+        async_to_sync(get_channel_layer().group_send)(
+            channel_group, get_message(content, action)
+        )
+
 
 class GroupMessangerMessageFile(models.Model):
     message = models.ForeignKey(
@@ -80,3 +100,7 @@ class GroupMessangerMessageFile(models.Model):
         db_table = 'GroupMessangerMessageFile'
         verbose_name = 'Файл сообщения мессенджера группы'
         verbose_name_plural = 'Файлы сообщения мессенджера группы'
+
+    def delete(self, using=None, keep_parents=False):
+        files.delete_old_files(self.file)
+        return super().delete(using, keep_parents)
