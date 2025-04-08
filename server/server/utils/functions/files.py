@@ -27,6 +27,10 @@ def group_messanger_message_file_uploading_to(instance, file):
     return f'groups/{instance.message.messanger.group.id}/messanger/{instance.message.messanger.id}/files/{file}'
 
 
+def project_message_file_uploading_to(instance, file):
+    return f'projects/{instance.message.project.id}/messages_files/{file}'
+
+
 def delete_old_files(*args):
     for file in args:
         if file and os.path.exists(file.path):

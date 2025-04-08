@@ -1,11 +1,10 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from rest_framework.exceptions import ValidationError
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from server.utils.functions import files
 from server.utils.functions.websockets import get_message
-from server.utils.classes.models import AbstractModelWithMembers
+from server.utils.classes.models import AbstractModelWithMembers, AbstractMessangerMessage
 
 
 class Group(AbstractModelWithMembers):
@@ -63,7 +62,7 @@ class GroupMessanger(AbstractModelWithMembers):
         return f'Мессенджер {self.name} группы {self.group.name}'
 
 
-class GroupMessangerMessage(models.Model):
+class GroupMessangerMessage(AbstractMessangerMessage):
     messanger = models.ForeignKey(
         GroupMessanger, related_name='messages', verbose_name='мессенджер', on_delete=models.CASCADE)
 
@@ -71,19 +70,10 @@ class GroupMessangerMessage(models.Model):
         get_user_model(), related_name='groups_messangers_messages',
         verbose_name='отправитель', on_delete=models.CASCADE)
 
-    message = models.TextField('сообщение')
-    timestamp = models.DateTimeField('временная метка', auto_now_add=True, editable=False)
-
     class Meta:
         db_table = 'GroupMessangerMessage'
         verbose_name = 'Сообщение мессенджера группы'
         verbose_name_plural = 'Сообщения мессенджера группы'
-
-    def delete(self, using=None, keep_parents=False):
-        files.delete_files_by_related(
-            self.files.all(), 'file'
-        )
-        return super().delete(using, keep_parents)
 
     def send_to_socket(self, content, action):
         channel_group = f'group_messanger_{self.messanger.id}'

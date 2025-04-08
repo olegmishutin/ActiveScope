@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from server.utils.functions import files
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from server.utils.functions import files, websockets
+from server.utils.classes.models import AbstractMessangerMessage
 
 
 class Project(models.Model):
@@ -115,6 +118,49 @@ class ProjectTaskFile(models.Model):
 
     def change_file(self, file):
         files.set_new_file(self, 'file', file)
+
+    def delete(self, using=None, keep_parents=False):
+        files.delete_old_files(self.file)
+        return super().delete(using, keep_parents)
+
+    def __str__(self):
+        return self.file.path
+
+
+class ProjectMessage(AbstractMessangerMessage):
+    project = models.ForeignKey(
+        Project, related_name='project_messages', verbose_name='проект', on_delete=models.CASCADE)
+
+    sender = models.ForeignKey(
+        get_user_model(), related_name='project_messages',
+        verbose_name='отправитель', on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'ProjectMessage'
+        verbose_name = 'Сообщение проекта'
+        verbose_name_plural = 'Сообщения проектов'
+
+    def send_to_socket(self, content, action):
+        channel_group = f'project_{self.project.id}_messages'
+
+        async_to_sync(get_channel_layer().group_send)(
+            channel_group, websockets.get_message(content, action)
+        )
+
+    def __str__(self):
+        return f'Сообщение {self.id} проекта {self.project.name}'
+
+
+class ProjectMessageFile(models.Model):
+    message = models.ForeignKey(
+        ProjectMessage, related_name='files', verbose_name='сообщение', on_delete=models.CASCADE)
+
+    file = models.FileField('файл', upload_to=files.project_message_file_uploading_to)
+
+    class Meta:
+        db_table = 'ProjectMessageFile'
+        verbose_name = 'Файл сообщения проекта'
+        verbose_name_plural = 'Файлы сообщений проектов'
 
     def delete(self, using=None, keep_parents=False):
         files.delete_old_files(self.file)

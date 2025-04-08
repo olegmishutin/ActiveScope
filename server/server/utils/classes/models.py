@@ -1,5 +1,6 @@
 from django.db import models
 from rest_framework.exceptions import ValidationError
+from server.utils.functions.files import delete_files_by_related
 
 
 class AbstractModelWithMembers(models.Model):
@@ -24,3 +25,17 @@ class AbstractModelWithMembers(models.Model):
 
         self.members.remove(user)
         self.update_members_count()
+
+
+class AbstractMessangerMessage(models.Model):
+    message = models.TextField('сообщение')
+    timestamp = models.DateTimeField('временная метка', auto_now_add=True, editable=False)
+
+    class Meta:
+        abstract = True
+
+    def delete(self, using=None, keep_parents=False):
+        delete_files_by_related(
+            self.files.all(), 'file'
+        )
+        return super().delete(using, keep_parents)
