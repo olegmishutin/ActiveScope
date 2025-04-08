@@ -13,7 +13,7 @@ from django.db.models import Prefetch, Count, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from asgiref.sync import sync_to_async, async_to_sync
 from channels.layers import get_channel_layer
-from server.utils.functions.for_websockets import get_message
+from server.utils.functions.websockets import get_message
 from server.utils.classes.permissions_classes import IsAdminUser
 from server.utils.classes.mixins import ManipulateMembersFromGroups
 from messages.models import Message

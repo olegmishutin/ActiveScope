@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from server.utils.functions import files
-from server.utils.functions.for_websockets import get_message
+from server.utils.functions.websockets import get_message
 from server.utils.classes.models import AbstractModelWithMembers
 
 
@@ -59,6 +59,9 @@ class GroupMessanger(AbstractModelWithMembers):
         files.delete_folder(f'groups/{self.group.id}/messanger/{self.id}')
         return super().delete(using, keep_parents)
 
+    def __str__(self):
+        return f'Мессенджер {self.name} группы {self.group.name}'
+
 
 class GroupMessangerMessage(models.Model):
     messanger = models.ForeignKey(
@@ -89,6 +92,9 @@ class GroupMessangerMessage(models.Model):
             channel_group, get_message(content, action)
         )
 
+    def __str__(self):
+        return f'Сообщение {self.id} мессенджера {self.messanger.name} группы {self.messanger.group.name}'
+
 
 class GroupMessangerMessageFile(models.Model):
     message = models.ForeignKey(
@@ -104,3 +110,6 @@ class GroupMessangerMessageFile(models.Model):
     def delete(self, using=None, keep_parents=False):
         files.delete_old_files(self.file)
         return super().delete(using, keep_parents)
+
+    def __str__(self):
+        return self.file.path

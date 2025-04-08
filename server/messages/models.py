@@ -51,4 +51,4 @@ class Message(models.Model):
         verbose_name_plural = 'Сообщения'
 
     def __str__(self):
-        return f'message_id {self.id}'
+        return f'Уведомление {self.id}'

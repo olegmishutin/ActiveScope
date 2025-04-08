@@ -1,6 +1,6 @@
 from django.db.models import Manager
 from rest_framework.exceptions import ValidationError
-from server.utils.functions.for_websockets import send_signal_to_socket
+from server.utils.functions.websockets import send_signal_to_socket
 
 
 class MessagesManager(Manager):

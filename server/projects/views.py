@@ -13,7 +13,7 @@ from asgiref.sync import sync_to_async
 from messages.models import Message
 from server.utils.classes.permissions_classes import IsAdminUser
 from server.utils.classes.mixins import ManipulateMembersFromGroups
-from server.utils.functions.for_websockets import send_signal_to_socket
+from server.utils.functions.websockets import send_signal_to_socket
 from .permissions import IsProjectCanBeChangedOrDeleted, UserIsMemberOfProject, UserIsOwnerOfTheProject
 from .utils import get_project_from_request, get_project_task_from_request
 from .filters import TaskFilter, TasksCountFilter
