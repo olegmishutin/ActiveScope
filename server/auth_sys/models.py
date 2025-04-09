@@ -77,6 +77,11 @@ class User(AbstractBaseUser):
         for project in self.my_projects.all():
             files.delete_folder(f'projects/{project.id}')
 
+        for message in self.project_messages.all().prefetch_related('files'):
+            files.delete_files_by_related(
+                message.files.all(), 'file'
+            )
+
         super().delete(using, keep_parents)
 
     def __str__(self):

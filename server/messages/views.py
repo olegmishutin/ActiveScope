@@ -1,4 +1,6 @@
-from rest_framework import generics, status
+from rest_framework import status
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.mixins import ListModelMixin, UpdateModelMixin
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -9,23 +11,17 @@ from .models import Message
 from .serializers import MessageSerializer
 
 
-class MessagesView(generics.GenericAPIView):
+class MessagesViewSet(ListModelMixin, UpdateModelMixin, GenericViewSet):
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return self.request.user.messages.all()
-
-
-class MessagesListView(MessagesView, generics.ListAPIView):
     filter_backends = [OrderingFilter, DjangoFilterBackend]
     filterset_fields = ['is_readed', 'topic']
     ordering_fields = ['date']
     ordering = ['-date']
 
-
-class UpdatedMessageView(MessagesView, generics.UpdateAPIView):
-    pass
+    def get_queryset(self):
+        return self.request.user.messages.all()
 
 
 @sync_to_async()

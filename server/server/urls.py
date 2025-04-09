@@ -2,6 +2,7 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 from groups.urls import group_websocket_urlpatterns
+from projects.urls import projects_websocket_urlpatterns
 from .consumer import SignalConsumer
 
 api_urls = [
@@ -19,4 +20,4 @@ urlpatterns = [
 
 websocket_urlpatterns = [
     path('ws/signals/', SignalConsumer.as_asgi())
-] + group_websocket_urlpatterns
+] + group_websocket_urlpatterns + projects_websocket_urlpatterns

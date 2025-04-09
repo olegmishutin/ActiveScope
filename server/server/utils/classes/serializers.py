@@ -14,6 +14,7 @@ class MessageFileSerializer(serializers.ModelSerializer):
 
 
 class MessageSimpleSerializer(serializers.ModelSerializer):
+    files = None
     sender_profile = ShortUserProfile(source='sender', read_only=True)
 
     class Meta:

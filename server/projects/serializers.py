@@ -2,7 +2,9 @@ import os
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from .models import Project, ProjectTask, ProjectTaskFile, ProjectTaskStatus, ProjectTaskPriority
+from server.utils.classes.serializers import MessageSimpleSerializer, MessageSerializer, MessageFileSerializer
+from .models import Project, ProjectTask, ProjectTaskFile, ProjectTaskStatus, ProjectTaskPriority, ProjectMessage, \
+    ProjectMessageFile
 
 
 class BaseSerializer(serializers.ModelSerializer):
@@ -175,3 +177,29 @@ class ShortProjectsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ['id', 'icon', 'name', 'owner']
+
+
+class ProjectMessageFileSerializer(MessageFileSerializer):
+    class Meta(MessageFileSerializer.Meta):
+        model = ProjectMessageFile
+
+
+class ProjectMessageSimpleSerializer(MessageSimpleSerializer):
+    files = ProjectMessageFileSerializer(many=True, read_only=True)
+
+    class Meta(MessageSimpleSerializer.Meta):
+        model = ProjectMessage
+        exclude = ['project', 'sender']
+
+    def add_addition_val_data(self):
+        self.validated_data['project'] = self.context['project']
+
+
+class ProjectMessageSerializer(ProjectMessageSimpleSerializer, MessageSerializer):
+    class Meta(MessageSerializer.Meta):
+        model = ProjectMessage
+        message_file_model = ProjectMessageFile
+        exclude = ['project', 'sender']
+
+    def add_addition_val_data(self):
+        self.validated_data['project_id'] = self.context['project_pk']

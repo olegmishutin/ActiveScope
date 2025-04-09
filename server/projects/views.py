@@ -13,6 +13,7 @@ from asgiref.sync import sync_to_async
 from messages.models import Message
 from server.utils.classes.permissions_classes import IsAdminUser
 from server.utils.classes.mixins import ManipulateMembersFromGroups
+from server.utils.classes.viewsets import MessageViewSet, MessageFileViewSet
 from server.utils.functions.websockets import send_signal_to_socket
 from .permissions import IsProjectCanBeChangedOrDeleted, UserIsMemberOfProject, UserIsOwnerOfTheProject
 from .utils import get_project_from_request, get_project_task_from_request
@@ -21,7 +22,7 @@ from .models import Project, ProjectTask, ProjectTaskFile
 from . import serializers
 
 
-class BaseViewSet(viewsets.ModelViewSet):
+class BaseViewSet(viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated, UserIsMemberOfProject]
 
     def get_serializer_context(self):
@@ -93,7 +94,7 @@ class ProjectsViewSet(ManipulateMembersFromGroups, viewsets.ModelViewSet):
             })
 
 
-class TasksViewSet(BaseViewSet):
+class TasksViewSet(BaseViewSet, viewsets.ModelViewSet):
     serializer_class = serializers.TaskSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = TaskFilter
@@ -115,14 +116,14 @@ class MembersView(mixins.ListModelMixin, viewsets.GenericViewSet):
                 'projects_tasks', filter=Q(projects_tasks__project_id=self.kwargs.get('project_pk'))))
 
 
-class StatusesViewSet(BaseViewSet):
+class StatusesViewSet(BaseViewSet, viewsets.ModelViewSet):
     serializer_class = serializers.StatusSerializer
 
     def get_queryset(self):
         return get_project_from_request(self.request, self.kwargs).statuses.all().order_by('name')
 
 
-class PrioritiesViewSet(BaseViewSet):
+class PrioritiesViewSet(BaseViewSet, viewsets.ModelViewSet):
     serializer_class = serializers.PrioritySerializer
 
     def get_queryset(self):
@@ -206,6 +207,26 @@ class AdminFileView(generics.RetrieveAPIView):
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         return FileResponse(open(instance.file.path, 'rb'), as_attachment=True)
+
+
+class ProjectMessageViewSet(BaseViewSet, MessageViewSet):
+    serializer_class = serializers.ProjectMessageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return get_object_or_404(
+            self.request.user.projects.all(),
+            pk=self.kwargs.get('project_pk')
+        ).project_messages.all().select_related('sender').prefetch_related('files').order_by('-timestamp')
+
+
+class ProjectMessageFileViewSet(MessageFileViewSet):
+    message_serializer = serializers.ProjectMessageSerializer
+    serializer_class = serializers.ProjectMessageFileSerializer
+    permission_classes = [IsAuthenticated, UserIsMemberOfProject]
+
+    def get_queryset(self):
+        return get_object_or_404(self.request.user.project_messages, pk=self.kwargs.get('message_pk')).files
 
 
 @sync_to_async()

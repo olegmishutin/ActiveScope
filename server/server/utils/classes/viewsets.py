@@ -4,7 +4,7 @@ from rest_framework.pagination import LimitOffsetPagination
 
 
 class MessageViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
-                                   mixins.UpdateModelMixin, mixins.DestroyModelMixin, GenericViewSet):
+                     mixins.UpdateModelMixin, mixins.DestroyModelMixin, GenericViewSet):
     pagination_class = LimitOffsetPagination
 
     def perform_create(self, serializer):
