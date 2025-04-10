@@ -39,6 +39,10 @@ class MessagesManager(Manager):
         self.create(receiver=messanger.group.founder, topic='LEAVE_GROUP_MESSANGER',
                     text=f'Пользователь {user.email} покинул мессенджер {messanger.name} группы {messanger.group.name}')
 
+    def create_messanger_mentioned(self, topic_key, messanger_id, message_id, receiver):
+        self.create(receiver=receiver, topic=topic_key, messanger_id=messanger_id, message_id=message_id,
+                    text=f'Вас упомянули в {"мессенджере группы" if topic_key == "GROUP_MESSAGE" else "мессенджере проекта"}')
+
     def get_project_task_messages_objects(self, data):
         ret_data = []
         users_data, projects_data, tasks_data, days_data = [], [], [], []

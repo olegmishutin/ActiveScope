@@ -189,17 +189,14 @@ class ProjectMessageSimpleSerializer(MessageSimpleSerializer):
 
     class Meta(MessageSimpleSerializer.Meta):
         model = ProjectMessage
-        exclude = ['project', 'sender']
-
-    def add_addition_val_data(self):
-        self.validated_data['project'] = self.context['project']
-
-
-class ProjectMessageSerializer(ProjectMessageSimpleSerializer, MessageSerializer):
-    class Meta(MessageSerializer.Meta):
-        model = ProjectMessage
-        message_file_model = ProjectMessageFile
+        messanger_model = Project
+        messanger_val_data_field = 'project_id'
         exclude = ['project', 'sender']
 
     def add_addition_val_data(self):
         self.validated_data['project_id'] = self.context['project_pk']
+
+
+class ProjectMessageSerializer(ProjectMessageSimpleSerializer, MessageSerializer):
+    class Meta(ProjectMessageSimpleSerializer.Meta):
+        message_file_model = ProjectMessageFile

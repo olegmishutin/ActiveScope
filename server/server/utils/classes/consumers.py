@@ -45,7 +45,7 @@ class MessangerConsumer(AsyncJsonWebsocketConsumer):
             serializer = self.message_simple_serializer(
                 data=content['object'], context={
                     'user': self.user,
-                    self.parent_serializer_name: self.parent_instance
+                    self.parent_serializer_name: self.parent_instance.id
                 }
             )
             serializer_is_valid = await sync_to_async(serializer.is_valid)()

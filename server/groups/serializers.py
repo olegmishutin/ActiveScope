@@ -71,17 +71,14 @@ class GroupMessangerMessageSimpleSerializer(MessageSimpleSerializer):
 
     class Meta(MessageSimpleSerializer.Meta):
         model = GroupMessangerMessage
-        exclude = ['messanger', 'sender']
-
-    def add_addition_val_data(self):
-        self.validated_data['messanger'] = self.context['messanger']
-
-
-class GroupMessangerMessageSerializer(GroupMessangerMessageSimpleSerializer, MessageSerializer):
-    class Meta(MessageSerializer.Meta):
-        model = GroupMessangerMessage
-        message_file_model = GroupMessangerMessageFile
+        messanger_model = GroupMessanger
+        messanger_val_data_field = 'messanger_id'
         exclude = ['messanger', 'sender']
 
     def add_addition_val_data(self):
         self.validated_data['messanger_id'] = self.context['messanger_pk']
+
+
+class GroupMessangerMessageSerializer(GroupMessangerMessageSimpleSerializer, MessageSerializer):
+    class Meta(GroupMessangerMessageSimpleSerializer.Meta):
+        message_file_model = GroupMessangerMessageFile

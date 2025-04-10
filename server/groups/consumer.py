@@ -7,6 +7,6 @@ from .serializers import GroupMessangerMessageSimpleSerializer
 class GroupMessangerConsumer(MessangerConsumer):
     parent_model = GroupMessanger
     message_simple_serializer = GroupMessangerMessageSimpleSerializer
-    parent_serializer_name = 'messanger'
+    parent_serializer_name = 'messanger_pk'
     url_route_identifier_name = 'messanger_id'
     room_name_with_formating = 'group_messanger_{0}'

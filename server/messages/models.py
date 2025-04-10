@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from groups.models import Group, GroupMessanger
+from groups.models import Group
 from projects.models import Project, ProjectTask
 from .managers import MessagesManager
 
@@ -17,6 +17,9 @@ class Message(models.Model):
 
         'EXC_GROUP_MESSANGER': 'Исключен из мессенджера группы',
         'LEAVE_GROUP_MESSANGER': 'Убавление в месенджере группы',
+
+        'GROUP_MESSAGE': 'Упоминание в мессенджере группы',
+        'PROJECT_MESSAGE': 'Упоминание в мессенджере проекта',
 
         'TASKS': 'Уведомление о задаче'
     }
@@ -35,6 +38,9 @@ class Message(models.Model):
     sender_project_task = models.ForeignKey(
         ProjectTask, related_name='messages', verbose_name='проектная-задача-отправитель', on_delete=models.CASCADE,
         null=True, blank=True)
+
+    messanger_id = models.BigIntegerField('идентификатор мессенджера', null=True, blank=True)
+    message_id = models.BigIntegerField('идентификатор сообщения', null=True, blank=True)
 
     days_left = models.PositiveSmallIntegerField('остаточные дни', null=True, blank=True, editable=False)
 
