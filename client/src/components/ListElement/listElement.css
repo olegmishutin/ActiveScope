@@ -30,11 +30,12 @@
     height: 25px;
     min-width: 25px;
     min-height: 25px;
+    overflow: hidden;
+    border-radius: 5px;
 }
 
 .list_element__header__info__icon.round {
     border-radius: 50%;
-    overflow: hidden;
 }
 
 .list_element__header__info__icon img {
@@ -79,6 +80,7 @@
 .list_element__details .base_list {
     padding-top: 8px;
     padding-left: 32px;
+    gap: 15px;
 }
 
 .list_element .default_button {

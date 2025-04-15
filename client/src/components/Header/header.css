@@ -32,6 +32,7 @@
     min-width: 286px;
     min-height: 286px;
     overflow: hidden;
+    border-radius: 10px;
 }
 
 .header__content__image img {

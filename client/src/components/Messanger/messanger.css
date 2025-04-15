@@ -1,0 +1,150 @@
+.messanger {
+    width: 100%;
+    height: 100%;
+    justify-items: center;
+}
+
+.messanger_background,
+.messanger_foreground {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.messanger_background {
+    background-image: url("../../assets/images/messanger_backgroud.jpg");
+    opacity: 0.25;
+    background-size: 280px;
+}
+
+.messanger_foreground {
+    background-color: black;
+    opacity: 0.35;
+}
+
+.messanger_box {
+    position: relative;
+    max-width: 100%;
+    width: 660px;
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.messanger_box__header,
+.messanger_box__footer {
+    background-color: #313131;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.messanger_box__header__icon {
+    width: 45px;
+    height: 45px;
+    min-width: 45px;
+    min-height: 45px;
+    margin: 0 10px;
+}
+
+.messanger_box__header__icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.messanger_box__header__title {
+    margin-right: 30px;
+}
+
+.messanger_box__header__button {
+    margin-left: auto;
+    background: none;
+    border: none;
+}
+
+.messanger_box__header__back_button {
+    background: none;
+}
+
+.messanger_box__main,
+.messanger_box__main__messages {
+    height: 100%;
+    overflow: auto;
+}
+
+.messanger_box__main {
+    padding: 10px 0;
+}
+
+.messanger_box__main__messages::-webkit-scrollbar {
+    display: none;
+}
+
+.messanger_box__main__messages {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-radius: 10px;
+}
+
+.messanger_box__footer {
+    justify-content: space-between;
+}
+
+.messanger_box__footer .textbox,
+.messanger_box__footer__textbox {
+    width: 100%;
+}
+
+.messanger_box__footer .textbox {
+    padding: 0 5px;
+    box-sizing: border-box;
+}
+
+.messanger_box__footer__send_button {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    justify-content: center;
+}
+
+.messanger_box__footer__send_button img {
+    transform: rotate(180deg);
+}
+
+.messanger__message {
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    max-width: 80%;
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.messanger__message.left_message {
+    align-self: flex-start;
+    background-color: #414141;
+    justify-content: flex-start;
+}
+
+.messanger__message.right_message {
+    align-self: flex-end;
+    background-color: #3777A0;
+    justify-content: flex-end;
+}
+
+.messanger__message__date {
+    font-size: 14px;
+    opacity: 0.65;
+}

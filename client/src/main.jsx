@@ -15,6 +15,7 @@ import ProjectDescription from "./pages/ProjectDescription/projectDescription.js
 import AdminProjects from "./pages/AdminProjects/adminProjects.jsx";
 import ProjectBase from "./components/ProjectBase/projectBase.jsx";
 import NotFound from "./components/NotFound/notFound.jsx";
+import ProjectMessanger from "./pages/ProjectMessanger/projectMessanger.jsx";
 
 const router = createBrowserRouter([
     {
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
                         element: <ProjectDescription/>
                     },
                 ]
+            },
+            {
+                path: 'project/:id/messanger',
+                element: <ProjectMessanger/>
             },
             {
                 path: 'admin/projects/',

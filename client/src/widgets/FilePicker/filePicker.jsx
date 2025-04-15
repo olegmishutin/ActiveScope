@@ -14,7 +14,9 @@ export default function FilePicker(props) {
                     <img src={props.big ? bigFilePickerIcon : smallFilePickerIcon} alt='icon' loading='lazy'/>
                 </div>
                 {props.children}
-                <p className='default_file_picker__error' id={`${props.id}_error`}></p>
+                {
+                    props.remove_error ? '' : <p className='default_file_picker__error' id={`${props.id}_error`}></p>
+                }
             </label>
         </>
     )
