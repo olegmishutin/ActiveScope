@@ -27,7 +27,7 @@
 .messanger_box {
     position: relative;
     max-width: 100%;
-    width: 660px;
+    width: 850px;
     height: 100%;
     padding: 10px;
     box-sizing: border-box;
@@ -91,7 +91,7 @@
 
 .messanger_box__main__messages {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 10px;
     border-radius: 10px;
 }
@@ -124,7 +124,7 @@
 .messanger__message {
     padding: 10px;
     box-sizing: border-box;
-    border-radius: 10px;
+    border-radius: 15px;
     max-width: 80%;
     display: flex;
     gap: 10px;
@@ -147,4 +147,86 @@
 .messanger__message__date {
     font-size: 14px;
     opacity: 0.65;
+}
+
+.messanger__message__images {
+    max-width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50%, 1fr));
+    gap: 5px;
+}
+
+.messanger__message__images img {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    max-height: 600px;
+    object-fit: cover;
+    border-radius: 10px;
+    grid-column: span 1;
+    transition-duration: 0.3s;
+}
+
+.messanger__message__images img:hover {
+    scale: 102%;
+    cursor: pointer;
+}
+
+.messanger__message__images img:first-child {
+    grid-column: span 2;
+}
+
+.messanger__message__images img:last-child:nth-child(even) {
+    grid-column: span 2;
+}
+
+.messanger__message__files {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.messanger__message__files__file {
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+}
+
+.messanger__message.right_message .messanger__message__files__file {
+    background-color: #2e6283;
+}
+
+.messanger__message.left_message .messanger__message__files__file {
+    background-color: #525252;
+    flex-direction: row-reverse;
+}
+
+.messanger__message__files__file a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    word-break: break-word;
+}
+
+.messanger__message__files__file__button {
+    width: 0;
+    height: 30px;
+    overflow: hidden;
+    padding: 0;
+    margin-left: 15px;
+}
+
+.messanger__message__files__file:hover .messanger__message__files__file__button {
+    width: 100px;
+}
+
+.messanger_image_watcher__image {
+    width: 100%;
+    max-width: 1000px;
+    border-radius: 10px;
+    object-fit: cover;
 }

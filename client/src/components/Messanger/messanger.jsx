@@ -4,6 +4,7 @@ import FilePicker from "../../widgets/FilePicker/filePicker.jsx";
 import Textbox from "../../widgets/Textbox/textbox.jsx";
 import BackButton from "../../widgets/BackButton/backButton.jsx";
 import {Link} from "react-router-dom";
+import Modal from "../Modal/modal.jsx";
 
 
 export default function Messanger(props) {
@@ -43,6 +44,18 @@ export default function Messanger(props) {
                     </div>
                 </div>
             </div>
+            <Modal id='messanger_image_watcher' extendCloseFunc={() => {
+                setTimeout(() => {
+                    props.imageSetter(null)
+                }, 500)
+            }}>
+                {
+                    props.imageObject !== null ? <>
+                        <img className='messanger_image_watcher__image' src={props.imageObject.file} alt='image'
+                             loading='lazy'/>
+                    </> : ''
+                }
+            </Modal>
         </>
     )
 }
