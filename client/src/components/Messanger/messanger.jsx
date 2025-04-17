@@ -44,7 +44,8 @@ export default function Messanger(props) {
                     </div>
                 </div>
             </div>
-            <Modal id='messanger_image_watcher' extendCloseFunc={() => {
+            <Modal className='messanger_image_watcher' contentClassName='messanger_image_watcher__content'
+                   id='messanger_image_watcher' extendCloseFunc={() => {
                 setTimeout(() => {
                     props.imageSetter(null)
                 }, 500)

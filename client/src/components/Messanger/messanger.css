@@ -27,7 +27,7 @@
 .messanger_box {
     position: relative;
     max-width: 100%;
-    width: 850px;
+    width: 720px;
     height: 100%;
     padding: 10px;
     box-sizing: border-box;
@@ -125,7 +125,7 @@
     padding: 10px;
     box-sizing: border-box;
     border-radius: 15px;
-    max-width: 80%;
+    max-width: 65%;
     display: flex;
     gap: 10px;
     align-items: flex-end;
@@ -150,34 +150,32 @@
 }
 
 .messanger__message__images {
-    max-width: 100%;
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(50%, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(calc(50% - 2.5px), 1fr));
     gap: 5px;
 }
 
 .messanger__message__images img {
-    max-width: 100%;
     width: 100%;
     height: 100%;
-    max-height: 600px;
+    max-height: 300px;
     object-fit: cover;
     border-radius: 10px;
-    grid-column: span 1;
     transition-duration: 0.3s;
+}
+
+.messanger__message__images:has(img:only-child) {
+    grid-template-columns: 1fr;
+}
+
+.messanger__message__images img:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
 }
 
 .messanger__message__images img:hover {
     scale: 102%;
     cursor: pointer;
-}
-
-.messanger__message__images img:first-child {
-    grid-column: span 2;
-}
-
-.messanger__message__images img:last-child:nth-child(even) {
-    grid-column: span 2;
 }
 
 .messanger__message__files {
@@ -194,6 +192,7 @@
     text-align: center;
     display: flex;
     align-items: center;
+    gap: 15px;
 }
 
 .messanger__message.right_message .messanger__message__files__file {
@@ -217,7 +216,6 @@
     height: 30px;
     overflow: hidden;
     padding: 0;
-    margin-left: 15px;
 }
 
 .messanger__message__files__file:hover .messanger__message__files__file__button {
@@ -225,8 +223,38 @@
 }
 
 .messanger_image_watcher__image {
-    width: 100%;
-    max-width: 1000px;
+    max-width: 100%;
+    max-height: 85svh;
     border-radius: 10px;
-    object-fit: cover;
+    object-fit: contain;
+}
+
+.messanger_image_watcher {
+    align-self: flex-start;
+    width: 100%;
+    min-height: 100%;
+    border-radius: 0;
+    background: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.messanger_image_watcher__content {
+    display: flex;
+    justify-content: center;
+}
+
+@media (max-width: 1280px) {
+    .messanger__message__files__file {
+        flex-wrap: wrap;
+    }
+
+    .messanger__message__files__file__button {
+        width: 100%;
+    }
+
+    .messanger__message__files__file:hover .messanger__message__files__file__button {
+        width: 100%;
+    }
 }
