@@ -5,9 +5,26 @@ import Textbox from "../../widgets/Textbox/textbox.jsx";
 import BackButton from "../../widgets/BackButton/backButton.jsx";
 import {Link} from "react-router-dom";
 import Modal from "../Modal/modal.jsx";
+import Button from "../../widgets/Button/button.jsx";
 
 
 export default function Messanger(props) {
+    const socket = props.socketObject
+
+    if (props.socketObject !== null) {
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data)
+
+            if (data.method === 'create') {
+                props.setMessages(prevMessages => [data.object, ...prevMessages])
+            } else if (data.method === 'destroy') {
+                props.setMessages(prevMessages =>
+                    prevMessages.filter(message => message.id !== data.object.id)
+                );
+            }
+        }
+    }
+
     return (
         <>
             <div className='messanger_background'></div>
@@ -49,7 +66,23 @@ export default function Messanger(props) {
                 setTimeout(() => {
                     props.imageSetter(null)
                 }, 500)
-            }}>
+            }} manageButtons={
+                <>
+                    {
+                        props.imageObject !== null && props.senderIsUser ? <Button onClick={() => {
+                            props.deleteWatchingFile(props.imageObjectMessageId, props.imageObject.id)
+                        }} className='red_button'>
+                            Удалить
+                        </Button> : ''
+                    }
+                    {
+                        props.imageObject !== null ?
+                            <a className='default_button messanger_image_watcher__download'
+                               href={props.downloadFileUrl}>Скачать
+                            </a> : ''
+                    }
+                </>
+            }>
                 {
                     props.imageObject !== null ? <>
                         <img className='messanger_image_watcher__image' src={props.imageObject.file} alt='image'
