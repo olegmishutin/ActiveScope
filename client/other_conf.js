@@ -1,3 +1,3 @@
 export function DOCKERIZED() {
-    return false
+    return true
 }

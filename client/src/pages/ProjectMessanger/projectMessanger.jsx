@@ -2,7 +2,7 @@ import './projectMessanger.css'
 import {useState, useEffect} from "react";
 import {Link, useParams} from "react-router-dom";
 import axios from "axios";
-import {DELETE, GET} from "../../utils/methods.jsx";
+import {DELETE, GET, POST} from "../../utils/methods.jsx";
 import {checkResponse} from "../../utils/response.jsx";
 import Messanger from "../../components/Messanger/messanger.jsx";
 import projectIcon from '../../assets/images/project big.svg';
@@ -21,6 +21,7 @@ export default function ProjectMessanger() {
     const [watchingImageMessageId, setWatchingImageMessageId] = useState(null)
     const [watchingImageUrl, setWatchingImageUrl] = useState(null)
     const [senderIsUser, setSenderIsUser] = useState(false)
+    const [uploadedFiles, setUploadedFiles] = useState([])
     const [socket, setSocket] = useState(null)
 
     useEffect(() => {
@@ -128,14 +129,34 @@ export default function ProjectMessanger() {
     }
 
     function sendMessage() {
-        const data = getDataByIDs([
-                ['message_textarea', 'message']
-            ], false, false
-        )
+        if (!uploadedFiles.length) {
+            const data = getDataByIDs([
+                    ['message_textarea', 'message']
+                ], false, false
+            )
 
-        if (data['message'] !== undefined) {
             document.getElementById('message_textarea').value = ''
             socket.send(JSON.stringify({object: data}))
+        } else {
+            const data = getDataByIDs([
+                    ['message_textarea', 'message']
+                ], true, false
+            )
+
+            for (let i = 0; i < uploadedFiles.length; i++) {
+                data.append('uploaded_files', uploadedFiles[i])
+            }
+
+            axios(POST(`/api/projects/${id}/messages/`, data)).then(
+                (response) => {
+                    checkResponse(response, null, null, () => {
+                        document.getElementById('message_textarea').value = ''
+                        setUploadedFiles([])
+                    })
+                }
+            ).catch((error) => {
+                checkResponse(error.response)
+            })
         }
     }
 
@@ -146,7 +167,7 @@ export default function ProjectMessanger() {
                        imageObject={watchingImage} downloadFileUrl={watchingImageUrl} senderIsUser={senderIsUser}
                        imageObjectMessageId={watchingImageMessageId} deleteWatchingFile={deleteFile}
                        socketObject={socket} setMessages={setMessages} send_func={sendMessage}
-                       textbox_id='message_textarea'
+                       textbox_id='message_textarea' uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles}
             >
                 {
                     messages.map((message) => {
@@ -200,8 +221,10 @@ export default function ProjectMessanger() {
                                                 ))}
                                             </div>
                                         )}
-                                        <p>{message.message}</p>
-                                        <p className='messanger__message__date'>{message.timestamp}</p>
+                                        <div className="messanger__message__info">
+                                            <p className='messanger__message__info__text'>{message.message}</p>
+                                            <p className='messanger__message__info__date'>{message.timestamp}</p>
+                                        </div>
                                     </div>
                                     <button className='messanger__message_box__trash_button' onClick={() => {
                                         deleteMessage(message.id)

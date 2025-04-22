@@ -9,7 +9,12 @@ export default function FilePicker(props) {
             <label
                 className={`default_file_picker ${props.big ? 'big_file_picker' : ''} ${props.className} hoverEffect`}
                 htmlFor={props.id}>
-                <input type='file' multiple={props.multiple} id={props.id} accept={props.accept}/>
+                <input type='file' multiple={props.multiple} id={props.id} accept={props.accept}
+                       onChange={(e) => {
+                           if (props.onChange) {
+                               props.onChange(e)
+                           }
+                       }}/>
                 <div className="default_file_picker__icon">
                     <img src={props.big ? bigFilePickerIcon : smallFilePickerIcon} alt='icon' loading='lazy'/>
                 </div>

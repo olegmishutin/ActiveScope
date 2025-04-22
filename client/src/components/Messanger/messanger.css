@@ -36,14 +36,17 @@
     justify-content: space-between;
 }
 
+.messanger_box__header {
+    display: flex;
+    align-items: center;
+}
+
 .messanger_box__header,
 .messanger_box__footer {
     background-color: #313131;
     padding: 10px;
     box-sizing: border-box;
     border-radius: 15px;
-    display: flex;
-    align-items: center;
 }
 
 .messanger_box__header__icon {
@@ -121,6 +124,28 @@
     transform: rotate(180deg);
 }
 
+.messanger_box__footer__main {
+    display: flex;
+    align-items: center;
+}
+
+.messanger_box__footer__files {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.messanger_box__footer__files__file__button {
+    max-width: 200px;
+    max-height: 25px;
+    border-radius: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .messanger__message_box {
     display: flex;
     max-width: 70%;
@@ -128,19 +153,28 @@
     gap: 5px;
 }
 
-.messanger__message {
+.messanger__message,
+.messanger__message__info {
     width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    border-radius: 15px;
     display: flex;
     gap: 10px;
-    align-items: flex-end;
     flex-wrap: wrap;
 }
 
-.messanger__message p {
+.messanger__message__info {
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.messanger__message {
+    padding: 8px;
+    box-sizing: border-box;
+    border-radius: 15px;
+}
+
+.messanger__message__info__text {
     word-break: break-word;
+    white-space: pre-wrap;
 }
 
 .messanger__message_box.left_message {
@@ -196,7 +230,7 @@
     opacity: 1;
 }
 
-.messanger__message__date {
+.messanger__message__info__date {
     font-size: 14px;
     opacity: 0.65;
 }

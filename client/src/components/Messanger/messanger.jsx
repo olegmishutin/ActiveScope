@@ -17,6 +17,12 @@ export default function Messanger(props) {
 
             if (data.method === 'create') {
                 props.setMessages(prevMessages => [data.object, ...prevMessages])
+            } else if (data.method === 'update') {
+                props.setMessages(prevMessages =>
+                    prevMessages.map(msg =>
+                        msg.id === data.object.id ? data.object : msg
+                    )
+                )
             } else if (data.method === 'destroy') {
                 props.setMessages(prevMessages =>
                     prevMessages.filter(message => message.id !== data.object.id)
@@ -52,12 +58,41 @@ export default function Messanger(props) {
                         </ul>
                     </div>
                     <div className="messanger_box__footer">
-                        <FilePicker className='messanger_box__footer__filepicker' id={props.file_attachment_id}
-                                    multiple={true} remove_error={true}/>
-                        <Textbox className='messanger_box__footer__textbox' type='textarea' id={props.textbox_id}
-                                 placeholder='Ваше сообщение'/>
-                        <BackButton className='hoverEffect messanger_box__footer__send_button'
-                                    onClick={props.send_func}/>
+                        {
+                            props.uploadedFiles.length ? <>
+                                <ul className="messanger_box__footer__files">
+                                    {
+                                        props.uploadedFiles.map((file, key) => {
+                                            return (
+                                                <>
+                                                    <li className='messanger_box__footer__files__file'>
+                                                        <Button className='messanger_box__footer__files__file__button'
+                                                                onClick={() => {
+                                                                    props.setUploadedFiles(prevItems => prevItems.filter((_, index) => index !== key));
+                                                                }}>
+                                                            {file.name}
+                                                        </Button>
+                                                    </li>
+                                                </>
+                                            )
+                                        })
+                                    }
+                                </ul>
+                            </> : ''
+                        }
+                        <div className="messanger_box__footer__main">
+                            <FilePicker className='messanger_box__footer__filepicker' id={props.file_attachment_id}
+                                        multiple={true} remove_error={true} onChange={(e) => {
+                                props.setUploadedFiles([])
+                                for (let i = 0; i < e.target.files.length; i++) {
+                                    props.setUploadedFiles(prevFiles => [e.target.files[i], ...prevFiles])
+                                }
+                            }}/>
+                            <Textbox className='messanger_box__footer__textbox' type='textarea' id={props.textbox_id}
+                                     placeholder='Ваше сообщение'/>
+                            <BackButton className='hoverEffect messanger_box__footer__send_button'
+                                        onClick={props.send_func}/>
+                        </div>
                     </div>
                 </div>
             </div>
