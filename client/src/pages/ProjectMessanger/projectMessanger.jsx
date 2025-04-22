@@ -10,7 +10,7 @@ import userIcon from "../../assets/images/user.svg";
 import trashIcon from "../../assets/images/trash.svg";
 import Button from "../../widgets/Button/button.jsx";
 import {checkConfirmation} from "../../utils/request.jsx";
-import {getDataByIDs} from "../../utils/data.jsx";
+import {getDataByIDs, getWsConnection} from "../../utils/data.jsx";
 
 export default function ProjectMessanger() {
     const {id} = useParams()
@@ -47,8 +47,8 @@ export default function ProjectMessanger() {
             checkResponse(error.response)
         })
 
-        const socket = new WebSocket(
-            `/ws/project/17/messages/?token=${localStorage.getItem('token')}`
+        const socket = getWsConnection(
+            `/project/${id}/messages/?token=${localStorage.getItem('token')}`
         )
         socket.onopen = () => {
             setSocket(socket)
