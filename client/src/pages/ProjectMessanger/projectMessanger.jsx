@@ -11,6 +11,7 @@ import trashIcon from "../../assets/images/trash.svg";
 import Button from "../../widgets/Button/button.jsx";
 import {checkConfirmation} from "../../utils/request.jsx";
 import {getDataByIDs, getWsConnection} from "../../utils/data.jsx";
+import {getImage} from "../../utils/data.jsx";
 
 export default function ProjectMessanger() {
     const {id} = useParams()
@@ -179,7 +180,7 @@ export default function ProjectMessanger() {
                                             <Link to={`/users/${message.sender_profile.id}`}
                                                   className='messanger__message_box__user_href'>
                                                 <img className='messanger__message_box__user_icon'
-                                                     src={message.sender_profile.photo ? message.sender_profile.photo : userIcon}
+                                                     src={message.sender_profile.photo ? getImage(message.sender_profile.photo) : userIcon}
                                                      alt='user' loading='lazy'/>
                                             </Link>
                                         </> : ''
@@ -188,7 +189,7 @@ export default function ProjectMessanger() {
                                         {getOnlyImages(message.files).length > 0 && (
                                             <div className="messanger__message__images">
                                                 {getOnlyImages(message.files).map((file, key) => (
-                                                    <img key={key} src={file.file} alt='image' loading='lazy'
+                                                    <img key={key} src={getImage(file.file)} alt='image' loading='lazy'
                                                          onClick={() => {
                                                              const modal = document.getElementById('messanger_image_watcher')
                                                              modal.classList.add('show_modal')

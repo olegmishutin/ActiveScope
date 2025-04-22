@@ -6,6 +6,7 @@ import BackButton from "../../widgets/BackButton/backButton.jsx";
 import {Link} from "react-router-dom";
 import Modal from "../Modal/modal.jsx";
 import Button from "../../widgets/Button/button.jsx";
+import {getImage} from "../../utils/data.jsx";
 
 
 export default function Messanger(props) {
@@ -42,7 +43,7 @@ export default function Messanger(props) {
                             <BackButton className='messanger_box__header__back_button'/>
                         </Link>
                         <div className="messanger_box__header__icon">
-                            <img src={props.header_icon ? props.header_icon : props.default_header_icon}
+                            <img src={props.header_icon ? getImage(props.header_icon) : props.default_header_icon}
                                  alt='messanger icon' loading='lazy'/>
                         </div>
                         <div className="messanger_box__header__title">
@@ -120,8 +121,8 @@ export default function Messanger(props) {
             }>
                 {
                     props.imageObject !== null ? <>
-                        <img className='messanger_image_watcher__image' src={props.imageObject.file} alt='image'
-                             loading='lazy'/>
+                        <img className='messanger_image_watcher__image' src={getImage(props.imageObject.file)}
+                             alt='image' loading='lazy'/>
                     </> : ''
                 }
             </Modal>
