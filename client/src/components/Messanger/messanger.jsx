@@ -7,9 +7,14 @@ import {Link} from "react-router-dom";
 import Modal from "../Modal/modal.jsx";
 import Button from "../../widgets/Button/button.jsx";
 import {getImage} from "../../utils/data.jsx";
+import {useLocation} from "react-router-dom";
+import {useEffect} from "react";
+import {useSearchParams} from 'react-router-dom';
 
 
 export default function Messanger(props) {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const location = useLocation()
     const socket = props.socketObject
 
     if (props.socketObject !== null) {
@@ -31,6 +36,21 @@ export default function Messanger(props) {
             }
         }
     }
+
+    useEffect(() => {
+        const message_id = searchParams.get('message');
+
+        if (message_id) {
+            try {
+                console.log(searchParams)
+                const element = document.getElementById(`message-${message_id}`)
+                element.scrollIntoView({behavior: 'smooth', block: 'nearest'})
+                setSearchParams({})
+            } catch {
+                console.log()
+            }
+        }
+    }, [location, props.messages]);
 
     return (
         <>

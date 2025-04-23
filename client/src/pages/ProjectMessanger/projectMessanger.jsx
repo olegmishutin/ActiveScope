@@ -169,12 +169,14 @@ export default function ProjectMessanger() {
                        imageObjectMessageId={watchingImageMessageId} deleteWatchingFile={deleteFile}
                        socketObject={socket} setMessages={setMessages} send_func={sendMessage}
                        textbox_id='message_textarea' uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles}
+                       messages={messages}
             >
                 {
                     messages.map((message) => {
                         return (
                             <>
-                                <li className={`messanger__message_box ${message.sender_profile.email !== user.email ? 'left_message' : 'right_message'}`}>
+                                <li className={`messanger__message_box ${message.sender_profile.email !== user.email ? 'left_message' : 'right_message'}`}
+                                    id={`message-${message.id}`}>
                                     {
                                         user.email !== message.sender_profile.email ? <>
                                             <Link to={`/users/${message.sender_profile.id}`}

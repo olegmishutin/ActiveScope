@@ -11,6 +11,8 @@ import Checkbox from "../../widgets/Checkbox/checkbox.jsx"
 import BackButton from "../../widgets/BackButton/backButton.jsx"
 import Button from "../../widgets/Button/button.jsx"
 import {getFilters} from "../../utils/data.jsx";
+import {useNavigate} from 'react-router-dom';
+import {changePanel} from "../SidePanel/sidePanel.jsx";
 
 export function getIsReadedForUrl(url) {
     const isReadedCheckbox = document.getElementById('is_readed')
@@ -57,6 +59,7 @@ export function getMessages(messagesSetter, messagesCountSetter) {
 }
 
 export default function Messages(props) {
+    const navigate = useNavigate();
     const [messages, setMessages] = useState([...props.messages])
     const [themes, setThemes] = useState([])
 
@@ -96,6 +99,12 @@ export default function Messages(props) {
         setMessages(props.messages)
     }, [props.messages]);
 
+    function closeMessagePanel() {
+        const messagesPanel = document.getElementById('messages_panel')
+        messagesPanel.classList.remove('show_messages')
+        messagesPanel.classList.add('hide_messages')
+    }
+
     return (
         <>
             <aside className="messages" id='messages_panel'>
@@ -116,11 +125,7 @@ export default function Messages(props) {
                         }}>Не
                             прочитано</Checkbox>
                     </div>
-                    <BackButton className='messages__header__back_button' onClick={() => {
-                        const messagesPanel = document.getElementById('messages_panel')
-                        messagesPanel.classList.remove('show_messages')
-                        messagesPanel.classList.add('hide_messages')
-                    }}/>
+                    <BackButton className='messages__header__back_button' onClick={closeMessagePanel}/>
                 </div>
                 <ul className='messages__list'>
                     {
@@ -135,28 +140,43 @@ export default function Messages(props) {
                                             {
                                                 !message.is_readed ?
                                                     <>
-                                                        {
-                                                            ['INV_GROUP', 'INV_PROJECT'].includes(message.topic_code) ?
-                                                                <>
-                                                                    <Button
-                                                                        className='light_button messages__list__message__buttons__button'
-                                                                        onClick={() => {
-                                                                            readMessage(message.id, true, true)
-                                                                        }}>Принять</Button>
-                                                                    <Button
-                                                                        className='red_button messages__list__message__buttons__button'
-                                                                        onClick={() => {
-                                                                            readMessage(message.id, false, false)
-                                                                        }}>Отклонить</Button>
-                                                                </> :
-                                                                <>
+                                                        <>
+                                                            {
+                                                                ['INV_GROUP', 'INV_PROJECT'].includes(message.topic_code) ?
+                                                                    <>
+                                                                        <Button
+                                                                            className='light_button messages__list__message__buttons__button'
+                                                                            onClick={() => {
+                                                                                readMessage(message.id, true, true)
+                                                                            }}>Принять</Button>
+                                                                        <Button
+                                                                            className='red_button messages__list__message__buttons__button'
+                                                                            onClick={() => {
+                                                                                readMessage(message.id, false, false)
+                                                                            }}>Отклонить</Button>
+                                                                    </> : ''
+                                                            }
+                                                            {
+                                                                message.topic_code === 'PROJECT_MESSAGE' ? <>
                                                                     <Button
                                                                         className='light_button messages__list__message__buttons__button'
                                                                         onClick={() => {
                                                                             readMessage(message.id)
-                                                                        }}>Прочитано</Button>
-                                                                </>
-                                                        }
+                                                                            closeMessagePanel()
+
+                                                                            changePanel('panel', 'show_panel', 'hidden_panel')
+                                                                            navigate(`/project/${message.messanger_id}/messanger?message=${message.message_id}`)
+                                                                        }}>Перейти к сообщению
+                                                                    </Button>
+                                                                </> : ''
+                                                            }
+                                                            <Button
+                                                                className='light_button messages__list__message__buttons__button'
+                                                                onClick={() => {
+                                                                    readMessage(message.id)
+                                                                }}>Прочитано
+                                                            </Button>
+                                                        </>
                                                     </> : ''
                                             }
                                         </div>

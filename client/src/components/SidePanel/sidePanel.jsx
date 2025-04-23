@@ -27,6 +27,12 @@ import {getDataByIDs, getImage, getWsConnection} from "../../utils/data.jsx";
 import {getDateFromRequest} from "../../utils/date.jsx";
 import {checkConfirmation} from "../../utils/request.jsx";
 
+export function changePanel(id, removeClass, addClass) {
+    const panel = document.getElementById(id)
+    panel.classList.remove(removeClass)
+    panel.classList.add(addClass)
+}
+
 export default function SidePanel() {
     const [user, setUser] = useState({photo: null})
     const [projects, setProjects] = useState([])
@@ -173,12 +179,6 @@ export default function SidePanel() {
             document.getElementById('project_end_date').value = ''
             document.getElementById('project_description').value = ''
         }
-    }
-
-    function changePanel(id, removeClass, addClass) {
-        const panel = document.getElementById(id)
-        panel.classList.remove(removeClass)
-        panel.classList.add(addClass)
     }
 
     function closePanelOnMobile() {
