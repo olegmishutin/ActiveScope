@@ -163,13 +163,13 @@ export default function ProjectMessanger() {
 
     return (
         <>
-            <Messanger back_button_url={`/project/${id}/tasks`} header_icon={project.icon}
+            <Messanger back_button_url={`/project/${id}/tasks`} header_icon={project.icon} messanger_id={id}
                        default_header_icon={projectIcon} title={project.name} imageSetter={setWatchingImage}
                        imageObject={watchingImage} downloadFileUrl={watchingImageUrl} senderIsUser={senderIsUser}
                        imageObjectMessageId={watchingImageMessageId} deleteWatchingFile={deleteFile}
                        socketObject={socket} setMessages={setMessages} send_func={sendMessage}
                        textbox_id='message_textarea' uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles}
-                       messages={messages}
+                       messages={messages} currentUser={user}
             >
                 {
                     messages.map((message) => {

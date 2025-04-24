@@ -8,12 +8,17 @@ import Modal from "../Modal/modal.jsx";
 import Button from "../../widgets/Button/button.jsx";
 import {getImage} from "../../utils/data.jsx";
 import {useLocation} from "react-router-dom";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {useSearchParams} from 'react-router-dom';
+import axios from "axios";
+import {GET} from "../../utils/methods.jsx";
+import {checkResponse} from "../../utils/response.jsx";
+import userIcon from "../../assets/images/user.svg";
 
 
 export default function Messanger(props) {
     const [searchParams, setSearchParams] = useSearchParams();
+    const [members, setMembers] = useState([])
     const location = useLocation()
     const socket = props.socketObject
 
@@ -50,6 +55,15 @@ export default function Messanger(props) {
                 console.log()
             }
         }
+
+        axios(GET(`/api/projects/${props.messanger_id}/members/`)).then(
+            (response) => {
+                checkResponse(response, setMembers, response.data)
+                console.log(members)
+            }
+        ).catch((error) => {
+            checkResponse(error.response)
+        })
     }, [location, props.messages]);
 
     return (
@@ -69,7 +83,11 @@ export default function Messanger(props) {
                         <div className="messanger_box__header__title">
                             <h3>{props.title}</h3>
                         </div>
-                        <button className="messanger_box__header__button" onClick={props.header_button_event}>
+                        <button className="messanger_box__header__button" onClick={() => {
+                            const modal = document.getElementById('messanger_management_modal')
+                            modal.classList.remove('hide_modal')
+                            modal.classList.add('show_modal')
+                        }}>
                             <img src={threeDots} alt='info' loading='lazy'/>
                         </button>
                     </div>
@@ -117,6 +135,48 @@ export default function Messanger(props) {
                     </div>
                 </div>
             </div>
+            <Modal className='messanger_management' id='messanger_management_modal'
+                   contentClassName='messanger_management__content'>
+                <div className="messanger_management__header">
+                    <div className="messanger_management__header__icon">
+                        <img src={props.header_icon ? getImage(props.header_icon) : props.default_header_icon}
+                             loading='lazy'/>
+                    </div>
+                    <div className="messanger_management__header__title">
+                        <h3>{props.title}</h3>
+                    </div>
+                </div>
+                <ul className="messanger_management__members">
+                    {
+                        members.map((member) => {
+                            return (
+                                <>
+                                    {
+                                        member.email !== props.currentUser.email ? <>
+                                            <li className='messanger_management__members__member'>
+                                                <Link to={`/users/${member.id}`}
+                                                      className='messanger_management__members__member__info'>
+                                                    <div className="messanger_management__members__member__photo">
+                                                        <img src={member.photo ? getImage(member.photo) : userIcon}
+                                                             loading='lazy' alt='member photo'/>
+                                                    </div>
+                                                    <p>{member.get_full_name}</p>
+                                                </Link>
+                                                <Button className='light_button' onClick={() => {
+                                                    const textbox = document.getElementById(props.textbox_id)
+                                                    textbox.value = `${textbox.value} @${member.email}`
+                                                }}>
+                                                    Отметить
+                                                </Button>
+                                            </li>
+                                        </> : ''
+                                    }
+                                </>
+                            )
+                        })
+                    }
+                </ul>
+            </Modal>
             <Modal className='messanger_image_watcher' contentClassName='messanger_image_watcher__content'
                    id='messanger_image_watcher' extendCloseFunc={() => {
                 setTimeout(() => {
@@ -146,6 +206,7 @@ export default function Messanger(props) {
                     </> : ''
                 }
             </Modal>
+
         </>
     )
 }

@@ -154,7 +154,12 @@ export default function Messages(props) {
                                                                             onClick={() => {
                                                                                 readMessage(message.id, false, false)
                                                                             }}>Отклонить</Button>
-                                                                    </> : ''
+                                                                    </> : <Button
+                                                                        className='light_button messages__list__message__buttons__button'
+                                                                        onClick={() => {
+                                                                            readMessage(message.id)
+                                                                        }}>Прочитано
+                                                                    </Button>
                                                             }
                                                             {
                                                                 message.topic_code === 'PROJECT_MESSAGE' ? <>
@@ -170,12 +175,6 @@ export default function Messages(props) {
                                                                     </Button>
                                                                 </> : ''
                                                             }
-                                                            <Button
-                                                                className='light_button messages__list__message__buttons__button'
-                                                                onClick={() => {
-                                                                    readMessage(message.id)
-                                                                }}>Прочитано
-                                                            </Button>
                                                         </>
                                                     </> : ''
                                             }
