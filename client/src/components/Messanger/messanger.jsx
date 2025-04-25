@@ -129,6 +129,17 @@ export default function Messanger(props) {
                             }}/>
                             <Textbox className='messanger_box__footer__textbox' type='textarea' id={props.textbox_id}
                                      placeholder='Ваше сообщение'/>
+                            {
+                                props.editingMessageId !== null ? <Button onClick={() => {
+                                    props.editingMessageIdSetter(null)
+                                    props.setUploadedFiles([])
+
+                                    const textbox = document.getElementById(props.textbox_id)
+                                    textbox.value = ''
+                                }}>
+                                    Отменить
+                                </Button> : ''
+                            }
                             <BackButton className='hoverEffect messanger_box__footer__send_button'
                                         onClick={props.send_func}/>
                         </div>

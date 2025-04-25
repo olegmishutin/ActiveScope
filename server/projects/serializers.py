@@ -76,17 +76,40 @@ class PrioritySerializer(BaseSerializer):
         model = ProjectTaskPriority
 
 
+class ProjectMessageFileSerializer(MessageFileSerializer):
+    class Meta(MessageFileSerializer.Meta):
+        model = ProjectMessageFile
+
+
+class ProjectMessageSimpleSerializer(MessageSimpleSerializer):
+    files = ProjectMessageFileSerializer(many=True, read_only=True)
+
+    class Meta(MessageSimpleSerializer.Meta):
+        model = ProjectMessage
+        messanger_model = Project
+        messanger_val_data_field = 'project_id'
+        exclude = ['project', 'sender']
+
+    def add_addition_val_data(self):
+        self.validated_data['project_id'] = self.context['project_pk']
+
+
+class ProjectMessageSerializer(ProjectMessageSimpleSerializer, MessageSerializer):
+    class Meta(ProjectMessageSimpleSerializer.Meta):
+        message_file_model = ProjectMessageFile
+
+
 class TaskSerializer(BaseSerializer):
     status = StatusSerializer(read_only=True)
     priority = PrioritySerializer(read_only=True)
 
-    status_id = serializers.IntegerField(write_only=True, required=False)
-    priority_id = serializers.IntegerField(write_only=True, required=False)
+    status_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    priority_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     uploaded_files = serializers.ListField(child=serializers.FileField(), write_only=True, required=False)
 
     executor = serializers.ReadOnlyField(source='executor.email')
     executor_read_id = serializers.ReadOnlyField(source='executor.id')
-    executor_id = serializers.IntegerField(write_only=True, required=False)
+    executor_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
 
     class Meta(BaseSerializer.Meta):
         model = ProjectTask
@@ -116,7 +139,33 @@ class TaskSerializer(BaseSerializer):
 
     def update(self, instance, validated_data):
         self.check_states(validated_data)
-        return super().update(instance, validated_data)
+
+        old_status = None if instance.status is None else instance.status.id
+        updated = super().update(instance, validated_data)
+
+        if updated.status is not None and old_status != updated.status.id and updated.status.is_means_completeness \
+                and updated.executor != updated.project.owner:
+            data = {
+                'message': f'@{updated.project.owner.email}\n\nЗадаче: "{updated.name}" ' + \
+                           f'был присвоен статус: {"Пусто" if updated.status is None else updated.status.name}.' + \
+                           f'\nИсполнитель: {"Пусто" if updated.executor is None else updated.executor.email}.' + \
+                           f'\n\nОписание задачи: {"Пусто" if updated.description is None else updated.description}'
+            }
+
+            message_serializer = ProjectMessageSimpleSerializer(
+                data=data, context={
+                    'project_pk': self.context['project_pk'],
+                    'user': self.context['request'].user
+                }
+            )
+
+            if message_serializer.is_valid():
+                saved = message_serializer.save()
+                message_serializer_data = ProjectMessageSimpleSerializer(saved).data
+
+                saved.send_to_socket(message_serializer_data, 'create')
+
+        return updated
 
     def create(self, validated_data):
         self.check_states(validated_data)
@@ -177,26 +226,3 @@ class ShortProjectsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ['id', 'icon', 'name', 'owner']
-
-
-class ProjectMessageFileSerializer(MessageFileSerializer):
-    class Meta(MessageFileSerializer.Meta):
-        model = ProjectMessageFile
-
-
-class ProjectMessageSimpleSerializer(MessageSimpleSerializer):
-    files = ProjectMessageFileSerializer(many=True, read_only=True)
-
-    class Meta(MessageSimpleSerializer.Meta):
-        model = ProjectMessage
-        messanger_model = Project
-        messanger_val_data_field = 'project_id'
-        exclude = ['project', 'sender']
-
-    def add_addition_val_data(self):
-        self.validated_data['project_id'] = self.context['project_pk']
-
-
-class ProjectMessageSerializer(ProjectMessageSimpleSerializer, MessageSerializer):
-    class Meta(ProjectMessageSimpleSerializer.Meta):
-        message_file_model = ProjectMessageFile

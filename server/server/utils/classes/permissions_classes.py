@@ -18,3 +18,10 @@ class UserIsMemberOfObject(BasePermission):
             obj_id = view.kwargs[self.spare_kwargs_name]
 
         return getattr(request.user, self.obj_related_name).filter(id=obj_id).exists()
+
+
+class IsMessageCanBeChanged(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in ('PUT', 'PATCH') and not obj.sender == request.user:
+            return False
+        return True

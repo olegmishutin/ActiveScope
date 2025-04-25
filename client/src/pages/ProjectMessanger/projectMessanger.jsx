@@ -2,12 +2,13 @@ import './projectMessanger.css'
 import {useState, useEffect} from "react";
 import {Link, useParams} from "react-router-dom";
 import axios from "axios";
-import {DELETE, GET, POST} from "../../utils/methods.jsx";
+import {DELETE, GET, POST, PUT} from "../../utils/methods.jsx";
 import {checkResponse} from "../../utils/response.jsx";
 import Messanger from "../../components/Messanger/messanger.jsx";
 import projectIcon from '../../assets/images/project big.svg';
 import userIcon from "../../assets/images/user.svg";
 import trashIcon from "../../assets/images/trash.svg";
+import pencilIcon from "../../assets/images/pencil.svg";
 import Button from "../../widgets/Button/button.jsx";
 import {checkConfirmation} from "../../utils/request.jsx";
 import {getDataByIDs, getWsConnection} from "../../utils/data.jsx";
@@ -24,6 +25,7 @@ export default function ProjectMessanger() {
     const [senderIsUser, setSenderIsUser] = useState(false)
     const [uploadedFiles, setUploadedFiles] = useState([])
     const [socket, setSocket] = useState(null)
+    const [editingMessageId, setEditingMessageId] = useState(null)
 
     useEffect(() => {
         axios(GET(`/api/projects/${id}/`)).then(
@@ -130,7 +132,7 @@ export default function ProjectMessanger() {
     }
 
     function sendMessage() {
-        if (!uploadedFiles.length) {
+        if (!uploadedFiles.length && editingMessageId === null) {
             const data = getDataByIDs([
                     ['message_textarea', 'message']
                 ], false, false
@@ -148,16 +150,30 @@ export default function ProjectMessanger() {
                 data.append('uploaded_files', uploadedFiles[i])
             }
 
-            axios(POST(`/api/projects/${id}/messages/`, data)).then(
-                (response) => {
-                    checkResponse(response, null, null, () => {
-                        document.getElementById('message_textarea').value = ''
-                        setUploadedFiles([])
-                    })
-                }
-            ).catch((error) => {
-                checkResponse(error.response)
-            })
+            if (editingMessageId === null) {
+                axios(POST(`/api/projects/${id}/messages/`, data)).then(
+                    (response) => {
+                        checkResponse(response, null, null, () => {
+                            document.getElementById('message_textarea').value = ''
+                            setUploadedFiles([])
+                        })
+                    }
+                ).catch((error) => {
+                    checkResponse(error.response)
+                })
+            } else {
+                axios(PUT(`/api/projects/${id}/messages/${editingMessageId}/`, data)).then(
+                    (response) => {
+                        checkResponse(response, null, null, () => {
+                            document.getElementById('message_textarea').value = ''
+                            setUploadedFiles([])
+                            setEditingMessageId(null)
+                        })
+                    }
+                ).catch((error) => {
+                    checkResponse(error.response)
+                })
+            }
         }
     }
 
@@ -169,7 +185,8 @@ export default function ProjectMessanger() {
                        imageObjectMessageId={watchingImageMessageId} deleteWatchingFile={deleteFile}
                        socketObject={socket} setMessages={setMessages} send_func={sendMessage}
                        textbox_id='message_textarea' uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles}
-                       messages={messages} currentUser={user}
+                       messages={messages} currentUser={user} editingMessageId={editingMessageId}
+                       editingMessageIdSetter={setEditingMessageId}
             >
                 {
                     messages.map((message) => {
@@ -229,11 +246,22 @@ export default function ProjectMessanger() {
                                             <p className='messanger__message__info__date'>{message.timestamp}</p>
                                         </div>
                                     </div>
-                                    <button className='messanger__message_box__trash_button' onClick={() => {
+                                    <button className='messanger__message_box__manage_button' onClick={() => {
                                         deleteMessage(message.id)
                                     }}>
-                                        <img src={trashIcon} alt='trash' loading='lazy'/>
+                                        <img src={trashIcon} alt='delete' loading='lazy'/>
                                     </button>
+                                    {
+                                        message.sender_profile.email == user.email ? <>
+                                            <button className='messanger__message_box__manage_button' onClick={() => {
+                                                setEditingMessageId(message.id)
+                                                const textbox = document.getElementById('message_textarea')
+                                                textbox.value = message.message
+                                            }}>
+                                                <img src={pencilIcon} alt='edit' loading='lazy'/>
+                                            </button>
+                                        </> : ''
+                                    }
                                 </li>
                             </>
                         )

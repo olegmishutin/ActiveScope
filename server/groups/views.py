@@ -12,7 +12,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Prefetch, Count, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from asgiref.sync import sync_to_async
-from server.utils.classes.permissions_classes import IsAdminUser
+from server.utils.classes.permissions_classes import IsAdminUser, IsMessageCanBeChanged
 from server.utils.classes.mixins import ManipulateMembersFromGroups
 from server.utils.classes.viewsets import MessageViewSet, MessageFileViewSet
 from messages.models import Message
@@ -149,7 +149,7 @@ class GroupMessangerMessageViewSet(MessageViewSet):
 class GroupMessangerMessageFileViewSet(MessageFileViewSet):
     message_serializer = GroupMessangerMessageSerializer
     serializer_class = GroupMessangerMessageFileSerializer
-    permission_classes = [IsAuthenticated, UserIsMemberOfMessanger]
+    permission_classes = [IsAuthenticated, UserIsMemberOfMessanger, IsMessageCanBeChanged]
 
     def get_queryset(self):
         return get_object_or_404(self.request.user.groups_messangers_messages, pk=self.kwargs.get('message_pk')).files

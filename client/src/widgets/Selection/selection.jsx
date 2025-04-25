@@ -5,13 +5,16 @@ export default function Selection(props) {
         <>
             <label className={`hoverEffect default_selection ${props.className}`} htmlFor={props.id}>
                 {props.children}:
-                {
-                    props.data.length > 0 ? <>
-                        <select className='default_selection__select' id={props.id} onChange={(e) => {
-                            if (props.onChange) {
-                                props.onChange(e)
-                            }
-                        }}>
+                <select className='default_selection__select' id={props.id} onChange={(e) => {
+                    if (props.onChange) {
+                        props.onChange(e)
+                    }
+                }}>
+                    {
+                        props.allow_null ? <option value=''>Пусто</option> : ''
+                    }
+                    {
+                        props.data.length > 0 ? <>
                             {
                                 props.data.map((value) => {
                                     return (
@@ -26,9 +29,9 @@ export default function Selection(props) {
                                     )
                                 })
                             }
-                        </select>
-                    </> : ''
-                }
+                        </> : ''
+                    }
+                </select>
             </label>
         </>
     )

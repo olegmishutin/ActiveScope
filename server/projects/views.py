@@ -11,7 +11,7 @@ from django.http import FileResponse
 from django.db.models import Count, Q
 from asgiref.sync import sync_to_async
 from messages.models import Message
-from server.utils.classes.permissions_classes import IsAdminUser
+from server.utils.classes.permissions_classes import IsAdminUser, IsMessageCanBeChanged
 from server.utils.classes.mixins import ManipulateMembersFromGroups
 from server.utils.classes.viewsets import MessageViewSet, MessageFileViewSet
 from server.utils.functions.websockets import send_signal_to_socket
@@ -211,7 +211,7 @@ class AdminFileView(generics.RetrieveAPIView):
 
 class ProjectMessageViewSet(BaseViewSet, MessageViewSet):
     serializer_class = serializers.ProjectMessageSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsMessageCanBeChanged]
 
     def get_queryset(self):
         return get_object_or_404(

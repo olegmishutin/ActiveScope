@@ -292,6 +292,8 @@ export default function ProjectTasks() {
         const taskExecutor = document.getElementById('project_task_executor')
         const taskDescription = document.getElementById('project_task_description')
 
+        console.log(priority)
+
         taskName.value = name
         taskStatus.value = status
         taskStartDate.value = startDate
@@ -306,22 +308,8 @@ export default function ProjectTasks() {
             <div className="window_main_content">
                 <div className="project_task_manage_buttons">
                     <Button onClick={() => {
-                        let status = ''
-                        let priority = ''
-                        let executor = ''
-
-                        if (statuses.length > 0) {
-                            status = statuses[0].id
-                        }
-                        if (priorities.length > 0) {
-                            priority = priorities[0].id
-                        }
-                        if (members.length > 0) {
-                            ``
-                            executor = members[0].id
-                        }
                         setTaskStatus('')
-                        openTaskManagementModal('Создать', '', status, '', priority, '', executor, '', () => {
+                        openTaskManagementModal('Создать', '', '', '', '', '', '', '', () => {
                             manageTask()
                         })
                     }}>Создать задачу</Button>
@@ -386,28 +374,15 @@ export default function ProjectTasks() {
                                                      openModal('project_task_files')
                                                  }}>Файлы</Button>
                                                  <Button className='light_button' onClick={() => {
-                                                     let status = ''
-                                                     let priority = ''
-                                                     let executor = ''
-
-                                                     if (statuses.length > 0) {
-                                                         status = statuses[0].id
-                                                     }
-                                                     if (priorities.length > 0) {
-                                                         priority = priorities[0].id
-                                                     }
-                                                     if (members.length > 0) {
-                                                         executor = members[0].id
-                                                     }
                                                      setTaskStatus('')
                                                      openTaskManagementModal(
                                                          'Изменить',
                                                          task.name,
-                                                         task.status ? task.status.id : status,
+                                                         task.status ? task.status.id : '',
                                                          getDateFromRequest(task.start_date),
-                                                         task.priority ? task.priority.id : priority,
+                                                         task.priority ? task.priority.id : '',
                                                          getDateFromRequest(task.end_date),
-                                                         task.executor ? members.filter((member) => member.email === task.executor)[0].id : executor,
+                                                         task.executor ? members.filter((member) => member.email === task.executor)[0].id : '',
                                                          task.description,
                                                          () => {
                                                              manageTask(task.id)
@@ -499,17 +474,19 @@ export default function ProjectTasks() {
                     <div className="project_task_management__inline">
                         <div className="project_task_management__column">
                             <Textbox label='Название' id='project_task_name' isRequired={true}/>
-                            <Selection id='project_task_status' data={statuses} colorAttr={'color'}>
+                            <Selection id='project_task_status' data={statuses} colorAttr={'color'} allow_null={true}>
                                 Статус</Selection>
                         </div>
                         <div className="project_task_management__column">
                             <Textbox type='date' label='Дата начала' id='project_task_start_date'/>
-                            <Selection id='project_task_priority' data={priorities}
+                            <Selection id='project_task_priority' data={priorities} allow_null={true}
                                        colorAttr={'color'}>Приоритет</Selection>
                         </div>
                         <div className="project_task_management__column">
                             <Textbox type='date' label='Дата окончания' id='project_task_end_date'/>
-                            <Selection id='project_task_executor' data={selectionMembers}>Исполнитель</Selection>
+                            <Selection id='project_task_executor' data={selectionMembers} allow_null={true}>
+                                Исполнитель
+                            </Selection>
                         </div>
                     </div>
                     {
