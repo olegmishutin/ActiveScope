@@ -13,6 +13,7 @@ import Button from "../../widgets/Button/button.jsx"
 import {getFilters} from "../../utils/data.jsx";
 import {useNavigate} from 'react-router-dom';
 import {changePanel} from "../SidePanel/sidePanel.jsx";
+import NoContent from "../NoContent/noContent.jsx";
 
 export function getIsReadedForUrl(url) {
     const isReadedCheckbox = document.getElementById('is_readed')
@@ -127,64 +128,68 @@ export default function Messages(props) {
                     </div>
                     <BackButton className='messages__header__back_button' onClick={closeMessagePanel}/>
                 </div>
-                <ul className='messages__list'>
-                    {
-                        messages.map((message) => {
-                            return (
-                                <>
-                                    <li className='messages__list__message'>
-                                        <h3 className='messages__list__message__topic'>{message.topic}</h3>
-                                        <p className='messages__list__message__date'>Дата: {message.date}</p>
-                                        <p className='messages__list__message__text'>{message.text}</p>
-                                        <div className="messages__list__message__buttons">
-                                            {
-                                                !message.is_readed ?
-                                                    <>
-                                                        <>
-                                                            {
-                                                                ['INV_GROUP', 'INV_PROJECT'].includes(message.topic_code) ?
-                                                                    <>
-                                                                        <Button
-                                                                            className='light_button messages__list__message__buttons__button'
-                                                                            onClick={() => {
-                                                                                readMessage(message.id, true, true)
-                                                                            }}>Принять</Button>
-                                                                        <Button
-                                                                            className='red_button messages__list__message__buttons__button'
-                                                                            onClick={() => {
-                                                                                readMessage(message.id, false, false)
-                                                                            }}>Отклонить</Button>
-                                                                    </> : <Button
-                                                                        className='light_button messages__list__message__buttons__button'
-                                                                        onClick={() => {
-                                                                            readMessage(message.id)
-                                                                        }}>Прочитано
-                                                                    </Button>
-                                                            }
-                                                            {
-                                                                message.topic_code === 'PROJECT_MESSAGE' ? <>
-                                                                    <Button
-                                                                        className='light_button messages__list__message__buttons__button'
-                                                                        onClick={() => {
-                                                                            readMessage(message.id)
-                                                                            closeMessagePanel()
+                {
+                    messages.length > 0 ? <>
+                        <ul className='messages__list'>
+                            {
+                                messages.map((message) => {
+                                    return (
+                                        <>
+                                            <li className='messages__list__message'>
+                                                <h3 className='messages__list__message__topic'>{message.topic}</h3>
+                                                <p className='messages__list__message__date'>Дата: {message.date}</p>
+                                                <p className='messages__list__message__text'>{message.text}</p>
+                                                <div className="messages__list__message__buttons">
+                                                    {
+                                                        !message.is_readed ?
+                                                            <>
+                                                                <>
+                                                                    {
+                                                                        ['INV_GROUP', 'INV_PROJECT'].includes(message.topic_code) ?
+                                                                            <>
+                                                                                <Button
+                                                                                    className='light_button messages__list__message__buttons__button'
+                                                                                    onClick={() => {
+                                                                                        readMessage(message.id, true, true)
+                                                                                    }}>Принять</Button>
+                                                                                <Button
+                                                                                    className='red_button messages__list__message__buttons__button'
+                                                                                    onClick={() => {
+                                                                                        readMessage(message.id, false, false)
+                                                                                    }}>Отклонить</Button>
+                                                                            </> : <Button
+                                                                                className='light_button messages__list__message__buttons__button'
+                                                                                onClick={() => {
+                                                                                    readMessage(message.id)
+                                                                                }}>Прочитано
+                                                                            </Button>
+                                                                    }
+                                                                    {
+                                                                        message.topic_code === 'PROJECT_MESSAGE' ? <>
+                                                                            <Button
+                                                                                className='light_button messages__list__message__buttons__button'
+                                                                                onClick={() => {
+                                                                                    readMessage(message.id)
+                                                                                    closeMessagePanel()
 
-                                                                            changePanel('panel', 'show_panel', 'hidden_panel')
-                                                                            navigate(`/project/${message.messanger_id}/messanger?message=${message.message_id}`)
-                                                                        }}>Перейти к сообщению
-                                                                    </Button>
-                                                                </> : ''
-                                                            }
-                                                        </>
-                                                    </> : ''
-                                            }
-                                        </div>
-                                    </li>
-                                </>
-                            )
-                        })
-                    }
-                </ul>
+                                                                                    changePanel('panel', 'show_panel', 'hidden_panel')
+                                                                                    navigate(`/project/${message.messanger_id}/messanger?message=${message.message_id}`)
+                                                                                }}>Перейти к сообщению
+                                                                            </Button>
+                                                                        </> : ''
+                                                                    }
+                                                                </>
+                                                            </> : ''
+                                                    }
+                                                </div>
+                                            </li>
+                                        </>
+                                    )
+                                })
+                            }
+                        </ul>
+                    </> : <NoContent/>
+                }
             </aside>
         </>
     )

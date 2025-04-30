@@ -17,6 +17,7 @@ import Filters from "../../components/Filters/filters.jsx"
 import ListElement from "../../components/ListElement/listElement.jsx"
 import Modal from "../../components/Modal/modal.jsx"
 import FilePicker from "../../widgets/FilePicker/filePicker.jsx"
+import NoContent from "../../components/NoContent/noContent.jsx";
 
 export default function Groups(props) {
     const [currentUser, setCurrentUser] = useState({})
@@ -164,107 +165,113 @@ export default function Groups(props) {
                     <Ordering id='ordering_members_count'>Количество участников</Ordering>
                     <Ordering id='ordering_created_date'>Дата создания</Ordering>
                 </Filters>
-                <ul className='base_list'>
-                    {
-                        groups.map((group) => {
-                            return (
-                                <>
-                                    <ListElement icon={group.icon} defaultIcon={groupsIcon}
-                                                 headerText={group.name} text={group.description} detail={
+                {
+                    groups.length > 0 ? <>
+                        <ul className='base_list'>
+                            {
+                                groups.map((group) => {
+                                    return (
                                         <>
-                                            <ul className='base_list'>
-                                                {group.members.map((member) => {
-                                                    return (
-                                                        <>
-                                                            <ListElement className='light_list_element'
-                                                                         icon={member.photo} roundedIcon={true}
-                                                                         headerText={member.full_name}
-                                                                         defaultIcon={userIcon}
-                                                                         text={member.description}>
-                                                                <Link to={`/users/${member.id}`}
-                                                                      className='list_element__header__text'>
-                                                                    Email: <span
-                                                                    className='list_element__header__text__important'>
+                                            <ListElement icon={group.icon} defaultIcon={groupsIcon}
+                                                         headerText={group.name} text={group.description} detail={
+                                                <>
+                                                    <ul className='base_list'>
+                                                        {group.members.map((member) => {
+                                                            return (
+                                                                <>
+                                                                    <ListElement className='light_list_element'
+                                                                                 icon={member.photo} roundedIcon={true}
+                                                                                 headerText={member.full_name}
+                                                                                 defaultIcon={userIcon}
+                                                                                 text={member.description}>
+                                                                        <Link to={`/users/${member.id}`}
+                                                                              className='list_element__header__text'>
+                                                                            Email: <span
+                                                                            className='list_element__header__text__important'>
                                                                         {member.email}
                                                                     </span>
-                                                                </Link>
-                                                                <p className='list_element__header__text'>
-                                                                    Количество проектов: <span
-                                                                    className='list_element__header__text__important'>
+                                                                        </Link>
+                                                                        <p className='list_element__header__text'>
+                                                                            Количество проектов: <span
+                                                                            className='list_element__header__text__important'>
                                                                         {member.projects_count}
                                                                     </span>
-                                                                </p>
-                                                                {
-                                                                    group.founder_id === currentUser.id && currentUser.id !== member.id && !props.isAdmin ?
-                                                                        <Button className='red_button'
-                                                                                onClick={() => {
-                                                                                    removeMember(group.id, member.id)
-                                                                                }}>
-                                                                            Исключить
-                                                                        </Button> : ''
-                                                                }
-                                                            </ListElement>
-                                                        </>
-                                                    )
-                                                })}
-                                            </ul>
-                                        </>
-                                    }>
-                                        <Link to={`/users/${group.founder_id}/`} className='list_element__header__text'>
-                                            Основатель: <span
-                                            className='list_element__header__text__important'>
+                                                                        </p>
+                                                                        {
+                                                                            group.founder_id === currentUser.id && currentUser.id !== member.id && !props.isAdmin ?
+                                                                                <Button className='red_button'
+                                                                                        onClick={() => {
+                                                                                            removeMember(group.id, member.id)
+                                                                                        }}>
+                                                                                    Исключить
+                                                                                </Button> : ''
+                                                                        }
+                                                                    </ListElement>
+                                                                </>
+                                                            )
+                                                        })}
+                                                    </ul>
+                                                </>
+                                            }>
+                                                <Link to={`/users/${group.founder_id}/`}
+                                                      className='list_element__header__text'>
+                                                    Основатель: <span
+                                                    className='list_element__header__text__important'>
                                                 {group.founder_email}
                                             </span>
-                                        </Link>
-                                        <p className='list_element__header__text'>
-                                            Дата создания: <span
-                                            className='list_element__header__text__important'>
+                                                </Link>
+                                                <p className='list_element__header__text'>
+                                                    Дата создания: <span
+                                                    className='list_element__header__text__important'>
                                                 {group.created_date}
                                             </span>
-                                        </p>
-                                        <p className='list_element__header__text'>
-                                            Количество участников: <span
-                                            className='list_element__header__text__important'>
+                                                </p>
+                                                <p className='list_element__header__text'>
+                                                    Количество участников: <span
+                                                    className='list_element__header__text__important'>
                                                 {group.members_count}
                                             </span>
-                                        </p>
-                                        {
-                                            group.founder_id === currentUser.id && !props.isAdmin ? <>
-                                                <Button className='light_button' onClick={() => {
-                                                    openModal('Изменить', () => {
-                                                        editGroup(group.id)
-                                                    }, group.name, group.description)
-                                                }}> Изменить
-                                                </Button>
-                                            </> : !props.isAdmin ? <Button className='red_button' onClick={() => {
-                                                leaveGroup(group.id)
-                                            }}>Покинуть</Button> : ''
-                                        }
-                                        {
-                                            props.isAdmin || group.founder_id === currentUser.id ?
-                                                <Button className='red_button' onClick={() => {
-                                                    checkConfirmation(
-                                                        'Уверены, что требуется удалить группу?',
-                                                        () => {
-                                                            const url = props.isAdmin ? `/api/admin_groups/${group.id}` : `/api/groups/${group.id}/`
+                                                </p>
+                                                {
+                                                    group.founder_id === currentUser.id && !props.isAdmin ? <>
+                                                        <Button className='light_button' onClick={() => {
+                                                            openModal('Изменить', () => {
+                                                                editGroup(group.id)
+                                                            }, group.name, group.description)
+                                                        }}> Изменить
+                                                        </Button>
+                                                    </> : !props.isAdmin ?
+                                                        <Button className='red_button' onClick={() => {
+                                                            leaveGroup(group.id)
+                                                        }}>Покинуть</Button> : ''
+                                                }
+                                                {
+                                                    props.isAdmin || group.founder_id === currentUser.id ?
+                                                        <Button className='red_button' onClick={() => {
+                                                            checkConfirmation(
+                                                                'Уверены, что требуется удалить группу?',
+                                                                () => {
+                                                                    const url = props.isAdmin ? `/api/admin_groups/${group.id}` : `/api/groups/${group.id}/`
 
-                                                            axios(DELETE(url)).then(
-                                                                (response) => {
-                                                                    checkResponse(response, null, null, getGroups)
+                                                                    axios(DELETE(url)).then(
+                                                                        (response) => {
+                                                                            checkResponse(response, null, null, getGroups)
+                                                                        }
+                                                                    ).catch((error) => {
+                                                                        checkResponse(error.response)
+                                                                    })
                                                                 }
-                                                            ).catch((error) => {
-                                                                checkResponse(error.response)
-                                                            })
-                                                        }
-                                                    )
-                                                }}>Удалить</Button> : ''
-                                        }
-                                    </ListElement>
-                                </>
-                            )
-                        })
-                    }
-                </ul>
+                                                            )
+                                                        }}>Удалить</Button> : ''
+                                                }
+                                            </ListElement>
+                                        </>
+                                    )
+                                })
+                            }
+                        </ul>
+                    </> : <NoContent/>
+                }
             </div>
             <Modal id='groupsModal' className='groups_modal_window' status={status} manageButtons={
                 <>

@@ -1,0 +1,17 @@
+.no_content {
+    width: 100%;
+    height: 100%;
+    justify-items: center;
+    align-content: center;
+    text-align: center;
+}
+
+.no_content img {
+    width: 100%;
+}
+
+@media (max-width: 425px) {
+    .no_content h2 {
+        font-size: 20px;
+    }
+}

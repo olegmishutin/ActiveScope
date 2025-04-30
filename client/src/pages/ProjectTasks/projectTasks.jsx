@@ -18,6 +18,7 @@ import Selection from "../../widgets/Selection/selection.jsx";
 import FilePicker from "../../widgets/FilePicker/filePicker.jsx";
 import {getDateFromInput, getDateFromRequest} from "../../utils/date.jsx";
 import {checkConfirmation} from "../../utils/request.jsx";
+import NoContent from "../../components/NoContent/noContent.jsx";
 
 export default function ProjectTasks() {
     let {id} = useParams()
@@ -362,102 +363,107 @@ export default function ProjectTasks() {
                         }
                     </Dropdown>
                 </Filters>
-                <ul className='project_tasks_list'>
-                    {tasks.map((task) => {
-                        return (
-                            <>
-                                <ListElement defaultIcon={task_icon} headerText={task.name} text={task.description}
-                                             additionalButtons={<>
-                                                 <Button className='light_button' onClick={() => {
-                                                     getTaskFiles(task.id)
-                                                     setTaskId(task.id)
-                                                     openModal('project_task_files')
-                                                 }}>Файлы</Button>
-                                                 <Button className='light_button' onClick={() => {
-                                                     setTaskStatus('')
-                                                     openTaskManagementModal(
-                                                         'Изменить',
-                                                         task.name,
-                                                         task.status ? task.status.id : '',
-                                                         getDateFromRequest(task.start_date),
-                                                         task.priority ? task.priority.id : '',
-                                                         getDateFromRequest(task.end_date),
-                                                         task.executor ? members.filter((member) => member.email === task.executor)[0].id : '',
-                                                         task.description,
-                                                         () => {
-                                                             manageTask(task.id)
-                                                         }
-                                                     )
-                                                 }}>Изменить</Button>
-                                                 <Button className='red_button' onClick={() => {
-                                                     checkConfirmation(
-                                                         'Уверены, что хотит эту удалить задачу?',
-                                                         () => {
-                                                             axios(DELETE(`/api/projects/${id}/tasks/${task.id}/`)).then(
-                                                                 (response) => {
-                                                                     checkResponse(response, null, null, getTasks)
+                {
+                    tasks.length > 0 ? <>
+                        <ul className='project_tasks_list'>
+                            {tasks.map((task) => {
+                                return (
+                                    <>
+                                        <ListElement defaultIcon={task_icon} headerText={task.name}
+                                                     text={task.description}
+                                                     additionalButtons={<>
+                                                         <Button className='light_button' onClick={() => {
+                                                             getTaskFiles(task.id)
+                                                             setTaskId(task.id)
+                                                             openModal('project_task_files')
+                                                         }}>Файлы</Button>
+                                                         <Button className='light_button' onClick={() => {
+                                                             setTaskStatus('')
+                                                             openTaskManagementModal(
+                                                                 'Изменить',
+                                                                 task.name,
+                                                                 task.status ? task.status.id : '',
+                                                                 getDateFromRequest(task.start_date),
+                                                                 task.priority ? task.priority.id : '',
+                                                                 getDateFromRequest(task.end_date),
+                                                                 task.executor ? members.filter((member) => member.email === task.executor)[0].id : '',
+                                                                 task.description,
+                                                                 () => {
+                                                                     manageTask(task.id)
                                                                  }
-                                                             ).catch((error) => {
-                                                                 checkResponse(error.response)
-                                                             })
-                                                         }
-                                                     )
-                                                 }}>Удалить</Button>
-                                             </>}>
-                                    {
-                                        task.executor ?
-                                            <>
-                                                <Link to={`/users/${task.executor_read_id}/`}
-                                                      className='list_element__header__text'>Исполнитель: <span
-                                                    className='list_element__header__text__important'>{task.executor}</span>
-                                                </Link>
-                                            </> : ''
-                                    }
-                                    {
-                                        task.start_date ?
-                                            <>
-                                                <p className='list_element__header__text'>
-                                                    Дата начала: <span
-                                                    className='list_element__header__text__important'>
+                                                             )
+                                                         }}>Изменить</Button>
+                                                         <Button className='red_button' onClick={() => {
+                                                             checkConfirmation(
+                                                                 'Уверены, что хотит эту удалить задачу?',
+                                                                 () => {
+                                                                     axios(DELETE(`/api/projects/${id}/tasks/${task.id}/`)).then(
+                                                                         (response) => {
+                                                                             checkResponse(response, null, null, getTasks)
+                                                                         }
+                                                                     ).catch((error) => {
+                                                                         checkResponse(error.response)
+                                                                     })
+                                                                 }
+                                                             )
+                                                         }}>Удалить</Button>
+                                                     </>}>
+                                            {
+                                                task.executor ?
+                                                    <>
+                                                        <Link to={`/users/${task.executor_read_id}/`}
+                                                              className='list_element__header__text'>Исполнитель: <span
+                                                            className='list_element__header__text__important'>{task.executor}</span>
+                                                        </Link>
+                                                    </> : ''
+                                            }
+                                            {
+                                                task.start_date ?
+                                                    <>
+                                                        <p className='list_element__header__text'>
+                                                            Дата начала: <span
+                                                            className='list_element__header__text__important'>
                                                         {task.start_date}
                                                     </span>
-                                                </p>
-                                            </> : ''
-                                    }
-                                    {
-                                        task.end_date ?
-                                            <>
-                                                <p className='list_element__header__text'>
-                                                    Дата окончания: <span
-                                                    className='list_element__header__text__important'>
+                                                        </p>
+                                                    </> : ''
+                                            }
+                                            {
+                                                task.end_date ?
+                                                    <>
+                                                        <p className='list_element__header__text'>
+                                                            Дата окончания: <span
+                                                            className='list_element__header__text__important'>
                                                         {task.end_date}
                                                     </span>
-                                                </p>
-                                            </> : ''
-                                    }
-                                    {
-                                        task.status ?
-                                            <>
-                                                <div className="project_task_status"
-                                                     style={{backgroundColor: `#${task.status.color}`}}>
-                                                    {task.status.name}
-                                                </div>
-                                            </> : ''
-                                    }
-                                    {
-                                        task.priority ?
-                                            <>
-                                                <div className="project_task_priority"
-                                                     style={{backgroundColor: `#${task.priority.color}`}}>
-                                                    {task.priority.name}
-                                                </div>
-                                            </> : ''
-                                    }
-                                </ListElement>
-                            </>
-                        )
-                    })}
-                </ul>
+                                                        </p>
+                                                    </> : ''
+                                            }
+                                            {
+                                                task.status ?
+                                                    <>
+                                                        <div className="project_task_status"
+                                                             style={{backgroundColor: `#${task.status.color}`}}>
+                                                            {task.status.name}
+                                                        </div>
+                                                    </> : ''
+                                            }
+                                            {
+                                                task.priority ?
+                                                    <>
+                                                        <div className="project_task_priority"
+                                                             style={{backgroundColor: `#${task.priority.color}`}}>
+                                                            {task.priority.name}
+                                                        </div>
+                                                    </> : ''
+                                            }
+                                        </ListElement>
+                                    </>
+                                )
+                            })}
+                        </ul>
+                    </> : <NoContent/>
+                }
             </div>
             <ProjectTaskProperties id='project_statuses' whatCreate='статус' data={statuses} rounded={true}
                                    deleteFunc={deleteStatus} prefix='status' createFunc={createStatus}

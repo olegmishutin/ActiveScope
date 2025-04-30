@@ -14,6 +14,7 @@ import axios from "axios";
 import {GET} from "../../utils/methods.jsx";
 import {checkResponse} from "../../utils/response.jsx";
 import userIcon from "../../assets/images/user.svg";
+import NoContent from "../NoContent/noContent.jsx";
 
 
 export default function Messanger(props) {
@@ -92,12 +93,16 @@ export default function Messanger(props) {
                         </button>
                     </div>
                     <div className="messanger_box__main">
-                        <ul className='messanger_box__main__messages'>
-                            {props.children}
-                        </ul>
+                        {
+                            props.children.length > 0 ? <>
+                                <ul className='messanger_box__main__messages'>
+                                    {props.children}
+                                </ul>
+                            </> : <NoContent/>
+                        }
                     </div>
                     <div className="messanger_box__footer">
-                        {
+                    {
                             props.uploadedFiles.length ? <>
                                 <ul className="messanger_box__footer__files">
                                     {

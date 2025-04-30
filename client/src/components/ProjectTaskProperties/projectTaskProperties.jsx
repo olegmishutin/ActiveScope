@@ -6,6 +6,7 @@ import {HexColorPicker} from "react-colorful";
 import Checkbox from "../../widgets/Checkbox/checkbox.jsx";
 import {useState} from "react";
 import {checkConfirmation} from "../../utils/request.jsx";
+import NoContent from "../NoContent/noContent.jsx";
 
 export default function ProjectTaskProperties(props) {
     const [color, setColor] = useState('#000000')
@@ -78,9 +79,7 @@ export default function ProjectTaskProperties(props) {
                                     </li>
                                 </>
                             )
-                        }) : <>
-                            <p>Пока что тут пусто</p>
-                        </>
+                        }) : <NoContent light={true}/>
                     }
                 </ul>
             </Modal>

@@ -19,6 +19,7 @@ class BaseSerializer(serializers.ModelSerializer):
 
 class ProjectBaseSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.email')
+    owner_id = serializers.ReadOnlyField(source='owner.id')
     completed_tasks = serializers.ReadOnlyField()
     total_tasks = serializers.ReadOnlyField()
 
@@ -219,7 +220,6 @@ class AdminProjectsTasksSerializer(serializers.ModelSerializer):
 
 class AdminProjectsSerializer(ProjectBaseSerializer):
     tasks = AdminProjectsTasksSerializer(many=True)
-    owner_id = serializers.ReadOnlyField(source='owner.id')
 
 
 class ShortProjectsSerializer(serializers.ModelSerializer):

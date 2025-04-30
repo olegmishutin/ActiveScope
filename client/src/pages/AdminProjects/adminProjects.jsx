@@ -12,6 +12,7 @@ import projectDefaultIcon from '../../assets/images/project.svg'
 import {Link} from "react-router-dom";
 import {getFilters} from "../../utils/data.jsx";
 import {checkConfirmation} from "../../utils/request.jsx";
+import NoContent from "../../components/NoContent/noContent.jsx";
 
 export default function AdminProjects() {
     const [projects, setProjects] = useState([])
@@ -53,95 +54,101 @@ export default function AdminProjects() {
                              label='Максимальное кол-во задач'/>
                     <Ordering id='ordering_total_tasks'>Количество задач</Ordering>
                 </Filters>
-                <ul className='admin_projects__list'>
-                    {
-                        projects.map((project) => {
-                            return (
-                                <>
-                                    <ListElement icon={project.icon} defaultIcon={projectDefaultIcon}
-                                                 detailName={'Задачи'} headerText={project.name}
-                                                 text={project.description} detail={
+                {
+                    projects.length > 0 ? <>
+                        <ul className='admin_projects__list'>
+                            {
+                                projects.map((project) => {
+                                    return (
                                         <>
-                                            <ul className='base_list'>
-                                                {project.tasks.map((task) => {
-                                                    return (
-                                                        <>
-                                                            <ListElement className='light_list_element'
-                                                                         defaultIcon={projectDefaultIcon}
-                                                                         headerText={task.name} text={task.description}>
-                                                                {
-                                                                    task.executor_id ?
-                                                                        <Link to={`/users/${task.executor_id}/`}
-                                                                              className='list_element__header__text'>
-                                                                            Исполнитель: <span
-                                                                            className='list_element__header__text__important'>
+                                            <ListElement icon={project.icon} defaultIcon={projectDefaultIcon}
+                                                         detailName={'Задачи'} headerText={project.name}
+                                                         text={project.description} detail={
+                                                <>
+                                                    <ul className='base_list'>
+                                                        {project.tasks.map((task) => {
+                                                            return (
+                                                                <>
+                                                                    <ListElement className='light_list_element'
+                                                                                 defaultIcon={projectDefaultIcon}
+                                                                                 headerText={task.name}
+                                                                                 text={task.description}>
+                                                                        {
+                                                                            task.executor_id ?
+                                                                                <Link to={`/users/${task.executor_id}/`}
+                                                                                      className='list_element__header__text'>
+                                                                                    Исполнитель: <span
+                                                                                    className='list_element__header__text__important'>
                                                                                 {task.executor}
                                                                             </span>
-                                                                        </Link> : ''
-                                                                }
-                                                                {
-                                                                    task.start_date ?
-                                                                        <p className='list_element__header__text'>
-                                                                            Дата начала: <span
-                                                                            className='list_element__header__text__important'>
+                                                                                </Link> : ''
+                                                                        }
+                                                                        {
+                                                                            task.start_date ?
+                                                                                <p className='list_element__header__text'>
+                                                                                    Дата начала: <span
+                                                                                    className='list_element__header__text__important'>
                                                                             {task.start_date}
                                                                         </span>
-                                                                        </p> : ''
-                                                                }
-                                                                {
-                                                                    task.end_date ?
-                                                                        <p className='list_element__header__text'>
-                                                                            Дата окончания: <span
-                                                                            className='list_element__header__text__important'>
+                                                                                </p> : ''
+                                                                        }
+                                                                        {
+                                                                            task.end_date ?
+                                                                                <p className='list_element__header__text'>
+                                                                                    Дата окончания: <span
+                                                                                    className='list_element__header__text__important'>
                                                                             {task.end_date}
                                                                         </span>
-                                                                        </p> : ''
-                                                                }
-                                                            </ListElement>
-                                                        </>
-                                                    )
-                                                })}
-                                            </ul>
-                                        </>
-                                    }>
-                                        <Link to={`/users/${project.owner_id}/`} className='list_element__header__text'>
-                                            Основатель: <span
-                                            className='list_element__header__text__important'>
+                                                                                </p> : ''
+                                                                        }
+                                                                    </ListElement>
+                                                                </>
+                                                            )
+                                                        })}
+                                                    </ul>
+                                                </>
+                                            }>
+                                                <Link to={`/users/${project.owner_id}/`}
+                                                      className='list_element__header__text'>
+                                                    Основатель: <span
+                                                    className='list_element__header__text__important'>
                                                 {project.owner}
                                             </span>
-                                        </Link>
-                                        <p className='list_element__header__text'>
-                                            Количество задач: <span
-                                            className='list_element__header__text__important'>
+                                                </Link>
+                                                <p className='list_element__header__text'>
+                                                    Количество задач: <span
+                                                    className='list_element__header__text__important'>
                                                 {project.total_tasks}
                                             </span>
-                                        </p>
-                                        <p className='list_element__header__text'>
-                                            Количество выполненных задач: <span
-                                            className='list_element__header__text__important'>
+                                                </p>
+                                                <p className='list_element__header__text'>
+                                                    Количество выполненных задач: <span
+                                                    className='list_element__header__text__important'>
                                                 {project.completed_tasks}
                                             </span>
-                                        </p>
-                                        <Button className='red_button' onClick={() => {
-                                            checkConfirmation(
-                                                'Уверены, что требуется удалить этот проект?',
-                                                () => {
-                                                    axios(DELETE(`/api/admin_projects/${project.id}/`)).then(
-                                                        (response) => {
-                                                            checkResponse(response, null, null, getProjects)
+                                                </p>
+                                                <Button className='red_button' onClick={() => {
+                                                    checkConfirmation(
+                                                        'Уверены, что требуется удалить этот проект?',
+                                                        () => {
+                                                            axios(DELETE(`/api/admin_projects/${project.id}/`)).then(
+                                                                (response) => {
+                                                                    checkResponse(response, null, null, getProjects)
+                                                                }
+                                                            ).catch((error) => {
+                                                                checkResponse(error.response)
+                                                            })
                                                         }
-                                                    ).catch((error) => {
-                                                        checkResponse(error.response)
-                                                    })
-                                                }
-                                            )
-                                        }}>Удалить</Button>
-                                    </ListElement>
-                                </>
-                            )
-                        })
-                    }
-                </ul>
+                                                    )
+                                                }}>Удалить</Button>
+                                            </ListElement>
+                                        </>
+                                    )
+                                })
+                            }
+                        </ul>
+                    </> : <NoContent/>
+                }
             </div>
         </>
     )

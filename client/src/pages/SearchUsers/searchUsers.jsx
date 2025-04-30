@@ -16,6 +16,7 @@ import Textbox from "../../widgets/Textbox/textbox.jsx"
 import Button from "../../widgets/Button/button.jsx"
 import InviteModal from "../../components/InviteMdal/inviteModal.jsx"
 import {checkConfirmation} from "../../utils/request.jsx";
+import NoContent from "../../components/NoContent/noContent.jsx";
 
 export default function SearchUsers(props) {
     const [users, setUser] = useState([])
@@ -86,58 +87,63 @@ export default function SearchUsers(props) {
                              label='Максимальное кол-во проектов' id='max_projects_count'/>
                     <Ordering id='ordering_projects_count'>Количество проектов</Ordering>
                 </Filters>
-                <ul className='base_list search_users__list'>
-                    {
-                        users.map((user) => {
-                            return (
-                                <>
-                                    <ListElement headerText={user.full_name} icon={user.photo}
-                                                 defaultIcon={userIcon} roundedIcon={true} text={user.description}>
-                                        <Link to={`/users/${user.id}`} className='list_element__header__text'>
-                                            Email: <span className='list_element__header__text__important'>
+                {
+                    users.length > 0 ? <>
+                        <ul className='base_list search_users__list'>
+                            {
+                                users.map((user) => {
+                                    return (
+                                        <>
+                                            <ListElement headerText={user.full_name} icon={user.photo}
+                                                         defaultIcon={userIcon} roundedIcon={true}
+                                                         text={user.description}>
+                                                <Link to={`/users/${user.id}`} className='list_element__header__text'>
+                                                    Email: <span className='list_element__header__text__important'>
                                                 {user.email}
                                                 </span>
-                                        </Link>
-                                        <p className='list_element__header__text'>
-                                            Количество проектов: <span
-                                            className='list_element__header__text__important'>
+                                                </Link>
+                                                <p className='list_element__header__text'>
+                                                    Количество проектов: <span
+                                                    className='list_element__header__text__important'>
                                                 {user.projects_count}
                                             </span>
-                                        </p>
-                                        {
-                                            props.isAdmin ? <Button
-                                                    className='red_button' onClick={() => {
-                                                    checkConfirmation(
-                                                        'Уверены, что требуется удалить данного пользователя?',
-                                                        () => {
-                                                            axios(DELETE(`/api/users/${user.id}/`)).then(
-                                                                (response) => {
-                                                                    checkResponse(response, null, null, getUsers)
+                                                </p>
+                                                {
+                                                    props.isAdmin ? <Button
+                                                            className='red_button' onClick={() => {
+                                                            checkConfirmation(
+                                                                'Уверены, что требуется удалить данного пользователя?',
+                                                                () => {
+                                                                    axios(DELETE(`/api/users/${user.id}/`)).then(
+                                                                        (response) => {
+                                                                            checkResponse(response, null, null, getUsers)
+                                                                        }
+                                                                    ).catch((error) => {
+                                                                        checkResponse(error.response)
+                                                                    })
                                                                 }
-                                                            ).catch((error) => {
-                                                                checkResponse(error.response)
-                                                            })
-                                                        }
-                                                    )
-                                                }}>Удалить</Button> :
-                                                <Button className='light_button'
-                                                        onClick={() => {
-                                                            setInviteUserId(user.id)
-                                                            setInviteStatus('')
-                                                            getUserOwnGroups()
-                                                            const modal = document.getElementById(
-                                                                'searchingInviteModal'
                                                             )
-                                                            modal.classList.remove('hide_modal')
-                                                            modal.classList.add('show_modal')
-                                                        }}>Пригласить в группу</Button>
-                                        }
-                                    </ListElement>
-                                </>
-                            )
-                        })
-                    }
-                </ul>
+                                                        }}>Удалить</Button> :
+                                                        <Button className='light_button'
+                                                                onClick={() => {
+                                                                    setInviteUserId(user.id)
+                                                                    setInviteStatus('')
+                                                                    getUserOwnGroups()
+                                                                    const modal = document.getElementById(
+                                                                        'searchingInviteModal'
+                                                                    )
+                                                                    modal.classList.remove('hide_modal')
+                                                                    modal.classList.add('show_modal')
+                                                                }}>Пригласить в группу</Button>
+                                                }
+                                            </ListElement>
+                                        </>
+                                    )
+                                })
+                            }
+                        </ul>
+                    </> : <NoContent/>
+                }
             </div>
             <InviteModal inviteUserFunc={inviteUser} id='searchingInviteModal' inviteStatus={inviteStatus}
                          groups={groups}/>

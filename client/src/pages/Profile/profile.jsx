@@ -1,7 +1,7 @@
 import './profile.css'
 import projectIcon from '../../assets/images/project.svg'
 
-import {useParams} from 'react-router-dom'
+import {Link, useParams} from 'react-router-dom'
 import {useState, useEffect} from "react"
 import axios from "axios"
 import {GET, PUT, DELETE, POST} from "../../utils/methods.jsx"
@@ -20,6 +20,7 @@ import FilePicker from "../../widgets/FilePicker/filePicker.jsx"
 import Checkbox from "../../widgets/Checkbox/checkbox.jsx"
 import InviteModal from "../../components/InviteMdal/inviteModal.jsx"
 import {checkConfirmation} from "../../utils/request.jsx";
+import NoContent from "../../components/NoContent/noContent.jsx";
 
 export default function Profile() {
     let {id} = useParams()
@@ -219,35 +220,41 @@ export default function Profile() {
                              id={'max_tasks_count'}></Textbox>
                     <Ordering id='ordering_total_tasks'>Количество задач</Ordering>
                 </Filters>
-                <ul className='base_list'>
-                    {
-                        projects.map((project) => {
-                            return (
-                                <>
-                                    <ListElement icon={project.icon} defaultIcon={projectIcon}
-                                                 headerText={project.name} text={project.description}>
-                                        <p className='list_element__header__text'>
-                                            Основатель: <span className='list_element__header__text__important'>
+                {
+                    projects.length > 0 ? <>
+                        <ul className='base_list'>
+                            {
+                                projects.map((project) => {
+                                    return (
+                                        <>
+                                            <ListElement icon={project.icon} defaultIcon={projectIcon}
+                                                         headerText={project.name} text={project.description}>
+                                                <Link to={`/users/${project.owner_id}`}
+                                                      className='list_element__header__text'>
+                                                    Основатель: <span className='list_element__header__text__important'>
                                                 {project.owner}
                                             </span>
-                                        </p>
-                                        <p className='list_element__header__text'>
-                                            Количество задач: <span className='list_element__header__text__important'>
+                                                </Link>
+                                                <p className='list_element__header__text'>
+                                                    Количество задач: <span
+                                                    className='list_element__header__text__important'>
                                                 {project.total_tasks}
                                             </span>
-                                        </p>
-                                        <p className='list_element__header__text'>
-                                            Количество выполненных задач: <span
-                                            className='list_element__header__text__important'>
+                                                </p>
+                                                <p className='list_element__header__text'>
+                                                    Количество выполненных задач: <span
+                                                    className='list_element__header__text__important'>
                                                 {project.completed_tasks}
                                             </span>
-                                        </p>
-                                    </ListElement>
-                                </>
-                            )
-                        })
-                    }
-                </ul>
+                                                </p>
+                                            </ListElement>
+                                        </>
+                                    )
+                                })
+                            }
+                        </ul>
+                    </> : <NoContent/>
+                }
             </div>
             <Modal id='editModal' className='profile_modal' contentClassName='profile_modal_content' status={editStatus}
                    manageButtons={
