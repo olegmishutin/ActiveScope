@@ -1,34 +1,43 @@
 import os
+import uuid
 import shutil
 from django.conf import settings
 
 
+def generate_file_name(file):
+    file, ext = os.path.splitext(file)
+    return f'{uuid.uuid4().hex}{ext}'
+
+
 def user_file_uploading_to(instance, file):
-    return f'{instance.email}/profile/{file}'
+    return f'{instance.email}/profile/{generate_file_name(file)}'
 
 
 def project_image_uploading_to(instance, file):
-    return f'projects/{instance.id}/info/{file}'
+    return f'projects/{instance.id}/info/{generate_file_name(file)}'
 
 
 def project_task_file_uploading_to(instance, file):
-    return f'projects/{instance.task.project.id}/task_{instance.task.id}/{file}'
+    return f'projects/{instance.task.project.id}/task_{instance.task.id}/{generate_file_name(file)}'
 
 
 def group_image_uploading_to(instance, file):
-    return f'groups/{instance.id}/{file}'
+    return f'groups/{instance.id}/{generate_file_name(file)}'
 
 
 def group_messanger_image_uploading_to(instance, file):
-    return f'groups/{instance.group.id}/messanger/{instance.id}/{file}'
+    return f'groups/{instance.group.id}/messanger/{instance.id}/{generate_file_name(file)}'
 
 
 def group_messanger_message_file_uploading_to(instance, file):
-    return f'groups/{instance.message.messanger.group.id}/messanger/{instance.message.messanger.id}/files/{file}'
+    return (
+        f'groups/{instance.message.messanger.group.id}/messanger/{instance.message.messanger.id}/'
+        f'files/{generate_file_name(file)}'
+    )
 
 
 def project_message_file_uploading_to(instance, file):
-    return f'projects/{instance.message.project.id}/messages_files/{file}'
+    return f'projects/{instance.message.project.id}/messages_files/{generate_file_name(file)}'
 
 
 def delete_old_files(*args):
