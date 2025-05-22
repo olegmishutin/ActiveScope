@@ -1,8 +1,12 @@
 import './filters.css'
 
+import {useEffect} from "react"
+import {useLocation} from "react-router-dom"
 import Button from "../../widgets/Button/button.jsx"
 
 export default function Filters(props) {
+    const location = useLocation()
+
     function changePanel(removeClass, addClass) {
         const filters = document.getElementById('filters')
         filters.classList.remove(removeClass)
@@ -32,6 +36,10 @@ export default function Filters(props) {
         })
         filter()
     }
+
+    useEffect(() => {
+        resetFilters()
+    }, [location]);
 
     return (
         <>
