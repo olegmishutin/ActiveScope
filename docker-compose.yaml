@@ -34,7 +34,7 @@ services:
       DB_PASSWORD: '123456'
       DB_HOST: 'pgdb'
       DB_PORT: '5432'
-      EXPIRE_TOKEN_IN: '7'
+      EXPIRE_TOKEN_IN: '31'
     ports:
       - '8080:8080'
     depends_on:
@@ -78,7 +78,7 @@ services:
       DB_PASSWORD: '123456'
       DB_HOST: 'pgdb'
       DB_PORT: '5432'
-      EXPIRE_TOKEN_IN: '7'
+      EXPIRE_TOKEN_IN: '31'
     depends_on:
       - celery_worker
 
