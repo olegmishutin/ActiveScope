@@ -178,7 +178,7 @@ class UserProjectsView(generics.ListAPIView):
 
 class AdminProjectsViewSet(mixins.ListModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.AdminProjectsSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated, IsAdminUser]
     filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
     ordering_fields = ['total_tasks']
     search_fields = ['name']
@@ -192,7 +192,7 @@ class AdminProjectsViewSet(mixins.ListModelMixin, mixins.DestroyModelMixin, view
 
 class AdminTasksFilesListView(generics.ListAPIView):
     serializer_class = serializers.TaskFilesSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get_queryset(self):
         task = get_object_or_404(ProjectTask.objects.all(), pk=self.kwargs.get('task_pk'))
@@ -202,7 +202,7 @@ class AdminTasksFilesListView(generics.ListAPIView):
 class AdminFileView(generics.RetrieveAPIView):
     queryset = ProjectTaskFile.objects.all()
     serializer_class = serializers.TaskFilesSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()

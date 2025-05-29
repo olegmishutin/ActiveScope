@@ -1,6 +1,7 @@
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from groups.urls import group_websocket_urlpatterns
 from projects.urls import projects_websocket_urlpatterns
 from .consumer import SignalConsumer
@@ -11,6 +12,8 @@ api_urls = [
     path('', include('groups.urls')),
     path('', include('messages.urls')),
     path('', include('projects.urls')),
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('docs/', SpectacularSwaggerView.as_view(), name='docs'),
 ]
 
 urlpatterns = [

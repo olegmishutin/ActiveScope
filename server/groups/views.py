@@ -161,7 +161,7 @@ class AdminGroupsView(generics.ListAPIView):
             projects_count=Count('projects'))))
 
     serializer_class = GroupsViewSet.serializer_class
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated, IsAdminUser]
     filter_backends = [SearchFilter] + GroupsViewSet.filter_backends
     filterset_class = GroupsViewSet.filterset_class
     ordering_fields = GroupsViewSet.ordering_fields

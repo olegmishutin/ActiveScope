@@ -31,7 +31,7 @@ class SearchUsersView(generics.ListAPIView):
 
 
 class AdminSearchUsersView(SearchUsersView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get_queryset(self):
         return get_user_model().objects.exclude(id=self.request.user.id).annotate(
