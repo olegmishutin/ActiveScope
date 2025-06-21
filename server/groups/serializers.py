@@ -80,5 +80,5 @@ class GroupMessangerMessageSimpleSerializer(MessageSimpleSerializer):
 
 
 class GroupMessangerMessageSerializer(GroupMessangerMessageSimpleSerializer, MessageSerializer):
-    class Meta(GroupMessangerMessageSimpleSerializer.Meta):
+    class Meta(MessageSerializer.Meta, GroupMessangerMessageSimpleSerializer.Meta):
         message_file_model = GroupMessangerMessageFile
