@@ -149,6 +149,7 @@
 .panel__main__selector__icon img {
     width: 100%;
     height: 100%;
+    object-fit: cover;
 }
 
 .panel__main__selector__icon__user {

@@ -91,7 +91,7 @@ export default function SidePanel() {
             ['project_start_date', 'start_date'],
             ['project_end_date', 'end_date'],
             ['project_description', 'description'],
-        ], true, false)
+        ], true, true)
 
         axios(POST('/api/projects/', data)).then((response) => {
             checkResponse(response, setProjectStatus, 'Проект успешно создан!', getProjects)

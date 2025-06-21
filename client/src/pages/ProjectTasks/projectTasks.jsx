@@ -317,7 +317,7 @@ export default function ProjectTasks() {
                     <Button onClick={() => {
                         getStatuses()
                         openModal('project_statuses')
-                    }}>Сатусы</Button>
+                    }}>Статусы</Button>
                     <Button onClick={() => {
                         getPriorities()
                         openModal('project_priorities')

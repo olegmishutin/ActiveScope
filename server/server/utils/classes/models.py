@@ -28,7 +28,7 @@ class AbstractModelWithMembers(models.Model):
 
 
 class AbstractMessangerMessage(models.Model):
-    message = models.TextField('сообщение')
+    message = models.TextField('сообщение', null=True, blank=True)
     timestamp = models.DateTimeField('временная метка', auto_now_add=True, editable=False)
 
     class Meta:

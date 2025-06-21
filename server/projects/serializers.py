@@ -96,7 +96,7 @@ class ProjectMessageSimpleSerializer(MessageSimpleSerializer):
 
 
 class ProjectMessageSerializer(ProjectMessageSimpleSerializer, MessageSerializer):
-    class Meta(ProjectMessageSimpleSerializer.Meta):
+    class Meta(MessageSerializer.Meta, ProjectMessageSimpleSerializer.Meta):
         message_file_model = ProjectMessageFile
 
 

@@ -40,7 +40,11 @@ class MessageFileViewSet(mixins.DestroyModelMixin, mixins.RetrieveModelMixin, Ge
         message = instance.message
         super().perform_destroy(instance)
 
-        message.send_to_socket(self.message_serializer(message).data, 'update')
+        if message.message is None and message.files.all().count() == 0:
+            message.send_to_socket({'id': message.id}, 'destroy')
+            message.delete()
+        else:
+            message.send_to_socket(self.message_serializer(message).data, 'update')
 
     def retrieve(self, request, *args, **kwargs):
         instance = get_object_or_404(self.serializer_class.Meta.model.objects.all(), pk=self.kwargs['pk'])
