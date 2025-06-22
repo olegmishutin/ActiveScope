@@ -174,14 +174,18 @@ class TaskSerializer(BaseSerializer):
         files = validated_data.pop('uploaded_files', [])
         task = super().create(validated_data)
 
-        created_files = [ProjectTaskFile(task=task, file=file) for file in files]
+        created_files = [
+            ProjectTaskFile(
+                task=task, file=file,
+                file_name=file.name
+            )
+            for file in files
+        ]
         ProjectTaskFile.objects.bulk_create(created_files)
-
         return task
 
 
 class TaskFilesSerializer(serializers.ModelSerializer):
-    file_name = serializers.SerializerMethodField('get_file_name')
     uploaded_files = serializers.ListField(child=serializers.FileField(), write_only=True)
 
     class Meta:
@@ -199,14 +203,17 @@ class TaskFilesSerializer(serializers.ModelSerializer):
             }
         }
 
-    def get_file_name(self, instance):
-        return os.path.basename(instance.file.name)
-
     def create(self, validated_data):
         files = validated_data.pop('uploaded_files', [])
         task_id = self.context.get('task_id')
 
-        files_to_create = [self.Meta.model(task_id=task_id, file=file) for file in files]
+        files_to_create = [
+            self.Meta.model(
+                task_id=task_id, file=file,
+                file_name=file.name
+            )
+            for file in files
+        ]
         return self.Meta.model.objects.bulk_create(files_to_create)
 
 

@@ -109,15 +109,13 @@ class ProjectTask(models.Model):
 class ProjectTaskFile(models.Model):
     task = models.ForeignKey(ProjectTask, related_name='files', verbose_name='задача', on_delete=models.CASCADE)
     file = models.FileField('файл', upload_to=files.project_task_file_uploading_to)
+    file_name = models.CharField('название файла', max_length=128, editable=False)
     upload_date = models.DateTimeField('дата загрузки', auto_now_add=True, editable=False)
 
     class Meta:
         db_table = 'ProjectTaskFile'
         verbose_name = 'Файл задачи проекта'
         verbose_name_plural = 'Файлы задач проектов'
-
-    def change_file(self, file):
-        files.set_new_file(self, 'file', file)
 
     def delete(self, using=None, keep_parents=False):
         files.delete_old_files(self.file)
@@ -156,6 +154,7 @@ class ProjectMessageFile(models.Model):
         ProjectMessage, related_name='files', verbose_name='сообщение', on_delete=models.CASCADE)
 
     file = models.FileField('файл', upload_to=files.project_message_file_uploading_to)
+    file_name = models.CharField('название файла', max_length=128, editable=False)
 
     class Meta:
         db_table = 'ProjectMessageFile'

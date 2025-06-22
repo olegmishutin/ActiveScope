@@ -91,6 +91,7 @@ class GroupMessangerMessageFile(models.Model):
         GroupMessangerMessage, related_name='files', verbose_name='сообщение', on_delete=models.CASCADE)
 
     file = models.FileField('файл', upload_to=files.group_messanger_message_file_uploading_to)
+    file_name = models.CharField('название файла', max_length=128, editable=False)
 
     class Meta:
         db_table = 'GroupMessangerMessageFile'

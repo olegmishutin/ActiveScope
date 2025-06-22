@@ -8,13 +8,8 @@ from messages.models import Message
 
 
 class MessageFileSerializer(serializers.ModelSerializer):
-    file_name = serializers.SerializerMethodField('get_file_name')
-
     class Meta:
         exclude = ['message']
-
-    def get_file_name(self, instance):
-        return os.path.basename(instance.file.name)
 
 
 class MessageSimpleSerializer(serializers.ModelSerializer):
@@ -99,7 +94,13 @@ class MessageSerializer(MessageSimpleSerializer):
 
         message = super(serializers.ModelSerializer, self).save(**kwargs)
         
-        created_files = [self.Meta.message_file_model(message=message, file=file) for file in files]
+        created_files = [
+            self.Meta.message_file_model(
+                message=message, file=file,
+                file_name=file.name
+            )
+            for file in files
+        ]
         self.Meta.message_file_model.objects.bulk_create(created_files)
 
         return message
