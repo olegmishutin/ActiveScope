@@ -317,7 +317,6 @@
 .messanger__message__files__file a {
     display: block;
     width: 100%;
-    height: 100%;
     align-content: center;
     word-break: break-word;
 }

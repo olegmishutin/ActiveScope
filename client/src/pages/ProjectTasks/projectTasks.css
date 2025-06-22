@@ -64,9 +64,11 @@
 }
 
 .project_task_files__list {
+    max-height: 500px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    overflow: auto;
 }
 
 .project_task_files__list__file {
@@ -80,6 +82,7 @@
 .project_task_files__list__file__info {
     max-width: 300px;
     overflow: hidden;
+    margin-right: 25px;
 }
 
 .project_task_files__list__file__info h4 {
@@ -96,43 +99,54 @@
     font-weight: 500;
 }
 
+.project_task_files__list__file__buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
 .project_task_files__list__file .default_button {
     max-height: 32px;
-    margin-left: 8px;
 }
 
 .project_task_files__list__file a {
-    margin-left: 25px !important;
     display: flex;
     align-items: center;
 }
 
 @media (max-width: 655px) {
-    .project_task_management__inline{
+    .project_task_management__inline {
         flex-wrap: wrap;
         gap: 8px;
     }
 
-    .project_task_management__column{
+    .project_task_management__column {
         width: 100%;
     }
 }
 
+@media (max-width: 425px) {
+    .project_task_files__list__file__buttons {
+        flex-direction: column;
+    }
+}
+
 @media (max-height: 339px) {
-    .project_task_management_modal{
+    .project_task_management_modal {
         align-self: flex-start;
     }
 }
 
 @media (max-width: 655px) and (max-height: 531px) {
-    .project_task_management_modal{
+    .project_task_management_modal {
         align-self: flex-start;
         border-radius: 0;
     }
 }
 
 @media (max-width: 731px) and (max-height: 339px) {
-    .project_task_management_modal{
+    .project_task_management_modal {
         border-radius: 0;
     }
 }
@@ -140,5 +154,18 @@
 @media (max-width: 425px) {
     .filters__content .dropdown {
         background-color: #313131;
+    }
+}
+
+@media (max-height: 589px) {
+    .project_task_files__window{
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 559px) and (max-height: 589px){
+    .project_task_files__window{
+        min-height: 100%;
+        border-radius: 0;
     }
 }

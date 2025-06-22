@@ -503,7 +503,7 @@ export default function ProjectTasks() {
                              placeholder='Краткое описание для задачи:'/>
                 </div>
             </Modal>
-            <Modal id='project_task_files' manageButtons={<>
+            <Modal className='project_task_files__window' id='project_task_files' manageButtons={<>
                 <FilePicker id='project_task_files_uploaded_files' multiple={true}>Файлы</FilePicker>
                 <Button id='project_task_files_load_button' onClick={() => {
                     sendFiles(taskId)
@@ -519,24 +519,26 @@ export default function ProjectTasks() {
                                             <h4>{file.file_name}</h4>
                                             <p>Дата: {file.upload_date}</p>
                                         </div>
-                                        <a className='default_button light_button'
-                                           href={`/api/projects/${id}/tasks/${file.task}/files/${file.id}/`}>Скачать</a>
-                                        <Button className='red_button' onClick={() => {
-                                            checkConfirmation(
-                                                'Уверены, что хотит удалить этот файл?',
-                                                () => {
-                                                    axios(DELETE(`/api/projects/${id}/tasks/${file.task}/files/${file.id}/`)).then(
-                                                        (response) => {
-                                                            checkResponse(response, null, null, () => {
-                                                                getTaskFiles(file.task)
-                                                            })
-                                                        }
-                                                    ).catch((error) => {
-                                                        checkResponse(error.response)
-                                                    })
-                                                }
-                                            )
-                                        }}>Удалить</Button>
+                                        <div className="project_task_files__list__file__buttons">
+                                            <a className='default_button light_button'
+                                               href={`/api/projects/${id}/tasks/${file.task}/files/${file.id}/`}>Скачать</a>
+                                            <Button className='red_button' onClick={() => {
+                                                checkConfirmation(
+                                                    'Уверены, что хотит удалить этот файл?',
+                                                    () => {
+                                                        axios(DELETE(`/api/projects/${id}/tasks/${file.task}/files/${file.id}/`)).then(
+                                                            (response) => {
+                                                                checkResponse(response, null, null, () => {
+                                                                    getTaskFiles(file.task)
+                                                                })
+                                                            }
+                                                        ).catch((error) => {
+                                                            checkResponse(error.response)
+                                                        })
+                                                    }
+                                                )
+                                            }}>Удалить</Button>
+                                        </div>
                                     </li>
                                 </>
                             )
